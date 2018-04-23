@@ -16,6 +16,15 @@
 <script>
 import bet from '~/components/bet'
 export default {
-  components: { bet }
+  components: { bet },
+  mounted() {
+    // console.log( process.env.NODE_ENV )
+    if ( process.env.NODE_ENV === 'development' ) {
+      let script = document.createElement('script');
+      script.onload = function() { eruda.init(); }
+      document.body.appendChild(script)
+      script.src = '//cdn.bootcss.com/eruda/1.4.2/eruda.min.js'
+    }
+  }
 }
 </script>
