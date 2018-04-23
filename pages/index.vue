@@ -21,7 +21,7 @@
     #panel-bet {
       .selection { 
         .flow(row); .flow(row); height:40px; line-height:40px; align-items:stretch;
-        .preview { padding:0 10px; min-width:70px; font-size:20px; text-align:center; color:@color-primary; background-color:#fff; .radius; }
+        .preview { padding:0 10px; min-width:70px; font-size:26px; text-align:center; color:@color-primary; background-color:#fff; .radius; }
         .preview + * { flex:1; }
       }
       & > div { margin-bottom:20px; }
@@ -44,7 +44,7 @@
             position:absolute; left:0; top:100%; line-height:25px; font-size:12px; color:#fff; 
           }
           .preview { position:relative; }
-          // .preview::after { position:absolute; left:0; bottom:-30px; width:100%; text-align:center; color:#fff; font-size:10px; content:'min change'; }
+          .preview::after { position:absolute; right:5px; font-size:10px; content:'%'; }
           div { 
             position:relative; display:flex; align-items:center;  margin:0 15px 0 20px; 
             input { 
@@ -451,9 +451,6 @@ export default {
         let temp = contract.maxProfit((err,result)=>{
           if ( err ) return this.commonErrorCatcher(err);
           profit.max = this.web3.fromWei(result.toNumber());
-          console.log('~~~~~~~~~~~~~~~~~maxProfit');
-          console.log( result.toNumber() )
-          console.log('~~~~~~~~~~~~~~~~~maxProfit');
           console.warn(`最大用户收益: ${profit.max}`);
         });
       }, profit.reqDelay);
@@ -508,16 +505,6 @@ export default {
     // this.account = await this.getAccountInfo();
     // this.account.pendingWithdrawal = await this.getPendingWithdrawal();
     // this.record  = await this.getRecord();
-
-
-    console.log('________________start');
-    this.getContract().maxNumber((err,result)=>{
-      console.log('_____________maxNumber' );
-      if ( err ) console.log(err);
-      else console.log(result);
-      console.log('_____________maxNumber' );
-    })
-    console.log('________________end');
   }
 }
 </script>
