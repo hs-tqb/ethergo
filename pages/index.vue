@@ -449,6 +449,7 @@ export default {
         let temp = contract.maxProfit((err,result)=>{
           if ( err ) return this.commonErrorCatcher(err);
           profit.max = this.web3.fromWei(result.toNumber());
+          console.warn(`最大用户收益: ${profit.max}`);
         });
       }, profit.reqDelay);
     },
