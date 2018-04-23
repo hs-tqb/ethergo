@@ -1,0 +1,58 @@
+@charset "UTF-8";
+@import '~assets/css/variables.less';
+
+// reset && base
+* { box-sizing:border-box; margin:0; padding:0; font:inherit; color:inherit; outline:0 none; }
+html { height:100%; }
+body { height:inherit; font:400 16px/1 "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif; -webkit-font-smoothing:antialiased; color:@color-white; }
+h1{font-size:20px}
+h2{font-size:18px}
+h3{font-size:16px}
+img { border:0 none; }
+a{color:@link-color; text-decoration:none}
+
+
+// 去掉移动端点击时产生的阴影
+// a, input[type=button] { -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+// 去掉默认样式
+// input, textarea { -webkit-appearance: none; }
+
+
+// 标签
+ul { list-style:none; }
+img { border:0 none; max-width:100%; }
+a, input { 
+  outline:0 none;
+  text-decoration:none;
+  -webkit-tap-highlight-color:rgba(0, 0, 0, 0);  
+  -moz-tap-highlight-color:rgba(0, 0, 0, 0);  
+  -ms-tap-highlight-color:rgba(0, 0, 0, 0);  
+  -o-tap-highlight-color:rgba(0, 0, 0, 0);  
+}
+input[type=text], input[type=button], input[type=submit], input[type=number], button { 
+  border:0 none; 
+  outline:0 none;
+  // border-radius:0;
+  -webkit-appearance:none; 
+}
+
+// 类
+.btn { padding:0 15px; min-width:60px; height:100%; min-height:35px; text-align:center; background-color:@border-color-base; .radius; }
+.btn.text    { background-color:transparent; } 
+.btn.block   { display:block; margin:0 auto; width:100%; min-height:42px; font-size:16px; }
+.btn.primary { color:#fff; background-color:@color-primary; }
+.btn.regular { background-color:@border-color-base; }
+.btn.text.primary { .bgc(transparent); color:@color-primary; }
+.btn.transparent { .bgc(transparent); border:1px solid @border-color-base; }
+.btn:disabled { background-color:@border-color-base; color:@color-text-regular; }
+
+.text-center { text-align:center; }
+.text-left   { text-align:left; }
+.text-right  { text-align:right; }
+
+// 文本
+.text-primary { .text(primary); }
+.text-success { .text(success); }
+.text-failure,
+.text-danger  { .text(danger); }
+.text-info { .text(info); }

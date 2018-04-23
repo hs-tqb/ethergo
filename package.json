@@ -1,0 +1,29 @@
+{
+  "name": "ethergo",
+  "version": "1.0.0",
+  "description": "Nuxt.js project",
+  "author": "HS <huangshuai@utianqi.com>",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint"
+  },
+  "dependencies": {
+    "cross-env": "^5.1.4",
+    "nuxt": "^1.0.0",
+    "web3": "^0.20.0"
+  },
+  "devDependencies": {
+    "less": "^3.0.1",
+    "less-loader": "^4.1.0"
+  },
+  "config": {
+    "nuxt": {
+      "PORT": "5000"
+    }
+  }
+}
