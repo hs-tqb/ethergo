@@ -50,9 +50,11 @@
             input { 
               width:100%;  height:15px; background:transparent; background:url(~assets/img/range-background.svg) no-repeat center/ 100% auto; .radius; cursor:pointer; -webkit-appearance:none; 
               &::-webkit-slider-thumb {
-                width:12px; height:28px; 
+                width:16px; height:28px; 
                 -webkit-appearance:none;
                 .radius(10px);
+                // border:10px solid transparent;
+                border:0 none;
                 background-color:@color-primary-light-1;
                 // box-shadow:0 1px 1px #def3f8, inset 0 .125em .125em #0d1112;
               }
@@ -503,6 +505,16 @@ export default {
     // this.account = await this.getAccountInfo();
     // this.account.pendingWithdrawal = await this.getPendingWithdrawal();
     // this.record  = await this.getRecord();
+
+
+    console.log('________________start');
+    this.getContract().maxNumber((err,result)=>{
+      console.log('_____________maxNumber' );
+      if ( err ) console.log(err);
+      else console.log(result);
+      console.log('_____________maxNumber' );
+    })
+    console.log('________________end');
   }
 }
 </script>
