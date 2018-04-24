@@ -593,6 +593,9 @@ export default {
     },
     // --------- record ----------
     computeProfit(r) {
+      console.log('_______________record');
+      console.log(r);
+      console.log('_______________record');
       return this.web3.fromWei(r.DiceResult.toNumber()<r.UserNumber.toNumber()?
                 r.ProfitValue.toNumber():
                 -r.BetValue.toNumber());
