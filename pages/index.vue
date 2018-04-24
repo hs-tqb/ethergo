@@ -404,7 +404,7 @@ export default {
       })
       .catch(this.commonErrorCatcher);
 
-      console.log('______________________blockNumber', blockNumber)
+      // console.log('______________________blockNumber', blockNumber)
       
       // 估计n天的区块数, (假设一分钟上链10个)
       let dayBlockNumber = (60*24*10) * 1;
@@ -412,7 +412,7 @@ export default {
       // 获取合约
       let contract = this.getContract();
 
-      console.log('______________________contract', contract)
+      // console.log('______________________contract', contract)
 
       // 通过合约获取记录
       let LogBet, ResultBet, bets = [], results = []
@@ -443,10 +443,10 @@ export default {
           });
         }).catch(this.commonErrorCatcher)
       ])
-      console.log('______________________bets', bets)
-      console.log('______________________results', results)
-      LogBet.stopWatching();
-      ResultBet.stopWatching();
+      // console.log('______________________bets', bets)
+      // console.log('______________________results', results)
+      // LogBet.stopWatching();
+      // ResultBet.stopWatching();
 
       
       
@@ -459,7 +459,7 @@ export default {
       }).reverse();
       this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
 
-      console.log('______________________record', this.record)
+      // console.log('______________________record', this.record)
       
     },
     // 获取待提现金额
@@ -593,12 +593,12 @@ export default {
           if ( err ) console.error(error.toString());
           LogResult.stopWatching();
           // this.roll.result = result.args.DiceResult.toNumber()
-          console.log('______________jieguo');
-          console.log( result )
-          console.log('______________jieguo');
+          // console.log('______________jieguo');
+          // console.log( result )
+          // console.log('______________jieguo');
           this.roll.result = result.args.Status.toNumber()
           this.roll.value  = result.args.DiceResult.toNumber()
-          console.log( this.roll )
+          // console.log( this.roll )
         })
       })
     },
