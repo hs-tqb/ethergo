@@ -598,6 +598,11 @@ export default {
       console.log('_______________record');
       console.log(r);
       console.log('_______________record');
+      // 如果还没出结果
+      if ( !r.DiceResult ) {
+        r.DiceResult = { toNumber(){ return '等待开奖'; } }
+        return '等待开奖';
+      }
       return this.web3.fromWei(r.DiceResult.toNumber()<r.UserNumber.toNumber()?
                 r.ProfitValue.toNumber():
                 -r.BetValue.toNumber());
