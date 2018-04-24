@@ -95,7 +95,7 @@
       // li { .border(bottom); }
       .tabs { padding:5px; text-align:right; .border(bottom); }
       .tabs .btn { margin-left:5px; }
-      .table-wrapper { width:100%; overflow:auto; }
+      .table-wrapper { width:100%; .scroll; }
       table { min-width:100%; border-collapse:collapse; }
       table td { padding:10px; }
       table tr:nth-child(even) { background-color:rgba(0,0,0,0.3); }
