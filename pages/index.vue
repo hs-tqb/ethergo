@@ -5,7 +5,7 @@
     h3 { margin:10px 0; }
     h5 { font-size:12px; }
     .panel { padding:5px 10px; }
-
+    .btn.block { height:52px; font-size:22px; }
     // 顶栏
     #topbar { 
       // .flow; justify-content:space-between; align-items:center;  
@@ -19,12 +19,12 @@
     }
     // 赌注
     #panel-bet {
+      .flow; justify-content:space-around; height: calc( 100% - 58px ); 
       .selection { 
         .flow(row); .flow(row); height:40px; line-height:40px; align-items:stretch;
         .preview { padding:0 10px; min-width:70px; font-size:26px; text-align:center; color:@color-primary; background-color:#fff; .radius; }
         .preview + * { flex:1; }
       }
-      & > div { margin-bottom:20px; }
       #wager {
         .selection { 
           .list { 
@@ -66,7 +66,7 @@
           }
         }
       }
-      #roll {
+      #compensate {
         line-height:20px;
         h2 {
           span { font-size:60px; }
@@ -89,7 +89,7 @@
         &:first-child { .border(bottom); }
         h3 { margin:10px 0 20px 0; }
       }
-      .btn { margin-top:20px; }
+      .btn { margin-top:50px; }
     }
   }
 </style>
@@ -103,7 +103,7 @@
         <h4 id="balance">余额: {{account.balance}} ETH</h4>
       </div>
     </div>
-
+    <!-- 赌注 -->
     <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
       <div id="amount">
         <!-- <h2>立刻投注</h2> -->
@@ -146,7 +146,7 @@
           </div>
         </div>
       </div>
-      <div id="roll">
+      <div id="compensate">
         <h2>押注结果小于 <span>{{+bet.range.value+1}}</span></h2>
         <!-- <h3>押注结果小于 <span>{{+bet.range.value+1}}</span></h3> -->
         <p>投注数 <span>{{computedWager}} ETH&nbsp;</span></p>
@@ -157,7 +157,7 @@
       </div>
       <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll">
     </div>
-
+    <!-- 开奖 -->
     <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
       <div class="inner-panel">
         <h3>结果小于</h3>
@@ -175,7 +175,7 @@
       </div>
       <input type="button" class="btn primary block" :value="`你${roll.result>+bet.range.value?'输了':'赢了'}, 再玩一次`" v-if="roll.result" @click="backToRoll">
     </div>
-
+    <!-- 引导 -->
     <div id="panel-guide" class="panel" v-show="false">
       <h2>怎么玩</h2>
       <ul class="anchors">
@@ -219,7 +219,6 @@
         </ol>
       </div>
     </div>
-    
     <!-- 记录 -->
     <div id="panel-record" class="panel" v-show="false">
       <ul>
