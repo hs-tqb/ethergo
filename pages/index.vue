@@ -9,7 +9,7 @@
     // 顶栏
     #topbar { 
       // .flow; justify-content:space-between; align-items:center;  
-      #logo   {  }
+      // #logo   {  }
       #account-info { 
         // width:50%; 
         margin-top:5px;
@@ -19,7 +19,7 @@
     }
     // 赌注
     #panel-bet {
-      .flow; justify-content:space-around; height: calc( 100% - 58px ); 
+      .flow; justify-content:space-around; min-height: calc( 100% - 58px ); 
       .selection { 
         .flow(row); .flow(row); height:40px; line-height:40px; align-items:stretch;
         .preview { padding:0 10px; min-width:70px; font-size:26px; text-align:center; color:@color-primary; background-color:#fff; .radius; }
@@ -81,15 +81,18 @@
     }
     // 投注
     #panel-roll {
-      text-align:center;
+      .flow; min-height: calc( 100% - 58px ); text-align:center;
+      .border { margin:0 30px; }
       .number-block { font-size:100px; }
       .inner-panel { 
-        margin:0 40px;
-        padding:30px 0px;
-        &:first-child { .border(bottom); }
         h3 { margin:10px 0 20px 0; }
       }
-      .btn { margin-top:50px; }
+      .btn { margin-bottom:20px; }
+    }
+    // 历史
+    #panel-record {
+      // li { .border(bottom); }
+      table { width:100%; }
     }
   }
 </style>
@@ -114,6 +117,7 @@
             <ul class="list">
               <li 
               v-for="(s,i) in bet.wager.list" 
+              :key="`wager${i}`"
               @click="selectBetWager(i)"
               :class="i===bet.wager.selected?'selected':''"
               >{{s.name}}</li>
@@ -139,7 +143,7 @@
             v-model="bet.range.value"
             >
             <ul class="signs supp-info">
-              <li v-for="i in 5" :style="`left:${(i-1)*25}%;`" @click="setRange(i)">
+              <li v-for="i in 5" :key="`range${i}`" :style="`left:${(i-1)*25}%;`" @click="setRange(i)">
                 {{(i-1)*25}}%
               </li>
             </ul>
@@ -159,21 +163,39 @@
     </div>
     <!-- 开奖 -->
     <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
+      <div class="filler"></div>
       <div class="inner-panel">
         <h3>结果小于</h3>
         <p class="number-block">{{+bet.range.value+1}}</p>
       </div>
+      <div class="filler"></div>
+      <div class="border"></div>
+      <div class="filler"></div>
       <div class="inner-panel">
         <h3>投注结果</h3>
         <p class="number-block">
           <!-- {{roll.result}} -->
-          <template v-if="roll.result">{{roll.result}}</template>
-          <template v-else>
+          <template v-if="!roll.result">
             <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
           </template>
+          <template v-else-if="roll.result<3">{{roll.value}}</template>
+        </p>
+        <p class="tips" v-if="roll.result">
+          <span v-if="roll.result===0" class="text-danger">你输了</span>
+          <span v-else-if="roll.result===1" class="text-success">你赢了</span>
+          <span v-else-if="roll.result===2" class="text-warning">打款失败, 请手动提现</span>
+          <span v-else-if="roll.result===3" class="text-warning">投注失败, 已退款</span>
+          <span v-else-if="roll.result===4" class="text-warning">投注失败, 请手动提现</span>
         </p>
       </div>
-      <input type="button" class="btn primary block" :value="`你${roll.result>+bet.range.value?'输了':'赢了'}, 再玩一次`" v-if="roll.result" @click="backToRoll">
+      <div class="filler"></div>
+      <input type="button" 
+        class="btn primary block"
+        v-if="roll.result"
+        @click="backToRoll"
+        value="再玩一次" 
+      >
+      <span v-else style="height:50px;"></span>
     </div>
     <!-- 引导 -->
     <div id="panel-guide" class="panel" v-show="false">
@@ -220,10 +242,26 @@
       </div>
     </div>
     <!-- 记录 -->
-    <div id="panel-record" class="panel" v-show="false">
-      <ul>
-        <!-- <li v-for="(r,i) in record.all" :key="`r-a-${i}`">{{r}}</li> -->
-      </ul>
+    <div id="panel-record" class="panel" v-show="true">
+      <div class="tabs"> all </div>
+      <table>
+        <thead>
+          <tr>
+            <td>开奖数字</td>
+            <td>投注数字</td>
+            <td>用户收益</td>
+            <td>其它</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
+            <td>{{ r.DiceResult.toNumber() }}</td>
+            <td>{{ r.UserNumber.toNumber() }}</td>
+            <td>{{ r.computedProfit }}</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <!-- 提现 -->
     <!-- <div id="panel-withdraw" class="panel">
@@ -249,6 +287,7 @@ export default {
       },
       // 投注记录
       record: {
+        show:'all',
         user:[],
         all:[]
       },
@@ -282,8 +321,10 @@ export default {
       // 投注状态
       roll: {
         state:'ready',
-        result:undefined,
+        result:'',
+        value:undefined,
       },
+
     }
   },
   computed: {
@@ -370,32 +411,42 @@ export default {
       let contract = this.getContract();
 
       // 通过合约获取记录
-      let temp = []
-      let all  = [], user = []
-
-      await new Promise((resolve,reject)=>{
-        contract
-          .LogBet(
+      let LogBet, ResultBet, bets = [], results = []
+      // 需要结合两个记录
+      await Promise.all([
+        new Promise((resolve,reject)=>{
+          LogBet = contract.LogBet(
             { _userAddress: '' }, 
             { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-          )
-          .watch((err,result)=>{
+          );
+          LogBet.watch((err,result)=>{
             if ( err ) reject(err)
-            temp.push( result );
+            bets.push( result );
             resolve(result)
           })
-      })
-      .catch(this.commonErrorCatcher);
+        }).catch(this.commonErrorCatcher),
+        new Promise((resolve,reject)=>{
+          ResultBet = contract.LogResult(
+            { _userAddress: '' }, 
+            { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+          );
+          ResultBet.watch((err,result)=>{
+            if ( err ) reject(err)
+            results.push( result );
+            resolve(result)
+          });
+        }).catch(this.commonErrorCatcher)
+      ])
+      LogBet.stopWatching();
+      ResultBet.stopWatching();
 
-
-      all = temp.map(c=>{
-        return c;
-      });
-      user = all.filter(c=>{
-        return c.args.UserAddress === this.account.address;
-      })
-
-      this.record = { all, user };
+      this.record.all = bets.map(b=>{
+        let r  = results.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
+        let o = { ...b.args, ...r.args};
+        o.computedProfit = this.computeProfit( o );
+        return o;
+      }).reverse();
+      this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
     },
     // 获取待提现金额
     async getPendingWithdrawal() {
@@ -490,6 +541,7 @@ export default {
         });
       }, profit.reqDelay);
     },
+    // 投注
     doRoll() {
       if ( !this.checkAccountValid() ) return;
       
@@ -504,45 +556,73 @@ export default {
 
       // 投注
       let contract = this.getContract();
-      contract.userRollDice(98, additionParam, (err, hash)=>{
-        if ( err ) console.error(err.toString());
+      contract.userRollDice(+this.bet.range.value+1, additionParam, (err, hash)=>{
+        if ( err ) return console.error(err.toString());
         let LogBet = contract.LogBet();
         // 
         this.roll.state = 'roll';
         // 投注支付监控
         LogBet.watch((err, result)=>{
           if ( err ) console.error(error.toString());
-          console.log( result )
+          // console.log( result )
+          console.warn('支付成功');
+          // this.record.all.push({})
+          // this.record.user.push(result.args)
           LogBet.stopWatching();
-          // 
-          // this.roll.state = 'roll';
-          // this.roll.result= undefined;
         })
         // 投注结果监控
         let LogResult = contract.LogResult();
         LogResult.watch((err, result)=>{
           if ( err ) console.error(error.toString());
           LogResult.stopWatching();
-          this.roll.result = result.args.DiceResult.toNumber()
+          // this.roll.result = result.args.DiceResult.toNumber()
+          console.log('______________jieguo');
+          console.log( result )
+          console.log('______________jieguo');
+          this.roll.result = result.args.Status.toNumber()
+          this.roll.value  = result.args.DiceResult.toNumber()
+          console.log( this.roll )
         })
       })
     },
+    // 返回
     backToRoll() {
-      this.roll.state = 'ready';
-      this.roll.result= undefined;
-    }
-    // --------- bet ----------
+      this.roll.state  = 'ready';
+      this.roll.result = '';
+      this.roll.value  = undefined
+    },
+    // --------- record ----------
+    computeProfit(r) {
+      return this.web3.fromWei(r.DiceResult.toNumber()<r.UserNumber.toNumber()?
+                r.ProfitValue.toNumber():
+                -r.BetValue.toNumber());
+    },
     // --------- bet ----------
     // --------- bet ----------
   },
   // 初始化 环境 和 账户信息
   async mounted() {
     this.initWeb3();
-    this.getAccountInfo();
     this.getUserMaxProfit();
-    // console.log( Object.keys(this.web3) );
     // this.getPendingWithdrawal();
-    // this.getRecord();
+
+    await this.getAccountInfo();
+
+    this.getRecord();
+
+    // // 购买金额
+    // console.log( this.record.user.map(r=>this.web3.fromWei(r.BetValue.toNumber())) )
+    // // 赔付金额
+    // console.log( this.record.user.map(r=>this.web3.fromWei(r.ProfitValue.toNumber())) )
+    // // 订单ID
+    // console.log( this.record.user.map(r=>r.RandomQueryID.toNumber()) )
+    // // 赏金(如果中?)
+    // console.log( this.record.user.map(r=>this.web3.fromWei(r.RewardValue.toNumber())) )
+    // // 购买的数字
+    // console.log( this.record.user.map(r=>r.UserNumber.toNumber()) )
+    // // 开奖的数字
+    // console.log( this.record.user.map(r=>r.DiceResult.toNumber()) )
+    // console.log( this.record.user.map(r=>r.SerialNumberOfResult.toNumber()) )
     
     // this.account = await this.getAccountInfo();
     // this.account.pendingWithdrawal = await this.getPendingWithdrawal();

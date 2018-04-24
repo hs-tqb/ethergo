@@ -2,8 +2,8 @@
   @import url(~assets/css/variables.less);
   #__nuxt, #__layout, .page-root, .page-container { height:100%; }
   body { background:rgba(0,0,0,0.5); }
-  #__default {
-  }
+  // #__default {
+  // }
 </style>
 
 <template>

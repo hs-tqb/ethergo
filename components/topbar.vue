@@ -3,7 +3,7 @@
   // 顶栏
   #comp-topbar { 
     // .flow; justify-content:space-between; align-items:center;  
-    #logo   {  }
+    // #logo   {  }
     #account-info { 
       // width:50%; 
       margin-top:5px;
