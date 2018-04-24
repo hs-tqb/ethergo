@@ -403,12 +403,16 @@ export default {
         });
       })
       .catch(this.commonErrorCatcher);
+
+      console.log('______________________blockNumber', blockNumber)
       
       // 估计n天的区块数, (假设一分钟上链10个)
       let dayBlockNumber = (60*24*10) * 1;
 
       // 获取合约
       let contract = this.getContract();
+
+      console.log('______________________contract', contract)
 
       // 通过合约获取记录
       let LogBet, ResultBet, bets = [], results = []
@@ -440,6 +444,11 @@ export default {
       LogBet.stopWatching();
       ResultBet.stopWatching();
 
+      console.log('______________________bets', bets)
+      console.log('______________________results', results)
+      
+      
+
       this.record.all = bets.map(b=>{
         let r  = results.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
         let o = { ...b.args, ...r.args};
@@ -447,6 +456,9 @@ export default {
         return o;
       }).reverse();
       this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
+
+      console.log('______________________record', this.record)
+      
     },
     // 获取待提现金额
     async getPendingWithdrawal() {
@@ -613,10 +625,10 @@ export default {
   // 初始化 环境 和 账户信息
   async mounted() {
     this.initWeb3();
-    this.getUserMaxProfit();
     // this.getPendingWithdrawal();
 
     await this.getAccountInfo();
+    await this.getUserMaxProfit();
 
     this.getRecord();
 
