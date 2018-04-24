@@ -92,7 +92,11 @@
     // 历史
     #panel-record {
       // li { .border(bottom); }
+      .tabs { padding:5px; text-align:right; .border(bottom); }
+      .tabs .btn { margin-left:5px; }
       table { width:100%; }
+      // table td { width:20vw; }
+      table td span { .text-ellipsis; width:auto; max-width:20vw;  }
     }
   }
 </style>
@@ -181,8 +185,8 @@
           <template v-else-if="roll.result<3">{{roll.value}}</template>
         </p>
         <p class="tips" v-if="roll.result">
-          <span v-if="roll.result===0" class="text-danger">你输了</span>
-          <span v-else-if="roll.result===1" class="text-success">你赢了</span>
+          <span v-if="roll.result===0" class="text-danger">-{{computedWager}}</span>
+          <span v-else-if="roll.result===1" class="text-success">+{{computedUserProfit}}</span>
           <span v-else-if="roll.result===2" class="text-warning">打款失败, 请手动提现</span>
           <span v-else-if="roll.result===3" class="text-warning">投注失败, 已退款</span>
           <span v-else-if="roll.result===4" class="text-warning">投注失败, 请手动提现</span>
@@ -243,22 +247,27 @@
     </div>
     <!-- 记录 -->
     <div id="panel-record" class="panel" v-show="true">
-      <div class="tabs"> all </div>
+      <div class="tabs">
+        <input type="button" class="btn" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="all">
+        <input type="button" class="btn" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="user">
+      </div>
       <table>
         <thead>
           <tr>
             <td>开奖数字</td>
             <td>投注数字</td>
             <td>用户收益</td>
+            <td>账户</td>
             <td>其它</td>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
-            <td>{{ r.DiceResult.toNumber() }}</td>
-            <td>{{ r.UserNumber.toNumber() }}</td>
-            <td>{{ r.computedProfit }}</td>
-            <td></td>
+            <td><span>{{ r.DiceResult.toNumber() }}</span></td>
+            <td><span>{{ r.UserNumber.toNumber() }}</span></td>
+            <td><span>{{ r.computedProfit }}</span></td>
+            <td><span>{{ r.UserAddress }}</span></td>
+            <td><span></span></td>
           </tr>
         </tbody>
       </table>
@@ -619,7 +628,7 @@ export default {
         return '等待开奖';
       }
       return this.web3.fromWei(r.DiceResult.toNumber()<r.UserNumber.toNumber()?
-                r.ProfitValue.toNumber():
+                +r.ProfitValue.toNumber():
                 -r.BetValue.toNumber());
     },
     // --------- bet ----------
