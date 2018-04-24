@@ -175,7 +175,7 @@
         <h3>投注结果</h3>
         <p class="number-block">
           <!-- {{roll.result}} -->
-          <template v-if="!roll.result">
+          <template v-if="typeof roll.result !=='number'">
             <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
           </template>
           <template v-else-if="roll.result<3">{{roll.value}}</template>
@@ -569,6 +569,8 @@ export default {
           // this.record.all.push({})
           // this.record.user.push(result.args)
           LogBet.stopWatching();
+          // 刷新账户
+          this.getAccountInfo();
         })
         // 投注结果监控
         let LogResult = contract.LogResult();
