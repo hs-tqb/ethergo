@@ -17,7 +17,7 @@
         #address { margin-bottom:3px; }
       }
     }
-    // 投注
+    // 赌注
     #panel-bet {
       .selection { 
         .flow(row); .flow(row); height:40px; line-height:40px; align-items:stretch;
@@ -79,6 +79,18 @@
         }
       }
     }
+    // 投注
+    #panel-roll {
+      text-align:center;
+      .number-block { font-size:100px; }
+      .inner-panel { 
+        margin:0 40px;
+        padding:30px 0px;
+        &:first-child { .border(bottom); }
+        h3 { margin:10px 0 20px 0; }
+      }
+      .btn { margin-top:20px; }
+    }
   }
 </style>
 
@@ -91,7 +103,8 @@
         <h4 id="balance">余额: {{account.balance}} ETH</h4>
       </div>
     </div>
-    <div id="panel-bet" class="panel">
+
+    <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
       <div id="amount">
         <!-- <h2>立刻投注</h2> -->
         <h3>立刻投注</h3>
@@ -124,7 +137,6 @@
             :min="bet.range.min" 
             :max="bet.range.max" 
             v-model="bet.range.value"
-            @change="updateProfit"
             >
             <ul class="signs supp-info">
               <li v-for="i in 5" :style="`left:${(i-1)*25}%;`" @click="setRange(i)">
@@ -144,6 +156,24 @@
         </p>
       </div>
       <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll">
+    </div>
+
+    <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
+      <div class="inner-panel">
+        <h3>结果小于</h3>
+        <p class="number-block">{{+bet.range.value+1}}</p>
+      </div>
+      <div class="inner-panel">
+        <h3>投注结果</h3>
+        <p class="number-block">
+          <!-- {{roll.result}} -->
+          <template v-if="roll.result">{{roll.result}}</template>
+          <template v-else>
+            <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
+          </template>
+        </p>
+      </div>
+      <input type="button" class="btn primary block" :value="`你${roll.result>+bet.range.value?'输了':'赢了'}, 再玩一次`" v-if="roll.result" @click="backToRoll">
     </div>
 
     <div id="panel-guide" class="panel" v-show="false">
@@ -210,17 +240,20 @@ export default {
   data() {
     return {
       web3:undefined,
+      // 账户
       account :{},
+      // 合约
       contract:{
         abi:abi,
         address:'0xb22c9b68edfa6fd124cfedb0d5ad49d363c14146',
         instance:null,
       },
+      // 投注记录
       record: {
         user:[],
         all:[]
       },
-
+      // 赌注设置
       bet: {
         wager: {
           selected:0,
@@ -246,6 +279,11 @@ export default {
           reqTimer:-1,
           reqDelay:400
         }
+      },
+      // 投注状态
+      roll: {
+        state:'ready',
+        result:undefined,
       },
     }
   },
@@ -434,16 +472,14 @@ export default {
     // 选择价格
     selectBetWager(idx) {
       this.bet.wager.selected = idx;
-      this.updateProfit();
     },
     setRange(idx) {
       let temp = ((idx-1)*25);
       if ( temp === 0 ) temp = this.bet.range.min;
       else if ( temp === 100 ) temp = this.bet.range.max
       this.bet.range.value = temp;
-      this.updateProfit();
     },
-    updateProfit() {
+    getUserMaxProfit() {
       let profit = this.bet.profit;
       clearTimeout( profit.reqTimer );
       profit.reqTimer = setTimeout(()=>{
@@ -461,8 +497,8 @@ export default {
       // 支付参数
       let additionParam = {
           from: this.account.address,
-          value: this.web3.toWei( this.computedWager ),
           to: this.contract.address,
+          value: this.web3.toWei( this.computedWager ),
           gas: 3000000,
           gasPrice: 200000000000
       };
@@ -472,22 +508,29 @@ export default {
       contract.userRollDice(98, additionParam, (err, hash)=>{
         if ( err ) console.error(err.toString());
         let LogBet = contract.LogBet();
+        // 
+        this.roll.state = 'roll';
         // 投注支付监控
         LogBet.watch((err, result)=>{
-          console.log('_+____________111111111111111');
           if ( err ) console.error(error.toString());
           console.log( result )
           LogBet.stopWatching();
+          // 
+          // this.roll.state = 'roll';
+          // this.roll.result= undefined;
         })
         // 投注结果监控
         let LogResult = contract.LogResult();
         LogResult.watch((err, result)=>{
-          console.log('_+____________222222222222222');
           if ( err ) console.error(error.toString());
-          console.log( result )
           LogResult.stopWatching();
+          this.roll.result = result.args.DiceResult.toNumber()
         })
       })
+    },
+    backToRoll() {
+      this.roll.state = 'ready';
+      this.roll.result= undefined;
     }
     // --------- bet ----------
     // --------- bet ----------
@@ -496,12 +539,12 @@ export default {
   // 初始化 环境 和 账户信息
   async mounted() {
     this.initWeb3();
-    await this.getAccountInfo();
-    this.updateProfit();
+    this.getAccountInfo();
+    this.getUserMaxProfit();
+    // console.log( Object.keys(this.web3) );
     // this.getPendingWithdrawal();
     // this.getRecord();
-
-
+    
     // this.account = await this.getAccountInfo();
     // this.account.pendingWithdrawal = await this.getPendingWithdrawal();
     // this.record  = await this.getRecord();
