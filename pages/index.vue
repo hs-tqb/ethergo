@@ -445,8 +445,8 @@ export default {
       ])
       console.log('______________________bets', bets)
       console.log('______________________results', results)
-      LogBet.stopWatching();
-      ResultBet.stopWatching();
+      // LogBet.stopWatching();
+      // ResultBet.stopWatching();
 
       
       
