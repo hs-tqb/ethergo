@@ -324,7 +324,7 @@ export default {
         result:'',
         value:undefined,
       },
-
+      mountedRun: false,
     }
   },
   computed: {
@@ -624,6 +624,8 @@ export default {
   },
   // 初始化 环境 和 账户信息
   async mounted() {
+    if ( this.mountedRun ) return;
+    this.mountedRun = true;
     this.initWeb3();
     // this.getPendingWithdrawal();
 
