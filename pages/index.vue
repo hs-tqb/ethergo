@@ -424,6 +424,7 @@ export default {
             { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
           );
           LogBet.watch((err,result)=>{
+            console.log('___________________LogBet', err||result)
             if ( err ) reject(err)
             bets.push( result );
             resolve(result)
@@ -435,6 +436,7 @@ export default {
             { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
           );
           ResultBet.watch((err,result)=>{
+            console.log('___________________LogResult', err||result)
             if ( err ) reject(err)
             results.push( result );
             resolve(result)
