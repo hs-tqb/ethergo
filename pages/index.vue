@@ -6,6 +6,7 @@
     h5 { font-size:12px; }
     .panel { padding:5px 10px; }
     .btn.block { height:52px; font-size:22px; }
+    .text-pending { .text-warning; }
     // 顶栏
     #topbar { 
       // .flow; justify-content:space-between; align-items:center;  
@@ -94,9 +95,12 @@
       // li { .border(bottom); }
       .tabs { padding:5px; text-align:right; .border(bottom); }
       .tabs .btn { margin-left:5px; }
-      table { width:100%; }
-      // table td { width:20vw; }
-      table td span { .text-ellipsis; width:auto; max-width:20vw;  }
+      .table-wrapper { width:100%; overflow:auto; }
+      table { min-width:100%; border-collapse:collapse; }
+      table td { padding:10px; }
+      table tr:nth-child(even) { background-color:rgba(0,0,0,0.3); }
+      table tr:nth-child(odd) { background-color:rgba(0,0,0,0.5); }
+      // table td span { .text-ellipsis; width:auto; max-width:20vw;  }
     }
   }
 </style>
@@ -251,26 +255,36 @@
         <input type="button" class="btn" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="all">
         <input type="button" class="btn" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="user">
       </div>
-      <table>
-        <thead>
-          <tr>
-            <td>开奖数字</td>
-            <td>投注数字</td>
-            <td>用户收益</td>
-            <td>账户</td>
-            <td>其它</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
-            <td><span>{{ r.DiceResult.toNumber() }}</span></td>
-            <td><span>{{ r.UserNumber.toNumber() }}</span></td>
-            <td><span>{{ r.computedProfit }}</span></td>
-            <td><span>{{ r.UserAddress }}</span></td>
-            <td><span></span></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <td>开奖数字</td>
+              <td>投注数字</td>
+              <td>用户收益</td>
+              <td>账户</td>
+              <td>其它</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
+              <td><span>{{ r.DiceResult.toNumber() }}</span></td>
+              <td><span>{{ r.UserNumber.toNumber() }}</span></td>
+              <td><span :class="`text-${r.computedProfit.state}`">
+                {{ r.computedProfit.value }}</span>
+              </td>
+              <td><span>{{ r.UserAddress }}</span></td>
+              <td><span></span></td>
+              <!-- <td><span>{{ r.UserAddress }}</span></td>
+              <td><span>{{ r.UserAddress }}</span></td>
+              <td><span>{{ r.UserAddress }}</span></td>
+              <td><span>{{ r.UserAddress }}</span></td>
+              <td><span>{{ r.UserAddress }}</span></td> -->
+              
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <!-- 提现 -->
     <!-- <div id="panel-withdraw" class="panel">
@@ -619,17 +633,16 @@ export default {
     },
     // --------- record ----------
     computeProfit(r) {
-      console.log('_______________record');
-      console.log(r);
-      console.log('_______________record');
       // 如果还没出结果
       if ( !r.DiceResult ) {
         r.DiceResult = { toNumber(){ return '等待开奖'; } }
-        return '等待开奖';
+        return { state:'pending', value:'等待开奖' };
       }
-      return this.web3.fromWei(r.DiceResult.toNumber()<r.UserNumber.toNumber()?
-                +r.ProfitValue.toNumber():
+      let value = this.web3.fromWei(r.DiceResult.toNumber()<r.UserNumber.toNumber()?
+                r.ProfitValue.toNumber():
                 -r.BetValue.toNumber());
+
+      return { state:value>0?'success':'failure', value }
     },
     // --------- bet ----------
     // --------- bet ----------
