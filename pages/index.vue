@@ -443,11 +443,11 @@ export default {
           });
         }).catch(this.commonErrorCatcher)
       ])
+      console.log('______________________bets', bets)
+      console.log('______________________results', results)
       LogBet.stopWatching();
       ResultBet.stopWatching();
 
-      console.log('______________________bets', bets)
-      console.log('______________________results', results)
       
       
 
@@ -529,6 +529,7 @@ export default {
     // --------- 其它 ---------
     // 通用的catcher
     commonErrorCatcher(err) {
+      console.error('from: ', arguments.caller)
       console.error( err.toString() )
     },
 
