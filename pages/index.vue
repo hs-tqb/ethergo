@@ -12,9 +12,7 @@
       // .flow; justify-content:space-between; align-items:center;  
       // #logo   {  }
       #account-info { 
-        // width:50%; 
-        margin-top:5px;
-        text-align:right; font-size:12px;
+        margin-top:5px; text-align:right; font-size:12px; cursor:pointer;
         #address { margin-bottom:3px; }
       }
     }
@@ -97,7 +95,7 @@
       .tabs .btn { margin-left:5px; }
       .table-wrapper { width:100%; .scroll; }
       table { min-width:100%; border-collapse:collapse; }
-      table td { padding:10px; }
+      table td { padding:10px; white-space:nowrap; }
       table tr:nth-child(even) { background-color:rgba(0,0,0,0.3); }
       table tr:nth-child(odd) { background-color:rgba(0,0,0,0.5); }
       // table td span { .text-ellipsis; width:auto; max-width:20vw;  }
@@ -109,7 +107,7 @@
   <div id="page-home">
     <div id="topbar" class="panel">
       <img src="" alt="logo">
-      <div id="account-info">
+      <div id="account-info" @click="getAccountDetail">
         <h4 id="address">钱包: {{account.address}}</h4>
         <h4 id="balance">余额: {{account.balance}} ETH</h4>
       </div>
@@ -259,26 +257,25 @@
         <table>
           <thead>
             <tr>
-              <td>投注ID</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>开奖数字</td>
               <td>投注数字</td>
+              <td>开奖数字</td>
               <td>用户收益</td>
+              <td>投注ID</td>
               <td>账户</td>
-              <td>其它</td>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
-              <td><span>{{ r.DiceResult.toNumber() }}</span></td>
               <td><span>{{ r.UserNumber.toNumber() }}</span></td>
+              <td><span>{{ r.DiceResult.toNumber() }}</span></td>
               <td><span :class="`text-${r.computedProfit.state}`">
-                {{ r.computedProfit.value }}</span>
+                {{r.computedProfit.prefix}}
+                {{r.computedProfit.value}}</span>
               </td>
-              <td><span>{{ r.UserAddress }}</span></td>
-              <td><span></span></td>
+              <td><span>{{ r.BetID }}</span></td>
+              <td><a :href="`https://etherscan.io/address/${r.UserAddress}`" target="_blank">
+                {{ r.UserAddress }}</a>
+              </td>
               <!-- <td><span>{{ r.UserAddress }}</span></td>
               <td><span>{{ r.UserAddress }}</span></td>
               <td><span>{{ r.UserAddress }}</span></td>
@@ -622,12 +619,13 @@ export default {
           if ( err ) console.error(error.toString());
           LogResult.stopWatching();
           // this.roll.result = result.args.DiceResult.toNumber()
-          console.log('______________jieguo');
-          console.log( result )
-          console.log('______________jieguo');
+          // console.log('______________jieguo');
+          // console.log( result )
+          // console.log('______________jieguo');
           this.roll.result = result.args.Status.toNumber()
           this.roll.value  = result.args.DiceResult.toNumber()
-          console.log( this.roll )
+
+          this.getAccountInfo();
         })
       })
     },
@@ -644,11 +642,13 @@ export default {
         r.DiceResult = { toNumber(){ return '等待开奖'; } }
         return { state:'pending', value:'等待开奖' };
       }
-      let value = this.web3.fromWei(r.DiceResult.toNumber()<r.UserNumber.toNumber()?
-                r.ProfitValue.toNumber():
-                -r.BetValue.toNumber());
+      let compare = r.DiceResult.toNumber()<r.UserNumber.toNumber();
+      let value   = this.web3.fromWei(compare? r.ProfitValue.toNumber(): r.BetValue.toNumber());
 
-      return { state:value>0?'success':'failure', value }
+      return { state:compare?'success':'failure', value, prefix:compare?'+':'-' }
+    },
+    getAccountDetail() {
+      location.href = (`https://etherscan.io/address/${this.account.address}`)
     },
     // --------- bet ----------
     // --------- bet ----------
