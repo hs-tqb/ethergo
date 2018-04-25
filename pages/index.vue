@@ -266,31 +266,27 @@
           </thead>
           <tbody>
             <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
-              <td><span>{{ r.UserNumber.toNumber() }}</span></td>
-              <td><span>{{ r.DiceResult.toNumber() }}</span></td>
-              <td><span :class="`text-${r.computedProfit.state}`">
-                {{r.computedProfit.prefix}}
-                {{r.computedProfit.value}}</span>
+              <td>{{ r.UserNumber.toNumber() }}</td>
+              <td>{{ r.DiceResult.toNumber() }}</td>
+              <td>
+                <span :class="`text-${r.computedProfit.state}`">
+                  {{r.computedProfit.prefix}}
+                  {{r.computedProfit.value}}
+                </span>
               </td>
-              <td><span>{{ r.BetID }}</span></td>
+              <td>{{ r.BetID }}</td>
               <td><a :href="`https://etherscan.io/address/${r.UserAddress}`" target="_blank">
                 {{ r.UserAddress }}</a>
               </td>
-              <!-- <td><span>{{ r.UserAddress }}</span></td>
-              <td><span>{{ r.UserAddress }}</span></td>
-              <td><span>{{ r.UserAddress }}</span></td>
-              <td><span>{{ r.UserAddress }}</span></td>
-              <td><span>{{ r.UserAddress }}</span></td> -->
-              
             </tr>
           </tbody>
         </table>
       </div>
     </div>
     <!-- 提现 -->
-    <!-- <div id="panel-withdraw" class="panel">
-      <input type="button" class="btn primary" @click="doWithdraw" value="提现">
-    </div> -->
+    <div id="panel-withdraw" class="panel">
+      <input type="button" class="btn primary" @click="doWithdraw" :value="`可提现金额: ${account.pendingWithdrawal}`">
+    </div>
   </div>
 </template>
 
@@ -302,7 +298,12 @@ export default {
     return {
       web3:undefined,
       // 账户
-      account :{},
+      account :{
+        address:'',
+        wei:0,
+        balance:0,
+        pendingWithdrawal:0,
+      },
       // 合约
       contract:{
         abi:abi,
@@ -407,7 +408,7 @@ export default {
       let balance = this.web3.fromWei( wei );
       console.warn(`余额: ${balance} (eth)`)
 
-      this.account = { address, wei, balance };
+      this.account = { ...this.account, address, wei, balance };
     },
     // 获取合约
     getContract() {
@@ -556,6 +557,12 @@ export default {
       console.error('from: ', arguments.caller)
       console.error( err.toString() )
     },
+    async updatePageData() {
+      this.getUserMaxProfit();
+      await this.getAccountInfo();
+      this.getRecord();
+      this.getPendingWithdrawal();
+    },
 
     // --------- bet ----------
     // 选择价格
@@ -610,8 +617,9 @@ export default {
           LogBet.stopWatching();
           // 刷新账户
           // this.getAccountInfo();
-          this.account.wei     -= (additionParam.gas*additionParam.gasPrice)+(+this.web3.toWei(this.computedWager))
-          this.account.balance = this.web3.fromWei( this.account.wei )
+          // this.account.wei     -= (additionParam.gas*additionParam.gasPrice)+(+this.web3.toWei(this.computedWager))
+          // this.account.balance = this.web3.fromWei( this.account.wei )
+          this.updatePageData();
         })
         // 投注结果监控
         let LogResult = contract.LogResult();
@@ -625,7 +633,8 @@ export default {
           this.roll.result = result.args.Status.toNumber()
           this.roll.value  = result.args.DiceResult.toNumber()
 
-          this.getAccountInfo();
+          // this.getAccountInfo();
+          this.updatePageData();
         })
       })
     },
@@ -639,7 +648,7 @@ export default {
     computeProfit(r) {
       // 如果还没出结果
       if ( !r.DiceResult ) {
-        r.DiceResult = { toNumber(){ return '等待开奖'; } }
+        r.DiceResult = { toNumber(){ return '-'; } }
         return { state:'pending', value:'等待开奖' };
       }
       let compare = r.DiceResult.toNumber()<r.UserNumber.toNumber();
@@ -650,6 +659,7 @@ export default {
     getAccountDetail() {
       location.href = (`https://etherscan.io/address/${this.account.address}`)
     },
+
     // --------- bet ----------
     // --------- bet ----------
   },
@@ -658,14 +668,10 @@ export default {
     if ( this.mountedRun ) return;
     this.mountedRun = true;
     this.initWeb3();
+    this.updatePageData()
+
     // this.getPendingWithdrawal();
 
-    await this.getAccountInfo();
-    this.getUserMaxProfit();
-
-    this.getRecord();
-
-    console.log( this.web3.fromWei(600000000000000000) )
 
     // // 购买金额
     // console.log( this.record.user.map(r=>this.web3.fromWei(r.BetValue.toNumber())) )
