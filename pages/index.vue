@@ -188,9 +188,9 @@
           </template>
           <template v-else-if="roll.result<3">{{roll.value}}</template>
         </p>
-        <p class="tips" v-if="roll.result">
-          <span v-if="roll.result===0" class="text-danger">-{{computedWager}}</span>
-          <span v-else-if="roll.result===1" class="text-success">+{{computedUserProfit}}</span>
+        <p class="tips" v-if="typeof roll.result==='number'">
+          <span v-if="roll.result===0" class="text-danger">- {{computedWager}} ETH</span>
+          <span v-else-if="roll.result===1" class="text-success">+ {{computedUserProfit}} ETH</span>
           <span v-else-if="roll.result===2" class="text-warning">打款失败, 请手动提现</span>
           <span v-else-if="roll.result===3" class="text-warning">投注失败, 已退款</span>
           <span v-else-if="roll.result===4" class="text-warning">投注失败, 请手动提现</span>
@@ -199,7 +199,7 @@
       <div class="filler"></div>
       <input type="button" 
         class="btn primary block"
-        v-if="roll.result"
+        v-if="typeof roll.result==='number'"
         @click="backToRoll"
         value="再玩一次" 
       >
@@ -259,6 +259,10 @@
         <table>
           <thead>
             <tr>
+              <td>投注ID</td>
+              <td></td>
+              <td></td>
+              <td></td>
               <td>开奖数字</td>
               <td>投注数字</td>
               <td>用户收益</td>
@@ -608,7 +612,9 @@ export default {
           // this.record.user.push(result.args)
           LogBet.stopWatching();
           // 刷新账户
-          this.getAccountInfo();
+          // this.getAccountInfo();
+          this.account.wei     -= (additionParam.gas*additionParam.gasPrice)+(+this.web3.toWei(this.computedWager))
+          this.account.balance = this.web3.fromWei( this.account.wei )
         })
         // 投注结果监控
         let LogResult = contract.LogResult();
@@ -616,12 +622,12 @@ export default {
           if ( err ) console.error(error.toString());
           LogResult.stopWatching();
           // this.roll.result = result.args.DiceResult.toNumber()
-          // console.log('______________jieguo');
-          // console.log( result )
-          // console.log('______________jieguo');
+          console.log('______________jieguo');
+          console.log( result )
+          console.log('______________jieguo');
           this.roll.result = result.args.Status.toNumber()
           this.roll.value  = result.args.DiceResult.toNumber()
-          // console.log( this.roll )
+          console.log( this.roll )
         })
       })
     },
@@ -655,9 +661,11 @@ export default {
     // this.getPendingWithdrawal();
 
     await this.getAccountInfo();
-    await this.getUserMaxProfit();
+    this.getUserMaxProfit();
 
     this.getRecord();
+
+    console.log( this.web3.fromWei(600000000000000000) )
 
     // // 购买金额
     // console.log( this.record.user.map(r=>this.web3.fromWei(r.BetValue.toNumber())) )
