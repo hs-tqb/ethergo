@@ -98,6 +98,7 @@
       table td { padding:10px; white-space:nowrap; }
       table tr:nth-child(even) { background-color:rgba(0,0,0,0.3); }
       table tr:nth-child(odd) { background-color:rgba(0,0,0,0.5); }
+      // table tbody td { text-align:center; }
       // table td span { .text-ellipsis; width:auto; max-width:20vw;  }
     }
   }
@@ -219,7 +220,8 @@
             <tr>
               <td>投注数字</td>
               <td>开奖数字</td>
-              <td>用户收益</td>
+              <td>投注金额</td>
+              <td>玩家收益</td>
               <td>投注ID</td>
               <td>账户</td>
             </tr>
@@ -228,6 +230,7 @@
             <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
               <td>{{ r.UserNumber.toNumber() }}</td>
               <td>{{ r.DiceResult.toNumber() }}</td>
+              <td>{{ web3.fromWei(r.BetValue.toNumber()) }}</td>
               <td>
                 <span :class="`text-${r.computedProfit.state}`">
                   {{r.computedProfit.prefix}}
@@ -475,10 +478,14 @@ export default {
           });
         }).catch(this.commonErrorCatcher)
       ])
-      console.log('______________________bets', bets)
-      console.log('______________________results', results)
+      // console.log('______________________bets', bets)
+      // console.log('______________________results', results)
       // LogBet.stopWatching();
       // ResultBet.stopWatching();
+
+      // console.log('___________fs')
+      // console.log( bets.filter(b=>b.args.BetID==='0x3654c618d4c99078b4574b7c02e1588603721be9c4490619104f56a0a6c3f57c')[0] )
+      // console.log('___________fs')
 
       
       
@@ -594,7 +601,7 @@ export default {
         let temp = contract.maxProfit((err,result)=>{
           if ( err ) return this.commonErrorCatcher(err);
           profit.max = this.web3.fromWei(result.toNumber());
-          console.warn(`最大用户收益: ${profit.max}`);
+          console.warn(`最大玩家收益: ${profit.max}`);
         });
       }, profit.reqDelay);
     },
