@@ -27,7 +27,7 @@
       #wager {
         .selection { 
           .list { 
-            flex:1; .flow(row); margin-left:10px;
+            flex:1; .flow(row); margin-left:20px;
             li { 
               padding:0 10px; .radius; 
               &.selected { background-color:@color-primary-light-1; }
@@ -203,49 +203,9 @@
       >
       <span v-else style="height:50px;"></span>
     </div>
-    <!-- 引导 -->
-    <div id="panel-guide" class="panel" v-show="false">
-      <h2>怎么玩</h2>
-      <ul class="anchors">
-        <li><a href="#guide-game">Play the game</a></li>
-        <li><a href="#guide-metamask">Play using metamask</a></li>
-        <li><a href="#guide-browser">Play using mist browser</a></li>
-        <li><a href="#guide-mobile">Play using your mobile</a></li>
-        <li><a href="#guide-tips">Hot Tips</a></li>
-      </ul>
-      <div id="guide-game">
-        <h3>Play the game</h3>
-        <p>xxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
-        <ol>
-          <li>1111111111111111111</li>
-          <li>2222222222222</li>
-          <li>333333333333333333333</li>
-          <li>444444444444444444444</li>
-          <li>555555555555555555</li>
-        </ol>
-      </div>
-      <div id="guide-metamask">
-        <h3>Play the metamask</h3>
-        <p>xxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
-        <ol>
-          <li>1111111111111111111</li>
-          <li>2222222222222</li>
-          <li>333333333333333333333</li>
-          <li>444444444444444444444</li>
-          <li>555555555555555555</li>
-        </ol>
-      </div>
-      <div id="guide-browser">
-        <h3>Play the browser</h3>
-        <p>xxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
-        <ol>
-          <li>1111111111111111111</li>
-          <li>2222222222222</li>
-          <li>333333333333333333333</li>
-          <li>444444444444444444444</li>
-          <li>555555555555555555</li>
-        </ol>
-      </div>
+    <!-- 提现 -->
+    <div id="panel-withdraw" class="panel">
+      <input type="button" class="btn primary" @click="doWithdraw" :value="`可提现金额: ${account.pendingWithdrawal}`">
     </div>
     <!-- 记录 -->
     <div id="panel-record" class="panel" v-show="true">
@@ -283,9 +243,57 @@
         </table>
       </div>
     </div>
-    <!-- 提现 -->
-    <div id="panel-withdraw" class="panel">
-      <input type="button" class="btn primary" @click="doWithdraw" :value="`可提现金额: ${account.pendingWithdrawal}`">
+    <!-- 引导 -->
+    <div id="panel-guide" class="panel" v-show="true">
+      <h2>怎么玩</h2>
+      <ul class="anchors">
+        <li><a href="#guide-game">游戏规则</a></li>
+        <li><a href="#guide-metamask">使用 metamask</a></li>
+        <li><a href="#guide-browser">使用 mist 浏览器</a></li>
+        <li><a href="#guide-mobile">使用手机</a></li>
+        <li><a href="#guide-tips">Hot Tips</a></li>
+      </ul>
+      <div id="guide-game">
+        <h3>游戏规则</h3>
+        <ol>
+          <li>
+            1. 你正在押注100面骰子滚动的结果。骰子掷出的结果是1-100。选择一个1-100的数字作为你的投注值
+            <br>如果骰子结果低于你的号码，你就可以获得对应赔率的ETH！
+          </li>
+          <li>
+            2. 首先设置您的赌注大小（ETH为单位）。
+            <br>然后，调整“胜率大小”滑块来改变您获胜的比例。
+            <br>要获胜，骰子的结果必须低于你的号码。
+            <br>点击'投注'，即可开始游戏
+          </li>
+          <li>
+            3. 如果掷骰子的结果低于您的“掷骰子”号码，您立即获胜并获得相应赔率奖励！
+            <br>如果输了，智能合约会返给你1Wei（0.0000000000000001ETH）。
+          </li>
+          <li>注意：如果获胜，则从退回给玩家的总金额中扣除1％的佣金。您将承担小额gas费用进行下注。 我们不会收到gas费用。所有费用用于维护以太坊区块链。</li>
+        </ol>
+      </div>
+      <!-- <div id="guide-metamask">
+        <h3>使用 metamask</h3>
+        <ol>
+          <li>1111111111111111111</li>
+          <li>2222222222222</li>
+          <li>333333333333333333333</li>
+          <li>444444444444444444444</li>
+          <li>555555555555555555</li>
+        </ol>
+      </div>
+      <div id="guide-browser">
+        <h3>使用 mist 浏览器</h3>
+        <p>xxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+        <ol>
+          <li>1111111111111111111</li>
+          <li>2222222222222</li>
+          <li>333333333333333333333</li>
+          <li>444444444444444444444</li>
+          <li>555555555555555555</li>
+        </ol>
+      </div> -->
     </div>
   </div>
 </template>
@@ -321,7 +329,6 @@ export default {
         wager: {
           selected:0,
           list:[
-            {name:'MIN', value:0.1},
             {name:'0.1', value:0.1},
             {name:'0.3', value:0.3},
             {name:'0.5', value:0.5},
@@ -468,8 +475,8 @@ export default {
           });
         }).catch(this.commonErrorCatcher)
       ])
-      // console.log('______________________bets', bets)
-      // console.log('______________________results', results)
+      console.log('______________________bets', bets)
+      console.log('______________________results', results)
       // LogBet.stopWatching();
       // ResultBet.stopWatching();
 
@@ -501,8 +508,12 @@ export default {
     },
     // 提现
     doWithdraw() {
+      if ( this.account.pendingWithdrawal === 0 ) return;
       let contract = this.getContract();
-      contract.userWithdrawPendingTransactions((err, result)=>{
+      contract.userWithdrawPendingTransactions(
+        // this.account.address, 
+        // this.account.pendingWithdrawal, 
+        (err, result)=>{
         console.log(err || result);
       })
       // console.log( this.contract.abi )
