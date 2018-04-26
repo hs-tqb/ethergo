@@ -765,6 +765,14 @@ export default {
     this.initWeb3();
     this.updatePageData()
 
+
+    this.getContract().maxNumber((err,result)=>{
+      console.log('___________________maxNumber');
+      console.log( result.toNumber() );
+      console.log('___________________maxNumber');
+    })
+
+
     window.addEventListener('hashchange', this.hashChange);
     this.hashChange();
   }
