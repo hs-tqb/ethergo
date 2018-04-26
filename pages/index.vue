@@ -1,24 +1,9 @@
 <style lang="less">
   @import url(~assets/css/variables.less);
   #page-home {
-    h2 { margin-bottom:15px; font-size:40px; }
-    h3 { margin:10px 0; }
-    h5 { font-size:12px; }
-    .panel { padding:5px 10px; }
-    .btn.block { height:52px; font-size:22px; }
-    .text-pending { .text-warning; }
-    // 顶栏
-    #topbar { 
-      // .flow; justify-content:space-between; align-items:center;  
-      // #logo   {  }
-      #account-info { 
-        margin-top:5px; text-align:right; font-size:12px; cursor:pointer;
-        #address { margin-bottom:3px; }
-      }
-    }
     // 赌注
     #panel-bet {
-      .flow; justify-content:space-around; min-height: calc( 100% - 58px ); 
+      .flow; justify-content:space-around;
       .selection { 
         .flow(row); .flow(row); height:40px; line-height:40px; align-items:stretch;
         .preview { padding:0 10px; min-width:70px; font-size:26px; text-align:center; color:@color-primary; background-color:#fff; .radius; }
@@ -80,7 +65,7 @@
     }
     // 投注
     #panel-roll {
-      .flow; min-height: calc( 100% - 58px ); text-align:center;
+      .flow; text-align:center;
       .border { margin:0 30px; }
       .number-block { font-size:100px; }
       .inner-panel { 
@@ -93,7 +78,7 @@
       // li { .border(bottom); }
       .tabs { padding:5px; text-align:right; .border(bottom); }
       .tabs .btn { margin-left:5px; }
-      .table-wrapper { width:100%; .scroll; }
+      .table-wrapper { width:100%; min-width:100%; height:calc(100%-46px); .scroll; }
       table { min-width:100%; border-collapse:collapse; }
       table td { padding:10px; white-space:nowrap; }
       table tr:nth-child(even) { background-color:rgba(0,0,0,0.3); }
@@ -102,22 +87,31 @@
       // table td span { .text-ellipsis; width:auto; max-width:20vw;  }
     }
   }
+
+  @panel-height:calc( 100% - 92px );
+  @media screen and (max-width:411px) {
+    #page-home { 
+      .panel#panel-bet { min-height:@panel-height; }
+    }
+  }
+  @media screen and (min-width:412px) {
+    #page-home { 
+      .flow(row); height:@panel-height; overflow:hidden;
+      .panel { flex:1; margin:0 10px; height:100; min-width:375px; .scroll; }
+      #panel-bet { min-width:500px; }
+      // #panel-bet, 
+      // #panel-roll {  }
+    }
+  }
 </style>
 
 <template>
   <div id="page-home">
-    <div id="topbar" class="panel">
-      <img src="" alt="logo">
-      <div id="account-info" @click="getAccountDetail">
-        <h4 id="address">钱包: {{account.address}}</h4>
-        <h4 id="balance">余额: {{account.balance}} ETH</h4>
-      </div>
-    </div>
     <!-- 赌注 -->
     <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
       <div id="amount">
-        <!-- <h2>立刻投注</h2> -->
-        <h3>立刻投注</h3>
+        <h2>立刻投注</h2>
+        <!-- <h3>立刻投注</h3> -->
         <div id="wager">
           <div class="selection">
             <p class="preview">{{computedWager}}</p>
@@ -204,12 +198,13 @@
       >
       <span v-else style="height:50px;"></span>
     </div>
+
     <!-- 提现 -->
-    <div id="panel-withdraw" class="panel">
+    <div id="panel-withdraw" class="panel" v-show="hash==='#withdraw'">
       <input type="button" class="btn primary" @click="doWithdraw" :value="`可提现金额: ${account.pendingWithdrawal}`">
     </div>
     <!-- 记录 -->
-    <div id="panel-record" class="panel" v-show="true">
+    <div id="panel-record" class="panel" v-show="hash==='#record' || !hash">
       <div class="tabs">
         <input type="button" class="btn" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="all">
         <input type="button" class="btn" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="user">
@@ -247,7 +242,7 @@
       </div>
     </div>
     <!-- 引导 -->
-    <div id="panel-guide" class="panel" v-show="true">
+    <div id="panel-guide" class="panel" v-show="hash.indexOf('#guide')===0">
       <h2>怎么玩</h2>
       <ul class="anchors">
         <li><a href="#guide-game">游戏规则</a></li>
@@ -258,7 +253,7 @@
       </ul>
       <div id="guide-game">
         <h3>游戏规则</h3>
-        <ol>
+        <ul>
           <li>
             1. 你正在押注100面骰子滚动的结果。骰子掷出的结果是1-100。选择一个1-100的数字作为你的投注值
             <br>如果骰子结果低于你的号码，你就可以获得对应赔率的ETH！
@@ -274,7 +269,7 @@
             <br>如果输了，智能合约会返给你1Wei（0.0000000000000001ETH）。
           </li>
           <li>注意：如果获胜，则从退回给玩家的总金额中扣除1％的佣金。您将承担小额gas费用进行下注。 我们不会收到gas费用。所有费用用于维护以太坊区块链。</li>
-        </ol>
+        </ul>
       </div>
       <!-- <div id="guide-metamask">
         <h3>使用 metamask</h3>
@@ -310,12 +305,12 @@ export default {
       hash:'',
       web3:undefined,
       // 账户
-      account :{
-        address:'',
-        wei:0,
-        balance:0,
-        pendingWithdrawal:0,
-      },
+      // account :{
+      //   address:'',
+      //   wei:0,
+      //   balance:0,
+      //   pendingWithdrawal:0,
+      // },
       // 合约
       contract:{
         ...contract,
@@ -373,6 +368,10 @@ export default {
     },
     rollable() {
       return this.computedUserProfit <= this.bet.profit.max;
+    },
+    account() {
+      // console.log( this.$store.state.account )
+      return this.$store.state.account
     }
   },
   methods: {
@@ -418,7 +417,7 @@ export default {
       let balance = this.web3.fromWei( wei );
       console.warn(`余额: ${balance} (eth)`)
 
-      this.account = { ...this.account, address, wei, balance };
+      this.$store.commit('setAccount', { ...this.account, address, wei, balance })
     },
     // 获取合约
     getContract() {
@@ -428,7 +427,6 @@ export default {
     },
     // 获取投注记录
     async getRecord() {
-      console.log(222222222222222222);
       if ( !this.checkAccountValid() ) return;
       // 获取当前的区块数
       let blockNumber   = await new Promise((resolve, reject)=>{
@@ -459,8 +457,8 @@ export default {
             { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
           );
           LogBet.watch((err,result)=>{
-            // console.log('___________________LogBet', err||result)
             if ( err ) reject(err)
+            console.log('___________________LogBet', result);
             bets.push( result );
             resolve(result)
           })
@@ -471,15 +469,13 @@ export default {
             { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
           );
           ResultBet.watch((err,result)=>{
-            // console.log('___________________LogResult', err||result)
             if ( err ) reject(err)
+            console.log('___________________LogResult', result)
             results.push( result );
             resolve(result)
           });
         }).catch(this.commonErrorCatcher)
       ])
-
-      console.log('_________________refunds');
 
       // 如果两个数据长度不对等, 那就是有某条交易没有结果
       // 没有结果有两种状态, 等待手工退款(也显示为等待开奖), 已手工退款
@@ -652,6 +648,8 @@ export default {
         // 投注支付监控
         LogBet.watch((err, result)=>{
           if ( err ) return this.commonErrorCatcher(err)
+          if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 bet');
+          
           // console.log( result )
           console.warn('支付成功');
           // this.record.all.push({})
@@ -667,6 +665,8 @@ export default {
         let LogResult = contract.LogResult();
         LogResult.watch((err, result)=>{
           if ( err ) return this.commonErrorCatcher(err);
+          if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 result');
+          
           LogResult.stopWatching();
           // this.roll.result = result.args.DiceResult.toNumber()
           // console.log('______________jieguo');
@@ -698,12 +698,13 @@ export default {
 
       return { state:compare?'success':'failure', value, prefix:compare?'+':'-' }
     },
-    getAccountDetail() {
-      location.href = (`https://etherscan.io/address/${this.account.address}`)
-    },
 
     // --------- bet ----------
     // --------- bet ----------
+
+    hashChange() {
+      this.hash = location.hash;
+    }
   },
   // 初始化 环境 和 账户信息
   async mounted() {
@@ -712,9 +713,8 @@ export default {
     this.initWeb3();
     this.updatePageData()
 
-    window.addEventListener('hashchange', function(e) {
-      this.hash = location.hash;
-    })
+    window.addEventListener('hashchange', this.hashChange);
+    this.hashChange();
   }
 }
 </script>

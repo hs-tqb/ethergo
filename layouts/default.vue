@@ -2,8 +2,16 @@
   @import url(~assets/css/variables.less);
   #__nuxt, #__layout, .page-root, .page-container { height:100%; }
   body { background:rgba(0,0,0,0.5); }
-  // #__default {
-  // }
+  #__default {
+    h2 { margin-bottom:15px; font-size:40px; }
+    h3 { margin:10px 0; }
+    h5 { font-size:12px; }
+    .panel { padding:5px 10px; }
+    .btn.block { height:52px; font-size:22px; }
+    .text-pending { .text-warning; }
+  }
+
+
 
   @import url(~assets/css/icons/success.less);
   @import url(~assets/css/icons/failure.less);
@@ -41,11 +49,53 @@
       &[data-type=failure] { background-image:url(@icon-failure); }
     }
   }
+
+  #menu { 
+    position:fixed; top:48px; left:0; z-index:1000;
+    padding:20px;
+    padding-bottom:50px;
+    width:100%;
+    overflow:hidden;
+    background:#000;
+    transition-duration:300ms;
+    &.hide {
+      opacity:0;
+      pointer-events:none;
+      ul { transform:translate3d(0,-100%,0); }
+    }
+    ul { .flow(row); flex-wrap:wrap; transition-duration:300ms; } 
+    li { 
+      width:33%; line-height:50px; text-align:center; 
+      a { display:block; margin:0 15px; .border(bottom); }
+    }
+  }
+
+  @media screen and (max-width:411px) {
+    #menu { 
+      top:0; height:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      li { 
+        width:100%;  
+        a { border:0 none; }
+      }
+    }
+  }
 </style>
 
 <template>
   <div id="__default" class="page-root">
     <!-- <bet /> -->
+    <topbar />
+    <div id="menu" :class="showMenu?'':'hide'">
+      <ul>
+        <li><a @click="routeTo('#guide')">怎么玩</a></li>
+        <li><a @click="routeTo('#withdraw')">提现</a></li>
+        <li><a @click="routeTo('#record')">记录</a></li>
+        <li><a @click="routeTo('#help')">帮助</a></li>
+      </ul>
+    </div>
     <nuxt class="page-container" :data-page="$route.name"/>
     <!-- 全局消息弹窗 -->
     <div id="dialog-message" class="dialog-container" :class="messageDialog.show?'show':''">
@@ -57,16 +107,26 @@
 
 <script>
 import bet from '~/components/bet'
+import topbar from '~/components/topbar'
 export default {
-  components: { bet },
+  components: { topbar, bet },
   computed: {
     messageDialog() {
       return this.$store.state.messageDialog
+    },
+    showMenu() {
+      return this.$store.state.showMenu
     }
   },
+  methods: {
+    routeTo(hash) {
+      location.hash = hash;
+      this.$store.commit('toggleMenu', false);
+    },
+  },
   mounted() {
-    // console.log( process.env.NODE_ENV )
-    if ( process.env.NODE_ENV === 'development' ) {
+    // 测试环境下的移动端页面, 加载debug工具
+    if ( process.env.NODE_ENV === 'development' && (/iphone|ios|android|ipad/gi).test(navigator.userAgent) ) {
       let script = document.createElement('script');
       script.onload = function() { eruda.init(); }
       document.body.appendChild(script)

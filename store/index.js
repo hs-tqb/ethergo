@@ -5,7 +5,14 @@ Vue.use(Vuex)
 
 const store = () => new Vuex.Store({
   state: {
-    account: {},
+    showMenu:false,
+    // 账户
+    account :{
+      address:'',
+      wei:0,
+      balance:0,
+      pendingWithdrawal:0,
+    },
     messageDialog: {
       show:false,
       text:'',
@@ -13,12 +20,10 @@ const store = () => new Vuex.Store({
       timer:-1
     },
   },
-  actions: {
+  mutations: {
     setAccount(state, account) {
       state.account = account;
-    }
-  },
-  mutations: {
+    },
     showMessageDialog(state, obj) {
       if ( !obj.text && !obj.html && !obj.type ) return;
       let dialog = state.messageDialog;
@@ -37,8 +42,11 @@ const store = () => new Vuex.Store({
       dialog.html = (obj.html||'').toString().trim();
       dialog.text = (obj.text||'').toString().trim();
       dialog.show = true;
+    },
+    toggleMenu(state, flag) {
+      state.showMenu = flag;
     }
-  }
+  },
 })
 
 export default store
