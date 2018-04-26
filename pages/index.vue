@@ -305,11 +305,9 @@
 import contract from '~/assets/js/contract'
 import Web3 from 'web3'
 export default {
-  asyncData(ctx) {
-    console.log(ctx.route.hash?'sss':'ddd')
-  },
   data() {
     return {
+      hash:'',
       web3:undefined,
       // 账户
       account :{
@@ -430,8 +428,8 @@ export default {
     },
     // 获取投注记录
     async getRecord() {
-      let obj = { all:[], user:[] }
-      if ( !this.checkAccountValid() ) return obj;
+      console.log(222222222222222222);
+      if ( !this.checkAccountValid() ) return;
       // 获取当前的区块数
       let blockNumber   = await new Promise((resolve, reject)=>{
         this.web3.eth.getBlockNumber((err, result)=>{
@@ -480,28 +478,37 @@ export default {
           });
         }).catch(this.commonErrorCatcher)
       ])
-      // console.log('______________________bets', bets)
-      // console.log('______________________results', results)
-      // LogBet.stopWatching();
-      // ResultBet.stopWatching();
 
-      // console.log('___________fs')
-      // console.log( bets.filter(b=>b.args.BetID==='0x3654c618d4c99078b4574b7c02e1588603721be9c4490619104f56a0a6c3f57c')[0] )
-      // console.log('___________fs')
+      console.log('_________________refunds');
 
-      
-      
+      // 如果两个数据长度不对等, 那就是有某条交易没有结果
+      // 没有结果有两种状态, 等待手工退款(也显示为等待开奖), 已手工退款
+      let LogRefund, refunds = [];
+      if ( bets.length !== results.length ) {
+        await new Promise((resolve,reject)=>{
+          LogRefund = contract.LogRefund(
+            { _userAddress: '' }, 
+            { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+          )
+          LogRefund.watch((err,result)=>{
+            if (err) reject(err);
+            refunds.push( result );
+            resolve(result)
+          })
+        }).catch(this.commonErrorCatcher)
+      }
+
+
 
       this.record.all = bets.map(b=>{
         let r  = results.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
-        let o = { ...b.args, ...r.args};
+        let f  = refunds.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
+        let o  = { ...b.args, ...r.args, ...f.args};
         o.computedProfit = this.computeProfit( o );
         return o;
       }).reverse();
       this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
 
-      // console.log('______________________record', this.record)
-      
     },
     // 获取待提现金额
     async getPendingWithdrawal() {
@@ -684,7 +691,7 @@ export default {
       // 如果还没出结果
       if ( !r.DiceResult ) {
         r.DiceResult = { toNumber(){ return '-'; } }
-        return { state:'pending', value:'等待开奖' };
+        return { state:'pending', value:!!r.RefundValue?'已手工退款':'等待开奖' };
       }
       let compare = r.DiceResult.toNumber()<r.UserNumber.toNumber();
       let value   = this.web3.fromWei(compare? r.ProfitValue.toNumber(): r.BetValue.toNumber());
@@ -706,7 +713,7 @@ export default {
     this.updatePageData()
 
     window.addEventListener('hashchange', function(e) {
-      console.log('~~~~~~~~~~~~', e);
+      this.hash = location.hash;
     })
   }
 }
