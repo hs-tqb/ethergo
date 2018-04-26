@@ -293,6 +293,9 @@
         </ol>
       </div> -->
     </div>
+    <div id="panel-help" class="panel" v-show="hash==='#help'">
+      <h2>帮助</h2>
+    </div>
   </div>
 </template>
 

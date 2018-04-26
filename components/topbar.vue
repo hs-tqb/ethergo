@@ -40,7 +40,6 @@ export default {
       location.href = (`https://etherscan.io/address/${this.account.address}`)
     },
     toggleMenu() {
-      console.log( !this.$store.state.showMenu )
       this.$store.commit('toggleMenu', !this.$store.state.showMenu);
     },
   }
