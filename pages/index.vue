@@ -302,7 +302,7 @@
 </template>
 
 <script>
-import abi from '~/assets/js/abi'
+import contract from '~/assets/js/contract'
 import Web3 from 'web3'
 export default {
   data() {
@@ -317,8 +317,7 @@ export default {
       },
       // 合约
       contract:{
-        abi:abi,
-        address:'0xb22c9b68edfa6fd124cfedb0d5ad49d363c14146',
+        ...contract,
         instance:null,
       },
       // 投注记录
@@ -508,20 +507,34 @@ export default {
         .userGetPendingTxByAddress(this.account.address, (err,result)=>{
           if ( err ) reject(err)
           console.warn(`未提现: ${ result.toNumber() }`)
-          resolve(result.toNumber())
+          resolve(this.web3.fromWei(result.toNumber()))
         })
       })
       .catch(this.commonErrorCatcher);
     },
     // 提现
     doWithdraw() {
-      if ( this.account.pendingWithdrawal === 0 ) return;
+      if ( this.account.pendingWithdrawal == 0 ) 
+        return this.commonErrorCatcher('没有可提现的金额');
+
       let contract = this.getContract();
+
+      let additionParam = {
+        // address:this.account.address,
+        from:this.account.address,
+        // _from:this.account.address,
+        gas: 3000000,
+        gasPrice: 200000000000
+      };
+      // 支付参数
+
       contract.userWithdrawPendingTransactions(
         // this.account.address, 
-        // this.account.pendingWithdrawal, 
+        // this.web3.toWei(this.account.pendingWithdrawal), 
+        additionParam,
         (err, result)=>{
-        console.log(err || result);
+        if ( err ) return this.commonErrorCatcher(err);
+        this.$store.commit('showMessageDialog', {type:'success', html:'提现成功<br>请稍后进行查询'});
       })
       // console.log( this.contract.abi )
     },
@@ -540,7 +553,7 @@ export default {
       //   warning = '合约获取失败';
       // }
 
-      showWarning && warning && console.error(warning);
+      showWarning && warning && this.commonErrorCatcher(warning);
 
       return !warning;
     },
@@ -551,7 +564,7 @@ export default {
         warning = '合约获取失败';
       }
 
-      showWarning && warning && console.error(warning);
+      showWarning && warning && this.commonErrorCatcher(warning);
       return !warning;
     },
     // 检测余额可用
@@ -564,17 +577,17 @@ export default {
         warning = '余额不足'
       }
 
-      warning && console.error(warning);
-
+      warning && this.commonErrorCatcher(warning);
+      
       return !warning;
     },
 
     // --------- 其它 ---------
     // 通用的catcher
     commonErrorCatcher(err) {
-      console.error('from: ', arguments.caller)
-      console.error( err.toString() )
+      this.$store.commit('showMessageDialog',{type:'failure', text:err.toString()});
     },
+    // 刷新页面数据
     async updatePageData() {
       this.getUserMaxProfit();
       await this.getAccountInfo();
@@ -621,13 +634,14 @@ export default {
       // 投注
       let contract = this.getContract();
       contract.userRollDice(+this.bet.range.value+1, additionParam, (err, hash)=>{
-        if ( err ) return console.error(err.toString());
+        if ( err ) return;
+        // if ( err ) return this.commonErrorCatcher(err);
         let LogBet = contract.LogBet();
         // 
         this.roll.state = 'roll';
         // 投注支付监控
         LogBet.watch((err, result)=>{
-          if ( err ) console.error(error.toString());
+          if ( err ) return this.commonErrorCatcher(err)
           // console.log( result )
           console.warn('支付成功');
           // this.record.all.push({})
@@ -642,7 +656,7 @@ export default {
         // 投注结果监控
         let LogResult = contract.LogResult();
         LogResult.watch((err, result)=>{
-          if ( err ) console.error(error.toString());
+          if ( err ) return this.commonErrorCatcher(err);
           LogResult.stopWatching();
           // this.roll.result = result.args.DiceResult.toNumber()
           // console.log('______________jieguo');
@@ -687,27 +701,6 @@ export default {
     this.mountedRun = true;
     this.initWeb3();
     this.updatePageData()
-
-    // this.getPendingWithdrawal();
-
-
-    // // 购买金额
-    // console.log( this.record.user.map(r=>this.web3.fromWei(r.BetValue.toNumber())) )
-    // // 赔付金额
-    // console.log( this.record.user.map(r=>this.web3.fromWei(r.ProfitValue.toNumber())) )
-    // // 订单ID
-    // console.log( this.record.user.map(r=>r.RandomQueryID.toNumber()) )
-    // // 赏金(如果中?)
-    // console.log( this.record.user.map(r=>this.web3.fromWei(r.RewardValue.toNumber())) )
-    // // 购买的数字
-    // console.log( this.record.user.map(r=>r.UserNumber.toNumber()) )
-    // // 开奖的数字
-    // console.log( this.record.user.map(r=>r.DiceResult.toNumber()) )
-    // console.log( this.record.user.map(r=>r.SerialNumberOfResult.toNumber()) )
-    
-    // this.account = await this.getAccountInfo();
-    // this.account.pendingWithdrawal = await this.getPendingWithdrawal();
-    // this.record  = await this.getRecord();
   }
 }
 </script>
