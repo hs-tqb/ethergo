@@ -305,6 +305,9 @@
 import contract from '~/assets/js/contract'
 import Web3 from 'web3'
 export default {
+  asyncData(ctx) {
+    console.log(ctx.route.hash?'sss':'ddd')
+  },
   data() {
     return {
       web3:undefined,
@@ -701,6 +704,10 @@ export default {
     this.mountedRun = true;
     this.initWeb3();
     this.updatePageData()
+
+    window.addEventListener('hashchange', function(e) {
+      console.log('~~~~~~~~~~~~', e);
+    })
   }
 }
 </script>
