@@ -445,65 +445,93 @@ export default {
       // 获取合约
       let contract = this.getContract();
 
-      // console.log('______________________contract', contract)
 
-      // 通过合约获取记录
-      let LogBet, ResultBet, bets = [], results = []
-      // 需要结合两个记录
-      await Promise.all([
-        new Promise((resolve,reject)=>{
-          LogBet = contract.LogBet(
-            { _userAddress: '' }, 
-            { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-          );
-          LogBet.watch((err,result)=>{
-            if ( err ) reject(err)
-            console.log('___________________LogBet', result);
-            bets.push( result );
-            resolve(result)
-          })
-        }).catch(this.commonErrorCatcher),
-        new Promise((resolve,reject)=>{
-          ResultBet = contract.LogResult(
-            { _userAddress: '' }, 
-            { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-          );
-          ResultBet.watch((err,result)=>{
-            if ( err ) reject(err)
-            console.log('___________________LogResult', result)
-            results.push( result );
-            resolve(result)
-          });
-        }).catch(this.commonErrorCatcher)
-      ])
+      /*
 
-      // 如果两个数据长度不对等, 那就是有某条交易没有结果
-      // 没有结果有两种状态, 等待手工退款(也显示为等待开奖), 已手工退款
-      let LogRefund, refunds = [];
-      if ( bets.length !== results.length ) {
-        await new Promise((resolve,reject)=>{
-          LogRefund = contract.LogRefund(
-            { _userAddress: '' }, 
-            { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-          )
-          LogRefund.watch((err,result)=>{
-            if (err) reject(err);
-            refunds.push( result );
-            resolve(result)
-          })
-        }).catch(this.commonErrorCatcher)
-      }
+        // 通过合约获取记录
+        let LogBet, ResultBet, bets = [], results = []
+        // 需要结合两个记录
+        await Promise.all([
+          new Promise((resolve,reject)=>{
+            LogBet = contract.LogBet(
+              { _userAddress: '' }, 
+              { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+            );
+            LogBet.watch((err,result)=>{
+              if ( err ) reject(err)
+              console.log('___________________LogBet', result);
+              bets.push( result );
+              resolve(result)
+            })
+          }).catch(this.commonErrorCatcher),
+          new Promise((resolve,reject)=>{
+            ResultBet = contract.LogResult(
+              { _userAddress: '' }, 
+              { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+            );
+            ResultBet.watch((err,result)=>{
+              if ( err ) reject(err)
+              console.log('___________________LogResult', result)
+              results.push( result );
+              resolve(result)
+            });
+          }).catch(this.commonErrorCatcher)
+        ])
+
+        // 如果两个数据长度不对等, 那就是有某条交易没有结果
+        // 没有结果有两种状态, 等待手工退款(也显示为等待开奖), 已手工退款
+        let LogRefund, refunds = [];
+        if ( bets.length !== results.length ) {
+          await new Promise((resolve,reject)=>{
+            LogRefund = contract.LogRefund(
+              { _userAddress: '' }, 
+              { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+            )
+            LogRefund.watch((err,result)=>{
+              if (err) reject(err);
+              refunds.push( result );
+              resolve(result)
+            })
+          }).catch(this.commonErrorCatcher)
+        }
+      */
+
+      let LogBet,ResultBet,LogRefund,
+          bets=[], results=[], refunds=[];
 
 
-
-      this.record.all = bets.map(b=>{
-        let r  = results.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
-        let f  = refunds.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
-        let o  = { ...b.args, ...r.args, ...f.args};
-        o.computedProfit = this.computeProfit( o );
-        return o;
-      }).reverse();
-      this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
+      LogBet = contract.LogBet(
+        { _userAddress: '' }, 
+        { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+      );
+      ResultBet = contract.LogResult(
+        { _userAddress: '' }, 
+        { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+      );
+      LogRefund = contract.LogRefund(
+        { _userAddress: '' }, 
+        { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+      );
+      
+      LogBet.watch((err,result)=>{
+        if ( err ) return;
+        if ( bets.some(r=>r.args.BetID===result.args.BetID) ) return;
+        bets.push( result );
+        this.disposeRecord(bets, results, refunds);
+      })
+      ResultBet.watch((err,result)=>{
+        if ( err ) return;
+        if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
+        results.push( result );
+        this.disposeRecord(bets, results, refunds);
+      });
+      LogRefund.watch((err,result)=>{
+        if (err) return;
+        if ( refunds.some(r=>r.args.BetID===result.args.BetID) ) return;
+        refunds.push( result );
+        this.disposeRecord(bets, results, refunds);
+      })
+      
 
     },
     // 获取待提现金额
@@ -517,6 +545,27 @@ export default {
         })
       })
       .catch(this.commonErrorCatcher);
+    },
+    disposeRecord(bets,results,refunds) {
+      clearTimeout(this.disposeRecordTimer);
+      
+      this.disposeRecordTimer = setTimeout(()=>{
+        if ( this.record.all.length && this.record.all.length!==bets.length ) {
+          this.runHorse();
+        }
+        this.record.all = bets.map(b=>{
+          let r  = results.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
+          let f  = refunds.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
+          let o  = { ...b.args, ...r.args, ...f.args};
+          o.computedProfit = this.computeProfit( o );
+          return o;
+        }).reverse();
+        this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
+        this.recordDisposed = true;
+      }, 300);
+    },
+    runHorse() {
+      console.log('跑马');
     },
     // 提现
     doWithdraw() {
