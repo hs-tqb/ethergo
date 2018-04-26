@@ -582,7 +582,7 @@ export default {
         from:this.account.address,
         // _from:this.account.address,
         gas: 3000000,
-        gasPrice: 200000000000
+        gasPrice: 4000000000
       };
       // 支付参数
 
@@ -686,7 +686,7 @@ export default {
           to: this.contract.address,
           value: this.web3.toWei( this.computedWager ),
           gas: 3000000,
-          gasPrice: 200000000000
+          gasPrice: 4000000000
       };
 
       // 投注
