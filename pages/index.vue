@@ -719,9 +719,10 @@ export default {
     this.initWeb3();
     this.updatePageData()
 
+    console.warn(`合约地址: ${this.contract.address}`);
+
     window.addEventListener('hashchange', this.hashChange);
     this.hashChange();
-
 
 
     // this.getContract().maxNumber((err,result)=>{
