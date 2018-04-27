@@ -110,7 +110,7 @@
     <!-- 赌注 -->
     <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
       <div id="amount">
-        <h2>立刻投注</h2>
+        <h2>立刻投注（ETH）</h2>
         <!-- <h3>立刻投注</h3> -->
         <div id="wager">
           <div class="selection">
@@ -125,8 +125,8 @@
             </ul>
           </div>
           <div class="condition">
-            <p>Min bet size {{bet.wager.list[0].value}} ETH</p>
-            <p>Max profit {{bet.profit.max}} ETH</p>
+            <p>最小投注金额 {{bet.wager.list[0].value}} ETH</p>
+            <p>最大用户收益 {{bet.profit.max}} ETH</p>
           </div>
         </div>
       </div>
@@ -154,9 +154,10 @@
       <div id="compensate">
         <h2>押注结果小于 <span>{{+bet.range.value+1}}</span></h2>
         <!-- <h3>押注结果小于 <span>{{+bet.range.value+1}}</span></h3> -->
-        <p>投注数 <span>{{computedWager}} ETH&nbsp;</span></p>
-        <p>赢钱数 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
-        <p class="info">commission: {{1}}% 
+        <p>投注金额 <span>{{computedWager}} ETH&nbsp;</span></p>
+        <p>用户收益 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
+        <p class="info">&nbsp;
+          <!-- commission: {{1}}%  -->
           <span v-if="!rollable">(已超过最大赢钱数，请重新选择)</span>
         </p>
       </div>
