@@ -388,7 +388,7 @@ export default {
       return this.computedUserProfit <= this.bet.profit.max;
     },
     rollable() {
-      return this.isNetworkOK && this.isAccountOK && isUserProfitOK;
+      return this.isNetworkOK && this.isAccountOK && this.isUserProfitOK;
     },
     account() {
       // console.log( this.$store.state.account )
