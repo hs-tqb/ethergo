@@ -211,8 +211,9 @@
     <!-- 记录 -->
     <div id="panel-record" class="panel" v-show="hash==='#record'">
       <div class="tabs">
-        <input type="button" class="btn" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="all">
-        <input type="button" class="btn" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="user">
+        <input type="button" class="btn" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="最新投注">
+        <input type="button" class="btn" :class="record.show==='rank'?'primary':''" @click="record.show='rank'" value="奖金排行">
+        <input type="button" class="btn" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="我的投注">
       </div>
       <div class="table-wrapper">
         <table>
@@ -232,7 +233,10 @@
               <td>{{ r.DiceResult.toNumber() }}</td>
               <td>{{ web3.fromWei(r.BetValue.toNumber()) }}</td>
               <td>
-                <span :class="`text-${r.computedProfit.state}`">
+                <span v-if="record.show==='rank'">
+                  {{ web3.fromWei(r.ProfitValue.toNumber()) }}
+                </span>
+                <span :class="`text-${r.computedProfit.state}`" v-else>
                   {{r.computedProfit.prefix}}
                   {{r.computedProfit.value}}
                 </span>
@@ -333,7 +337,8 @@ export default {
       record: {
         show:'all',
         user:[],
-        all:[]
+        all:[],
+        rank:[]
       },
       // 赌注设置
       bet: {
@@ -463,6 +468,7 @@ export default {
       })
       .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getRecord'}));
 
+      this.record.blockNumber = blockNumber;
       // console.log('______________________blockNumber', blockNumber)
       
       // 估计n天的区块数, (假设一分钟上链10个)
@@ -497,6 +503,8 @@ export default {
       ResultBet.watch((err,result)=>{
         if ( err ) return;
         if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
+        // console.log( '______________record_result' )
+        // console.log( result.args.BetID, ': ', result.args.Status.toNumber() )
         results.push( result );
         this.disposeRecord(bets, results, refunds);
       });
@@ -507,7 +515,7 @@ export default {
         this.disposeRecord(bets, results, refunds);
       })
       
-
+      this.loadRankRecord()
     },
     // 获取待提现金额
     async getPendingWithdrawal() {
@@ -538,6 +546,50 @@ export default {
         }).reverse();
         this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
         this.recordDisposed = true;
+      }, 300);
+    },
+
+    loadRankRecord() {
+      let blockNumber    = this.record.blockNumber;
+      let dayBlockNumber = (60*24*10) * 7;
+      let contract       = this.getContract()
+
+      let results=[], bets=[];
+
+      contract.LogBet(
+        { _userAddress: '' }, 
+        { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+      ).watch((err,result)=>{
+        if ( err ) return;
+        if ( bets.some(r=>r.args.BetID===result.args.BetID) ) return;
+        bets.push(result)
+        this.disposeRankRecord(results,bets)
+      })
+
+      contract.LogResult(
+        { _userAddress: '' }, 
+        { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+      ).watch((err,result)=>{
+        if ( err ) return;
+        if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
+        // console.log( '______________rank_result' )
+        // console.log( result.args.BetID, ': ', result.args.Status.toNumber() )
+        results.push(result)
+        this.disposeRankRecord(results,bets)
+      })
+    },
+    disposeRankRecord(results,bets) {
+      clearTimeout( this.disposeRankRecordTimer )
+      this.disposeRankRecordTimer = setTimeout(()=>{
+        this.record.rank = results.map(b=>{
+          let r  = bets.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
+          let o  = { ...b.args, ...r.args};
+          return o;
+        })
+        .filter(r=>r.Status.toNumber()===1||r.Status.toNumber()===2)
+        .sort((c,n)=>{
+          return c.ProfitValue.toNumber() - n.ProfitValue.toNumber()
+        })
       }, 300);
     },
     runHorse() {
@@ -621,7 +673,9 @@ export default {
       this.getUserMaxProfit();
       await this.getAccountInfo();
       this.getPendingWithdrawal();
-      this.getRecord();
+      if ( !this.record.all.length ) {
+        this.getRecord()
+      }
     },
 
     // --------- bet ----------
@@ -705,10 +759,25 @@ export default {
         r.DiceResult = { toNumber(){ return '-'; } }
         return { state:'pending', value:!!r.RefundValue?'已手工退款':'等待开奖' };
       }
-      let compare = r.DiceResult.toNumber()<r.UserNumber.toNumber();
-      let value   = this.web3.fromWei(compare? r.ProfitValue.toNumber(): r.BetValue.toNumber());
+      let state='', value=0, prefix='';
+      if ( r.Status.toNumber()==0 ) {
+        state  = 'failure'
+        value  = this.web3.fromWei(r.BetValue.toNumber())
+        prefix = '-';
+      } else if ( r.Status.toNumber()==1 ) {
+        state  = 'success'
+        value  = this.web3.fromWei(r.ProfitValue.toNumber())
+        prefix = '+'
+      } else {
+        state  = 'other'
+        value  = 0
+        r.DiceResult = { toNumber(){ return '-' } }
+      }
+      return { state, value, prefix }
+      // let compare = r.DiceResult.toNumber()<r.UserNumber.toNumber();
+      // let value   = this.web3.fromWei(compare? r.ProfitValue.toNumber(): r.BetValue.toNumber());
 
-      return { state:compare?'success':'failure', value, prefix:compare?'+':'-' }
+      // return { state:compare?'success':'failure', value, prefix:compare?'+':'-' }
     },
 
     // --------- bet ----------
@@ -739,6 +808,7 @@ export default {
       this.commonErrorCatcher('无法连接到以太网公网')
       this.hash = location.hash = '#guide';
     }
+
 
     window.addEventListener('hashchange', this.hashChange);
 
