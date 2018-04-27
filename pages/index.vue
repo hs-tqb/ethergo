@@ -677,10 +677,6 @@ export default {
           // this.record.all.push({})
           // this.record.user.push(result.args)
           LogBet.stopWatching();
-          // 刷新账户
-          // this.getAccountInfo();
-          // this.account.wei     -= (additionParam.gas*additionParam.gasPrice)+(+this.web3.toWei(this.computedWager))
-          // this.account.balance = this.web3.fromWei( this.account.wei )
           this.updatePageData();
         })
         // 投注结果监控
@@ -690,14 +686,8 @@ export default {
           if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 result');
           
           LogResult.stopWatching();
-          // this.roll.result = result.args.DiceResult.toNumber()
-          // console.log('______________jieguo');
-          // console.log( result )
-          // console.log('______________jieguo');
           this.roll.result = result.args.Status.toNumber()
           this.roll.value  = result.args.DiceResult.toNumber()
-
-          // this.getAccountInfo();
           this.updatePageData();
         })
       })
