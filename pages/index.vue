@@ -204,7 +204,7 @@
       <input type="button" class="btn primary" @click="doWithdraw" :value="`可提现金额: ${account.pendingWithdrawal}`">
     </div>
     <!-- 记录 -->
-    <div id="panel-record" class="panel" v-show="hash==='#record' || !hash">
+    <div id="panel-record" class="panel" v-show="hash==='#record'">
       <div class="tabs">
         <input type="button" class="btn" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="all">
         <input type="button" class="btn" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="user">
@@ -296,6 +296,7 @@
     <div id="panel-help" class="panel" v-show="hash==='#help'">
       <h2>帮助</h2>
     </div>
+    <div id="panel-placeholder" class="panel" v-show="!hash"></div>
   </div>
 </template>
 
@@ -390,8 +391,8 @@ export default {
       let vm = this;
       // 获取钱包地址
       let address = await new Promise((resolve,reject)=>{
-        this.web3.eth.getAccounts((error, result)=>{
-          if ( error ) reject(error)
+        this.web3.eth.getAccounts((err, result)=>{
+          if ( err ) reject(err)
           else if ( !result.length ) reject('没找到账户信息');
           resolve(result)
         })
@@ -401,6 +402,10 @@ export default {
         return result[0];
       })
       .catch(this.commonErrorCatcher);
+
+      if ( !address ) {
+        return;
+      }
 
       // 获取余额 (单位 wei)
       let wei = await new Promise((resolve,reject)=>{
@@ -447,57 +452,6 @@ export default {
 
       // 获取合约
       let contract = this.getContract();
-
-
-      /*
-
-        // 通过合约获取记录
-        let LogBet, ResultBet, bets = [], results = []
-        // 需要结合两个记录
-        await Promise.all([
-          new Promise((resolve,reject)=>{
-            LogBet = contract.LogBet(
-              { _userAddress: '' }, 
-              { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-            );
-            LogBet.watch((err,result)=>{
-              if ( err ) reject(err)
-              console.log('___________________LogBet', result);
-              bets.push( result );
-              resolve(result)
-            })
-          }).catch(this.commonErrorCatcher),
-          new Promise((resolve,reject)=>{
-            ResultBet = contract.LogResult(
-              { _userAddress: '' }, 
-              { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-            );
-            ResultBet.watch((err,result)=>{
-              if ( err ) reject(err)
-              console.log('___________________LogResult', result)
-              results.push( result );
-              resolve(result)
-            });
-          }).catch(this.commonErrorCatcher)
-        ])
-
-        // 如果两个数据长度不对等, 那就是有某条交易没有结果
-        // 没有结果有两种状态, 等待手工退款(也显示为等待开奖), 已手工退款
-        let LogRefund, refunds = [];
-        if ( bets.length !== results.length ) {
-          await new Promise((resolve,reject)=>{
-            LogRefund = contract.LogRefund(
-              { _userAddress: '' }, 
-              { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-            )
-            LogRefund.watch((err,result)=>{
-              if (err) reject(err);
-              refunds.push( result );
-              resolve(result)
-            })
-          }).catch(this.commonErrorCatcher)
-        }
-      */
 
       let LogBet,ResultBet,LogRefund,
           bets=[], results=[], refunds=[];
@@ -649,8 +603,8 @@ export default {
     async updatePageData() {
       this.getUserMaxProfit();
       await this.getAccountInfo();
-      this.getRecord();
       this.getPendingWithdrawal();
+      this.getRecord();
     },
 
     // --------- bet ----------
@@ -756,7 +710,7 @@ export default {
 
     hashChange() {
       this.hash = location.hash;
-    }
+    },
   },
   // 初始化 环境 和 账户信息
   async mounted() {
@@ -765,16 +719,16 @@ export default {
     this.initWeb3();
     this.updatePageData()
 
-
-    this.getContract().maxNumber((err,result)=>{
-      console.log('___________________maxNumber');
-      console.log( result.toNumber() );
-      console.log('___________________maxNumber');
-    })
-
-
     window.addEventListener('hashchange', this.hashChange);
     this.hashChange();
+
+
+
+    // this.getContract().maxNumber((err,result)=>{
+    //   console.log('___________________maxNumber');
+    //   console.log( result.toNumber() );
+    //   console.log('___________________maxNumber');
+    // })
   }
 }
 </script>
