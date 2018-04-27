@@ -710,7 +710,7 @@ export default {
     // --------- bet ----------
 
     hashChange() {
-      this.hash = location.hash;
+      this.hash = location.hash||'#record';
     },
   },
   // 初始化 环境 和 账户信息
