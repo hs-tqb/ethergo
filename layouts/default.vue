@@ -85,8 +85,6 @@
 
 <template>
   <div id="__default" class="page-root">
-    <!-- <bet /> -->
-    <topbar />
     <div id="menu" :class="showMenu?'':'hide'">
       <ul>
         <li><a @click="routeTo('#guide')">怎么玩</a></li>
@@ -95,6 +93,7 @@
         <li><a @click="routeTo('#help')">帮助</a></li>
       </ul>
     </div>
+    <topbar />
     <nuxt class="page-container" :data-page="$route.name"/>
     <!-- 全局消息弹窗 -->
     <div id="dialog-message" class="dialog-container" :class="messageDialog.show?'show':''">

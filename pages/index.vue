@@ -86,9 +86,13 @@
       // table tbody td { text-align:center; }
       // table td span { .text-ellipsis; width:auto; max-width:20vw;  }
     }
+    // 
+    #panel-loading {
+      .flow; align-items:center; justify-content:center;
+    }
   }
 
-  @panel-height:calc( 100% - 92px );
+  @panel-height:calc( 100% - 90px );
   @media screen and (max-width:411px) {
     #page-home { 
       .panel#panel-bet { min-height:@panel-height; }
@@ -297,7 +301,9 @@
     <div id="panel-help" class="panel" v-show="hash==='#help'">
       <h2>帮助</h2>
     </div>
-    <div id="panel-placeholder" class="panel" v-show="!hash"></div>
+    <div id="panel-loading" class="panel" v-show="!hash">
+      <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
+    </div>
   </div>
 </template>
 
@@ -309,6 +315,8 @@ export default {
     return {
       hash:'',
       web3:undefined,
+      isNetworkOK:false,
+      isAccountOK:false,
       // 账户
       // account :{
       //   address:'',
@@ -499,10 +507,11 @@ export default {
     },
     // 获取待提现金额
     async getPendingWithdrawal() {
-      this.account.pendingWithdrawal = await new Promise((resolve,reject)=>{this
-        .getContract()
+      this.account.pendingWithdrawal = await new Promise((resolve,reject)=>{
+        this.getContract()
         .userGetPendingTxByAddress(this.account.address, (err,result)=>{
-          if ( err ) reject(err)
+          if ( err ) reject(err);
+          if ( !result ) return resolve(0);
           console.warn(`未提现: ${ result.toNumber() }`)
           resolve(this.web3.fromWei(result.toNumber()))
         })
@@ -600,17 +609,11 @@ export default {
     // --------- 其它 ---------
     // 通用的catcher
     commonErrorCatcher(err,opt) {
-      console.log('_________________________err');
-      console.log( err )
-      // console.log( opt.from )
-      console.log('_________________________err');
-      if ( typeof err==='object' && err.message==='Invalid JSON RPC response: ""' ) {
-        err = '无法链接到以太坊公网'
-      }
-      this.$store.commit('showMessageDialog',{type:'failure', text:err.toString()});
+      this.$store.commit('showMessageDialog',{type:'failure', html:opt&&opt.html, text:err.toString()});
     },
     // 刷新页面数据
     async updatePageData() {
+      if ( !this.isNetworkOK ) return;
       this.getUserMaxProfit();
       await this.getAccountInfo();
       this.getPendingWithdrawal();
@@ -720,23 +723,34 @@ export default {
     hashChange() {
       this.hash = location.hash||'#record';
     },
+    async checkNetwork() {
+      return await new Promise((resolve,reject)=>{
+        this.getContract().maxNumber((err,result)=>{
+          console.log(222222222222)
+          resolve(!err)
+        });
+      })
+    }
   },
   // 初始化 环境 和 账户信息
-  async mounted() {
-    if ( this.mountedRun ) return;
-    this.mountedRun = true;
+  async beforeMount() {
+  // async created() {
     this.initWeb3();
-    this.updatePageData()
 
-    console.warn(`合约地址: ${this.contract.address}`);
+    console.log(1111111111111111111);
+    this.isNetworkOK = await this.checkNetwork();
+    console.log(333333333333333);
+    console.log( this.isNetworkOK );
+    if ( this.isNetworkOK ) {
+      this.hashChange();
+      this.updatePageData()
+      console.warn(`合约地址: ${this.contract.address}`);
+    } else {
+      this.commonErrorCatcher('无法连接到以太网公网')
+      this.hash = location.hash = '#guide';
+    }
 
     window.addEventListener('hashchange', this.hashChange);
-    this.hashChange();
-
-
-    console.log('~~~~~~~~~~~~~~~');
-    console.log( this.web3 );
-    console.log('~~~~~~~~~~~~~~~');
 
 
     // this.getContract().maxNumber((err,result)=>{
