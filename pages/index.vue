@@ -411,6 +411,7 @@ export default {
         this.web3.eth.getAccounts((err, result)=>{
           if ( err ) reject(err)
           else if ( !result.length ) reject('没找到账户信息');
+          this.isAccountOK = true;
           resolve(result)
         })
       })
