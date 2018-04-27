@@ -359,6 +359,11 @@ export default {
         result:'',
         value:undefined,
       },
+      // 
+      metamaskOpt: {
+        gas: 3000000,
+        gasPrice: 3000000000
+      },
       mountedRun: false,
     }
   },
@@ -402,7 +407,7 @@ export default {
         console.warn(`钱包地址: ${result[0]}`)
         return result[0];
       })
-      .catch(this.commonErrorCatcher);
+      .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getAccountInfo'}));
 
       if ( !address ) {
         return;
@@ -420,7 +425,7 @@ export default {
         console.warn(`余额: ${ result.toNumber() } (wei)`)
         return result.toNumber()
       })
-      .catch(this.commonErrorCatcher.bind({}))
+      .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getBalance'}))
 
       // 余额 (单位 eth)
       let balance = this.web3.fromWei( wei );
@@ -444,7 +449,7 @@ export default {
           resolve(result);
         });
       })
-      .catch(this.commonErrorCatcher);
+      .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getRecord'}));
 
       // console.log('______________________blockNumber', blockNumber)
       
@@ -502,7 +507,7 @@ export default {
           resolve(this.web3.fromWei(result.toNumber()))
         })
       })
-      .catch(this.commonErrorCatcher);
+      .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getPendingWithdrawal'}));
     },
     disposeRecord(bets,results,refunds) {
       clearTimeout(this.disposeRecordTimer);
@@ -528,16 +533,13 @@ export default {
     // 提现
     doWithdraw() {
       if ( this.account.pendingWithdrawal == 0 ) 
-        return this.commonErrorCatcher('没有可提现的金额');
+        return this.commonErrorCatcher.call(this,err,{from:'doWithdraw'})
 
       let contract = this.getContract();
 
       let additionParam = {
-        // address:this.account.address,
         from:this.account.address,
-        // _from:this.account.address,
-        gas: 3000000,
-        gasPrice: 4000000000
+        ...this.metamaskOpt
       };
       // 支付参数
 
@@ -546,7 +548,7 @@ export default {
         // this.web3.toWei(this.account.pendingWithdrawal), 
         additionParam,
         (err, result)=>{
-        if ( err ) return this.commonErrorCatcher(err);
+        if ( err ) return this.commonErrorCatcher.call(this,err,{from:'userWithdrawPendingTransactions'})
         this.$store.commit('showMessageDialog', {type:'success', html:'提现成功<br>请稍后进行查询'});
       })
       // console.log( this.contract.abi )
@@ -566,7 +568,7 @@ export default {
       //   warning = '合约获取失败';
       // }
 
-      showWarning && warning && this.commonErrorCatcher(warning);
+      showWarning && warning && this.commonErrorCatcher.call(this,warning,{from:'checkAccountValid'})
 
       return !warning;
     },
@@ -577,11 +579,11 @@ export default {
         warning = '合约获取失败';
       }
 
-      showWarning && warning && this.commonErrorCatcher(warning);
+      showWarning && warning && this.commonErrorCatcher.call(this,warning,{from:'checkContractAvaliable'})
       return !warning;
     },
     // 检测余额可用
-    checkBalanceAvailae(n) {
+    checkBalanceAvailable(n) {
       let warning = '';
       if ( isNaN(this.account.balance) ) {
         warning = '余额加载失败, 请刷新页面重试'
@@ -590,14 +592,21 @@ export default {
         warning = '余额不足'
       }
 
-      warning && this.commonErrorCatcher(warning);
+      warning && this.commonErrorCatcher.call(this,warning,{from:'checkBalanceAvailable'})
       
       return !warning;
     },
 
     // --------- 其它 ---------
     // 通用的catcher
-    commonErrorCatcher(err) {
+    commonErrorCatcher(err,opt) {
+      console.log('_________________________err');
+      console.log( err )
+      // console.log( opt.from )
+      console.log('_________________________err');
+      if ( typeof err==='object' && err.message==='Invalid JSON RPC response: ""' ) {
+        err = '无法链接到以太坊公网'
+      }
       this.$store.commit('showMessageDialog',{type:'failure', text:err.toString()});
     },
     // 刷新页面数据
@@ -625,7 +634,7 @@ export default {
       profit.reqTimer = setTimeout(()=>{
         let contract = this.getContract();
         let temp = contract.maxProfit((err,result)=>{
-          if ( err ) return this.commonErrorCatcher(err);
+          if ( err ) return this.commonErrorCatcher.call(this,err,{from:'getUserMaxProfit'})
           profit.max = this.web3.fromWei(result.toNumber());
           console.warn(`最大玩家收益: ${profit.max}`);
         });
@@ -640,8 +649,7 @@ export default {
           from: this.account.address,
           to: this.contract.address,
           value: this.web3.toWei( this.computedWager ),
-          gas: 3000000,
-          gasPrice: 4000000000
+          ...this.metamaskOpt
       };
 
       // 投注
@@ -654,7 +662,7 @@ export default {
         this.roll.state = 'roll';
         // 投注支付监控
         LogBet.watch((err, result)=>{
-          if ( err ) return this.commonErrorCatcher(err)
+          if ( err ) return this.commonErrorCatcher.call(this,err,{from:'userRollDice'})
           if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 bet');
           
           // console.log( result )
@@ -671,7 +679,7 @@ export default {
         // 投注结果监控
         let LogResult = contract.LogResult();
         LogResult.watch((err, result)=>{
-          if ( err ) return this.commonErrorCatcher(err);
+          if ( err ) return this.commonErrorCatcher.call(this,err,{from:'LogResult.watch'});
           if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 result');
           
           LogResult.stopWatching();
@@ -724,6 +732,11 @@ export default {
 
     window.addEventListener('hashchange', this.hashChange);
     this.hashChange();
+
+
+    console.log('~~~~~~~~~~~~~~~');
+    console.log( this.web3 );
+    console.log('~~~~~~~~~~~~~~~');
 
 
     // this.getContract().maxNumber((err,result)=>{
