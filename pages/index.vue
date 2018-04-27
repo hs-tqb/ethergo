@@ -233,8 +233,8 @@
               <td>{{ r.DiceResult.toNumber() }}</td>
               <td>{{ web3.fromWei(r.BetValue.toNumber()) }}</td>
               <td>
-                <span v-if="record.show==='rank'">
-                  {{ web3.fromWei(r.ProfitValue.toNumber()) }}
+                <span v-if="record.show==='rank'" class="text-success">
+                  + {{ web3.fromWei(r.ProfitValue.toNumber()) }}
                 </span>
                 <span :class="`text-${r.computedProfit.state}`" v-else>
                   {{r.computedProfit.prefix}}
@@ -588,7 +588,7 @@ export default {
         })
         .filter(r=>r.Status.toNumber()===1||r.Status.toNumber()===2)
         .sort((c,n)=>{
-          return c.ProfitValue.toNumber() - n.ProfitValue.toNumber()
+          return n.ProfitValue.toNumber() - c.ProfitValue.toNumber()
         })
       }, 300);
     },
