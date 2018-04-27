@@ -162,7 +162,7 @@
         <p>用户收益 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
         <p class="info">&nbsp;
           <!-- commission: {{1}}%  -->
-          <span v-if="!rollable">(已超过最大赢钱数，请重新选择)</span>
+          <span v-if="!isUserProfitOK">(已超过最大赢钱数，请重新选择)</span>
         </p>
       </div>
       <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll">
@@ -384,8 +384,11 @@ export default {
       if ( !profit.max ) return 0;
       return ((((this.computedWager * (100-(range.value))) / (range.value)+this.computedWager))*990/1000)-this.computedWager;
     },
-    rollable() {
+    isUserProfitOK() {
       return this.computedUserProfit <= this.bet.profit.max;
+    },
+    rollable() {
+      return this.isNetworkOK && this.isAccountOK && isUserProfitOK;
     },
     account() {
       // console.log( this.$store.state.account )
@@ -726,7 +729,6 @@ export default {
     async checkNetwork() {
       return await new Promise((resolve,reject)=>{
         this.getContract().maxNumber((err,result)=>{
-          console.log(222222222222)
           resolve(!err)
         });
       })
@@ -737,10 +739,7 @@ export default {
   // async created() {
     this.initWeb3();
 
-    console.log(1111111111111111111);
     this.isNetworkOK = await this.checkNetwork();
-    console.log(333333333333333);
-    console.log( this.isNetworkOK );
     if ( this.isNetworkOK ) {
       this.hashChange();
       this.updatePageData()
