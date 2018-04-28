@@ -560,12 +560,12 @@ export default {
       .then(result=>{
         // 返回的是一个bigNumber对象, 需要获取bigNumber对应的数(单位是wei), 再将wei转成eth
         console.warn(`余额: ${ result.toNumber() } (wei)`)
-        return result.toNumber()
+        return +result.toNumber()
       })
       .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getBalance'}))
 
       // 余额 (单位 eth)
-      let balance = this.web3.fromWei( wei );
+      let balance = +this.web3.fromWei( wei );
       console.warn(`余额: ${balance} (eth)`)
 
       this.$store.commit('setAccount', { ...this.account, address, wei, balance })
@@ -721,16 +721,16 @@ export default {
             return o;
           })
           // 过滤(已出结果,并且结果为赢)
-          .filter(r=>r.Status&&(r.Status.toNumber()===1||r.Status.toNumber()===2))
+          .filter(r=>r.Status&&(+r.Status.toNumber()===1||+r.Status.toNumber()===2))
 
         let map = {}
         arr.forEach(r=>{
           if ( map['_'+r.UserAddress] ) {
-            map['_'+r.UserAddress].ProfitValue += r.ProfitValue.toNumber()
+            map['_'+r.UserAddress].ProfitValue += +r.ProfitValue.toNumber()
           } else {
             map['_'+r.UserAddress] = {
               UserAddress:r.UserAddress,
-              ProfitValue:r.ProfitValue.toNumber()
+              ProfitValue:+r.ProfitValue.toNumber()
             }
           }
         })
@@ -881,7 +881,7 @@ export default {
         let contract = this.getContract();
         let temp = contract.maxProfit((err,result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'getUserMaxProfit'})
-          profit.max = this.web3.fromWei(result.toNumber());
+          profit.max = +this.web3.fromWei(result.toNumber());
           console.warn(`最大玩家收益: ${profit.max}`);
         });
       }, profit.reqDelay);
@@ -894,7 +894,7 @@ export default {
       let additionParam = {
           from: this.account.address,
           to: this.contract.address,
-          value: this.web3.toWei( this.computedWager ),
+          value: +this.web3.toWei( this.computedWager ),
           ...this.metamaskOpt
       };
 
@@ -926,8 +926,8 @@ export default {
           if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 result');
           
           LogResult.stopWatching();
-          this.roll.result = result.args.Status.toNumber()
-          this.roll.value  = result.args.DiceResult.toNumber()
+          this.roll.result = +result.args.Status.toNumber()
+          this.roll.value  = +result.args.DiceResult.toNumber()
           this.updatePageData();
         })
       })
@@ -940,7 +940,7 @@ export default {
     },
     // --------- record ----------
     computeProfit(r) {
-      let status = r.Status? r.Status.toNumber(): -1;
+      let status = r.Status? +r.Status.toNumber(): -1;
       // 如果还没出结果
       if ( status === -1 ) {
         r.DiceResult = { toNumber(){ return '-'; } }
@@ -950,11 +950,11 @@ export default {
       let state='', value=0, prefix='';
       if ( status===0 ) {
         state  = 'success'
-        value  = this.web3.fromWei(r.BetValue.toNumber())
+        value  = +this.web3.fromWei(r.BetValue.toNumber())
         prefix = '-';
       } else if ( status===1 ) {
         state  = 'danger'
-        value  = this.web3.fromWei(r.ProfitValue.toNumber())
+        value  = +this.web3.fromWei(r.ProfitValue.toNumber())
         prefix = '+'
       } else {
         switch(status) {
