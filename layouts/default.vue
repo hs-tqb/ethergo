@@ -10,6 +10,9 @@
     .btn.block { height:52px; font-size:22px; }
     .text-pending { .text-warning; }
   }
+      
+  .page-container {  
+  }
 
 
 

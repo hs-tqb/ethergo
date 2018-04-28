@@ -3,6 +3,7 @@
   #page-home {
     // 赌注
     #panel-bet {
+      .flow; justify-content:space-around; 
       .selection { 
         .flow(row);height:40px; line-height:40px; align-items:stretch;
         .preview { padding:0 10px; min-width:70px; font-size:26px; text-align:center; color:@color-primary; background-color:#fff; .radius; }
@@ -55,7 +56,7 @@
           span { font-size:60px; }
           line-height:60px; 
         }
-        span { float:right; color:@color-success; }
+        span { float:right; color:@color-danger; }
         p.info { 
           font-size:12px; color:@color-text-placeholder; 
           span { font-size:16px; color:@color-danger; }
@@ -98,23 +99,26 @@
     }
   }
 
-  @panel-height:calc( 100% - 90px );
+  @panel-height-mb:calc( 100% - 90px );
+  @panel-height-pc:calc( 100% - 60px );
   @media screen and (max-width:411px) {
     #page-home { 
       .panel#panel-bet,
       .panel#panel-roll { height:100%; }
-      #panel-bet { 
-        .flow; justify-content:space-around; 
-      }
     }
   }
   @media screen and (min-width:412px) {
+
     #page-home { 
-      .flow(row); height:@panel-height; overflow:hidden;
-      .panel { flex:1; margin:0 10px; height:100; min-width:375px; .scroll; }
+      // padding: 0 20px;
+      .flow(row); height:@panel-height-pc; overflow:hidden;
+      .panel { 
+        margin:0 10px; height:100; min-width:375px; .scroll; 
+        &:not(#panel-bet):not(#panel-roll) { flex:1; }
+      }
       #panel-bet { 
-        min-width:500px; 
-        & > * { margin-bottom:100px!important; }
+        width:500px; 
+        // & > * { margin-bottom:80px!important; }
       }
       // #panel-bet, 
       // #panel-roll {  }
@@ -142,8 +146,8 @@
             </ul>
           </div>
           <div class="condition">
-            <p>最小投注金额 {{bet.wager.list[0].value}} ETH</p>
-            <p>最大用户收益 {{bet.profit.max}} ETH</p>
+            <p>最小投注 {{bet.wager.list[0].value}} ETH</p>
+            <p>最大收益 {{bet.profit.max}} ETH</p>
           </div>
         </div>
       </div>
@@ -169,13 +173,13 @@
         </div>
       </div>
       <div id="compensate">
-        <h2>押注结果小于 <span>{{+bet.range.value+1}}</span></h2>
-        <!-- <h3>押注结果小于 <span>{{+bet.range.value+1}}</span></h3> -->
+        <h2>投注结果小于 <span>{{+bet.range.value+1}}</span></h2>
+        <!-- <h3>投注结果小于 <span>{{+bet.range.value+1}}</span></h3> -->
         <p>投注金额 <span>{{computedWager}} ETH&nbsp;</span></p>
         <p>用户收益 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
         <p class="info">&nbsp;
           <!-- commission: {{1}}%  -->
-          <span v-if="!isUserProfitOK">(已超过最大赢钱数，请重新选择)</span>
+          <span v-if="!isUserProfitOK">(已超过最大收益限制，请调整投注金额或胜率)</span>
         </p>
       </div>
       <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll">
@@ -184,14 +188,14 @@
     <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
       <div class="filler"></div>
       <div class="inner-panel">
-        <h3>结果小于</h3>
+        <h3>投注数字</h3>
         <p class="number-block">{{+bet.range.value+1}}</p>
       </div>
       <div class="filler"></div>
       <div class="border"></div>
       <div class="filler"></div>
       <div class="inner-panel">
-        <h3>投注结果</h3>
+        <h3>开奖数字</h3>
         <p class="number-block">
           <!-- {{roll.result}} -->
           <template v-if="typeof roll.result !=='number'">
@@ -200,8 +204,8 @@
           <template v-else-if="roll.result<3">{{roll.value}}</template>
         </p>
         <p class="tips" v-if="typeof roll.result==='number'">
-          <span v-if="roll.result===0" class="text-danger">- {{computedWager}} ETH</span>
-          <span v-else-if="roll.result===1" class="text-success">+ {{computedUserProfit}} ETH</span>
+          <span v-if="roll.result===0" class="text-success">- {{computedWager}} ETH</span>
+          <span v-else-if="roll.result===1" class="text-danger">+ {{computedUserProfit}} ETH</span>
           <span v-else-if="roll.result===2" class="text-warning">打款失败, 请手动提现</span>
           <span v-else-if="roll.result===3" class="text-warning">投注失败, 已退款</span>
           <span v-else-if="roll.result===4" class="text-warning">投注失败, 请手动提现</span>
@@ -251,7 +255,7 @@
           </thead>
           <tbody v-if="record.show==='rank'">
             <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
-              <td class="text-success">+ {{web3.fromWei(r.ProfitValue)}}</td>
+              <td class="text-danger">+ {{web3.fromWei(r.ProfitValue)}}</td>
               <td><a :href="`https://etherscan.io/address/${r.UserAddress}`" target="_blank">
                 {{ r.UserAddress }}</a>
               </td>
@@ -263,7 +267,7 @@
               <td>{{ r.DiceResult.toNumber() }}</td>
               <td>{{ web3.fromWei(r.BetValue.toNumber()) }}</td>
               <td>
-                <span v-if="record.show==='rank'" class="text-success">
+                <span v-if="record.show==='rank'" class="text-danger">
                   + {{ web3.fromWei(r.ProfitValue.toNumber()) }}
                 </span>
                 <span :class="`text-${r.computedProfit.state}`" v-else>
@@ -852,11 +856,11 @@ export default {
       }
       let state='', value=0, prefix='';
       if ( status===0 ) {
-        state  = 'failure'
+        state  = 'success'
         value  = this.web3.fromWei(r.BetValue.toNumber())
         prefix = '-';
       } else if ( status===1 ) {
-        state  = 'success'
+        state  = 'danger'
         value  = this.web3.fromWei(r.ProfitValue.toNumber())
         prefix = '+'
       } else {
