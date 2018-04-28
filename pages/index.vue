@@ -538,6 +538,8 @@ export default {
           if ( err ) return reject(err)
           // else if ( !result.length ) return reject('没找到账户信息');
           // else if ( !result.length ) return reject.call(null,{show:false});
+          console.log( '______________________result' );
+          console.log( result )
           this.isAccountOK = result.length? true: false;
           resolve(result)
         })
