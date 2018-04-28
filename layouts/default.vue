@@ -123,6 +123,8 @@ export default {
     routeTo(hash) {
       location.hash = hash;
       // this.$store.commit('toggleMenu', false);
+      document.documentElement.scrollTop = document.documentElement.clientHeight - 90
+      document.body.scrollTop = document.body.clientHeight - 90
     },
   },
   mounted() {

@@ -241,7 +241,6 @@
       <div class="border"></div>
       <div class="inner-panel">
         <h3>开奖数字</h3>
-        {{roll}}
         <p class="number-block">
           <!-- {{roll.result}} -->
           <template v-if="typeof roll.result !=='number'">
@@ -889,6 +888,8 @@ export default {
     // 投注
     doRoll() {
       if ( !this.checkAccountValid() ) return;
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
       
       // 支付参数
       let additionParam = {
