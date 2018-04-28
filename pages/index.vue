@@ -3,11 +3,15 @@
   #page-home {
     // 赌注
     #panel-bet {
-      .flow; justify-content:space-between; max-height:800px;
+      position:relative; .flow; justify-content:space-between; max-height:800px;
       .selection { 
         .flow(row);height:40px; line-height:40px; align-items:stretch;
         .preview { padding:0 10px; min-width:70px; font-size:26px; text-align:center; color:@color-primary; background-color:#fff; .radius; }
         .preview + * { flex:1; }
+      }
+      #explain {
+        position:absolute; top:55px; left:10px; width:100%;
+        line-height:16px; font-size:12px;
       }
       #wager {
         .selection { 
@@ -148,7 +152,12 @@
   <div id="page-home">
     <!-- 赌注 -->
     <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
-      <h2>立刻投注（ETH）</h2>
+      <h2>立刻投注</h2>
+      <div id="explain">
+        <p>玩家在[2,99]间选择一个数字并使用ETH投注</p>
+        <p>系统在[1,100]间产生一个随机数</p>
+        <p>玩家选择的数字大于系统随机数则赢了！</p>
+      </div>
       <div id="amount">
         <h3>投注金额</h3>
         <div id="wager">
@@ -174,7 +183,7 @@
         <div class="selection">
           <p class="preview">
             {{bet.range.value}}
-            <span class="supp-info">min change</span>
+            <!-- <span class="supp-info">min change</span> -->
           </p>
           <div>
             <input type="range" 
@@ -221,10 +230,14 @@
         </p>
         <p class="tips" v-if="typeof roll.result==='number'">
           <span v-if="roll.result===0" class="text-success">- {{computedWager}} ETH</span>
-          <span v-else-if="roll.result===1" class="text-danger">+ {{computedUserProfit}} ETH</span>
-          <span v-else-if="roll.result===2" class="text-warning">打款失败, 请手动提现</span>
+          <span v-else-if="roll.result===1" class="text-danger">Wow, 你赢了！ +{{computedUserProfit}} ETH</span>
+          <span v-else-if="roll.result===2">
+            打款失败，请<a href="#withdraw" >手动提现</a>
+          </span>
           <span v-else-if="roll.result===3" class="text-warning">投注失败, 已退款</span>
-          <span v-else-if="roll.result===4" class="text-warning">投注失败, 请手动提现</span>
+          <span v-else-if="roll.result===4">
+            投注失败, 请<a href="#withdraw" >手动提现</a>
+          </span>
         </p>
       </div>
       <div class="btn-wrapper" v-if="typeof roll.result==='number'">
@@ -242,9 +255,9 @@
     <!-- 提现 -->
     <div id="panel-withdraw" class="panel" v-show="hash==='#withdraw'">
       <h2>提现</h2>
-      <p>我们支付所有赢得的投注和/或即时退款。但是，如果由于任何原因，我们无法从胜利或退款中向您发送Eth，您可以在此与我们解决此问题。</p>
+      <p>系统将自动处理对玩家的打款，但是不排除打款失败的情况。<br>如果系统给玩家打款失败，系统将记录下来，玩家稍后可以在此手动点击提现。</p>
       <p>账户: <a :href="`https://etherscan.io/address/${account.address}`" target="_blank">{{account.address}}</a></p>
-      <!-- <p>可提现金额: <span class="text-success">{{account.pendingWithdrawal}}<span> ETH</p> -->
+      <p>可提现金额: {{account.pendingWithdrawal}} ETH</p>
       <input type="button" class="btn primary" 
       :disabled="!account.pendingWithdrawal"
       @click="doWithdraw" 
@@ -427,6 +440,10 @@ export default {
         state:'ready',
         result:'',
         value:undefined,
+
+        // state:'roll',
+        // result:4,
+        // value:1
       },
       // 
       metamaskOpt: {
