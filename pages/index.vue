@@ -225,6 +225,7 @@
         <p>投注金额 <span>{{computedWager}} ETH&nbsp;</span></p>
         <p>用户收益 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
         <p class="info">&nbsp;
+          {{isNetworkOK}} {{isAccountOK}} {{isUserProfitOK}}
           <span v-if="isNetworkOK&&isAccountOK&&!isUserProfitOK">
             (已超过最大收益限制，请调整投注金额或胜率)</span>
         </p>
@@ -531,8 +532,8 @@ export default {
       // 获取钱包地址
       let address = await new Promise((resolve,reject)=>{
         this.web3.eth.getAccounts((err, result)=>{
-          if ( err ) reject(err)
-          else if ( !result.length ) reject('没找到账户信息');
+          if ( err ) return reject(err)
+          else if ( !result.length ) return reject('没找到账户信息');
           this.isAccountOK = true;
           resolve(result)
         })
@@ -550,7 +551,7 @@ export default {
       // 获取余额 (单位 wei)
       let wei = await new Promise((resolve,reject)=>{
         this.web3.eth.getBalance(address, 'latest', (err,result)=>{
-          if ( err ) reject(err)
+          if ( err ) return reject(err)
           resolve(result)
         })
       })
@@ -579,7 +580,7 @@ export default {
       // 获取当前的区块数
       let blockNumber   = await new Promise((resolve, reject)=>{
         this.web3.eth.getBlockNumber((err, result)=>{
-          if (err) reject();
+          if (err) return reject();
           resolve(result);
         });
       })
@@ -640,7 +641,7 @@ export default {
       this.account.pendingWithdrawal = await new Promise((resolve,reject)=>{
         this.getContract()
         .userGetPendingTxByAddress(this.account.address, (err,result)=>{
-          if ( err ) reject(err);
+          if ( err ) return reject(err);
           if ( !result ) return resolve(0);
           console.warn(`未提现: ${ result.toNumber() }`)
           resolve(+this.web3.fromWei(result.toNumber()))
@@ -991,7 +992,7 @@ export default {
     this.isNetworkOK = await this.checkNetwork();
     if ( this.isNetworkOK ) {
       this.hashChange();
-      this.updatePageData()
+      await this.updatePageData()
       console.warn(`合约地址: ${this.contract.address}`);
     } else {
       this.commonErrorCatcher('未连接到以太坊主网')
