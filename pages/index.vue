@@ -532,7 +532,8 @@ export default {
       let address = await new Promise((resolve,reject)=>{
         this.web3.eth.getAccounts((err, result)=>{
           if ( err ) return reject(err)
-          else if ( !result.length ) return reject('没找到账户信息');
+          // else if ( !result.length ) return reject('没找到账户信息');
+          else if ( !result.length ) return;
           this.isAccountOK = true;
           resolve(result)
         })
@@ -575,7 +576,7 @@ export default {
     },
     // 获取投注记录
     async getRecord() {
-      if ( !this.checkAccountValid() ) return;
+      if ( !this.checkAccountValid(false) ) return;
       // 获取当前的区块数
       let blockNumber   = await new Promise((resolve, reject)=>{
         this.web3.eth.getBlockNumber((err, result)=>{
