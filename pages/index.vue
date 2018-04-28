@@ -119,6 +119,18 @@
       p { margin-bottom:10px; word-break:break-word; }
       input { margin:20px 0; }
     }
+    #dialog-guide {
+      @import url(~assets/css/icons/failure.less);
+      .flow; justify-content:center; align-items:center;
+      background:rgba(0,0,0,0);
+      .inner-wrapper {
+        position:relative; 
+        padding:30px; width:500px; line-height:1.4; word-break:break-all;
+        background-color:rgba(0,0,0,0.5); .radius(10px);
+        li { margin-bottom:12px; }
+        i.close { position: absolute; right:0; top:0; width:60px; height:60px; background:url(@icon-failure) no-repeat center / 30px 30px; cursor: pointer; }
+      }
+    }
   }
 
   @panel-height-mb:calc( 100% - 90px );
@@ -333,19 +345,16 @@
         <h3>游戏规则</h3>
         <ul>
           <li>
-            1.玩家在2~99中选择一个数字并投注如果骰子结果低于你的号码，你就可以获得对应赔率的ETH！
+            1.玩家在2~99中选择一个数字并使用ETH投注
           </li>
           <li>
-            2.系统在1~100中产生一个随机数（通过公平的、可证明的、不可篡改的、oraclize第三方随机数生成机制）
+            2.系统在1~100中产生一个随机数（<a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a>可证明公平）
           </li>
           <li>
             3.玩家选择的数字大于系统产生的随机数则玩家赢，系统自动将本金+收益转到玩家钱包
           </li>
           <li>
-            4.否则玩家输，系统将发送1wei（0.0000000000000001ETH）到玩家钱包
-          </li>
-          <li>
-            5.玩家选择的数字越大，胜率越高，但收益越小
+            4.如果玩家输，系统将发送1 wei（0.0000000000000001ETH）到玩家钱包
           </li>
         </ul>
       </div>
@@ -377,6 +386,28 @@
     <div id="panel-loading" class="panel" v-show="!hash">
       <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
     </div>
+    <div id="dialog-guide" class="dialog-container" :class="showGuide?'show':''">
+      <div class="inner-wrapper">
+      <i class="close" @click="hideGuide"></i>
+        <h2>怎么玩</h2>
+        <div id="guide-game">
+          <ul>
+            <li>
+              1.玩家在2~99中选择一个数字并使用ETH投注
+            </li>
+            <li>
+              2.系统在1~100中产生一个随机数（<a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a>可证明公平）
+            </li>
+            <li>
+              3.玩家选择的数字大于系统产生的随机数则玩家赢，系统自动将本金+收益转到玩家钱包
+            </li>
+            <li>
+              4.如果玩家输，系统将发送1 wei（0.0000000000000001ETH）到玩家钱包
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -386,6 +417,7 @@ import Web3 from 'web3'
 export default {
   data() {
     return {
+      showGuide:false,
       hash:'',
       web3:undefined,
       isNetworkOK:false,
@@ -480,6 +512,10 @@ export default {
       this.web3 = typeof web3 !== 'undefined'? 
         new Web3(web3.currentProvider):
         new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    },
+    hideGuide() {
+      localStorage.setItem('hasReadGuide', true);
+      this.showGuide = false;
     },
     // 获取账户信息
     async getAccountInfo() {
@@ -849,6 +885,7 @@ export default {
       let contract = this.getContract();
       contract.userRollDice(+this.bet.range.value+1, additionParam, (err, hash)=>{
         if ( err ) return;
+
         // if ( err ) return this.commonErrorCatcher(err);
         let LogBet = contract.LogBet();
         // 
@@ -945,6 +982,9 @@ export default {
       this.hashChange();
       this.updatePageData()
       console.warn(`合约地址: ${this.contract.address}`);
+      if ( !localStorage.getItem('hasReadGuide') )  {
+        this.showGuide = true;
+      }
     } else {
       this.commonErrorCatcher('无法连接到以太网公网')
       this.hash = location.hash = '#guide';
