@@ -212,12 +212,15 @@
     <div id="panel-record" class="panel" v-show="hash==='#record'">
       <div class="tabs">
         <input type="button" class="btn" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="最新投注">
-        <input type="button" class="btn" :class="record.show==='rank'?'primary':''" @click="record.show='rank'" value="奖金排行">
+        <input type="button" class="btn" :class="record.show==='rank'?'primary':''" @click="record.show='rank'" value="一周收益排行">
         <input type="button" class="btn" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="我的投注">
       </div>
       <div class="table-wrapper">
         <table>
-          <thead>
+          <thead v-if="record.show==='rank'">
+            <tr><td>收益累计</td><td>投注者</td></tr>
+          </thead>
+          <thead v-else>
             <tr>
               <td>投注数字</td>
               <td>开奖数字</td>
@@ -227,7 +230,15 @@
               <td>账户</td>
             </tr>
           </thead>
-          <tbody>
+          <tbody v-if="record.show==='rank'">
+            <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
+              <td class="text-success">+ {{web3.fromWei(r.ProfitValue)}}</td>
+              <td><a :href="`https://etherscan.io/address/${r.UserAddress}`" target="_blank">
+                {{ r.UserAddress }}</a>
+              </td>
+            </tr>
+          </tbody>
+          <tbody v-else>
             <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
               <td>{{ r.UserNumber.toNumber() }}</td>
               <td>{{ r.DiceResult.toNumber() }}</td>
@@ -532,7 +543,6 @@ export default {
     },
     disposeRecord(bets,results,refunds) {
       clearTimeout(this.disposeRecordTimer);
-      
       this.disposeRecordTimer = setTimeout(()=>{
         if ( this.record.all.length && this.record.all.length!==bets.length ) {
           this.runHorse();
@@ -546,7 +556,7 @@ export default {
         }).reverse();
         this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
         this.recordDisposed = true;
-      }, 300);
+      }, 500);
     },
 
     loadRankRecord() {
@@ -555,7 +565,6 @@ export default {
       let contract       = this.getContract()
 
       let results=[], bets=[];
-
       contract.LogBet(
         { _userAddress: '' }, 
         { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
@@ -565,7 +574,6 @@ export default {
         bets.push(result)
         this.disposeRankRecord(results,bets)
       })
-
       contract.LogResult(
         { _userAddress: '' }, 
         { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
@@ -577,19 +585,79 @@ export default {
         results.push(result)
         this.disposeRankRecord(results,bets)
       })
+
+      // let results = [];
+      // contract.LogResult(
+      //   { _userAddress: '' }, 
+      //   { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+      // ).watch((err,result)=>{
+      //   if ( err ) return;
+      //   if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
+      //   // console.log( '______________rank_result' )
+      //   // console.log( result.args.BetID, ': ', result.args.Status.toNumber() )
+      //   results.push(result)
+      //   this.disposeRankRecord(results)
+      // })
     },
     disposeRankRecord(results,bets) {
       clearTimeout( this.disposeRankRecordTimer )
       this.disposeRankRecordTimer = setTimeout(()=>{
-        this.record.rank = results.map(b=>{
-          let r  = bets.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
-          let o  = { ...b.args, ...r.args};
-          return o;
+        let arr = results
+          // 合并列表
+          .map(b=>{
+            let r  = bets.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
+            let o  = { ...b.args, ...r.args};
+            return o;
+          })
+          // 过滤(已出结果,并且结果为赢)
+          .filter(r=>r.Status&&(r.Status.toNumber()===1||r.Status.toNumber()===2))
+
+        let map = {}
+        arr.forEach(r=>{
+          if ( map['_'+r.UserAddress] ) {
+            map['_'+r.UserAddress].ProfitValue += r.ProfitValue.toNumber()
+          } else {
+            map['_'+r.UserAddress] = {
+              UserAddress:r.UserAddress,
+              ProfitValue:r.ProfitValue.toNumber()
+            }
+          }
         })
-        .filter(r=>r.Status.toNumber()===1||r.Status.toNumber()===2)
-        .sort((c,n)=>{
-          return n.ProfitValue.toNumber() - c.ProfitValue.toNumber()
-        })
+
+        this.record.rank = Object.keys(map)
+          .map(i=>map[i])
+          .sort((c,n)=>n.ProfitValue - c.ProfitValue);
+
+
+          // // 排序
+          // .sort((c,n)=>{
+          //   return n.ProfitValue.toNumber() - c.ProfitValue.toNumber()
+          // })
+        // let map = {};
+        // let arr = results
+        //   .filter(r=>{
+        //     return r.args.Status.toNumber()===1||r.args.Status.toNumber()===2
+        //   })
+        //   .map(r=>{
+        //     return { UserAddress:r.args.UserAddress, ProfitValue:r.args.ProfitValue }
+        //   });
+        //   console.log('+__++++++++++++++++arr');
+        //   return console.log( results[0].args );
+        //   arr.forEach(r=>{
+        //     // map['_'+r.UserAddress] = (map['_'+r.UserAddress]||0)
+        //     if ( map['_'+r.UserAddress] ) {
+        //       map['_'+r.UserAddress].ProfitValue += r.ProfitValue.toNumber()
+        //     } else {
+        //       map['_'+r.UserAddress] = {
+        //         UserAddress:r.UserAddress,
+        //         ProfitValue:0
+        //       }
+        //     }
+        //   })
+        // this.record.rank = Object.keys(map).map(i=>i);
+
+        // console.log('__________________r');
+        // console.log( this.record.rank );
       }, 300);
     },
     runHorse() {
@@ -754,23 +822,32 @@ export default {
     },
     // --------- record ----------
     computeProfit(r) {
+      let status = r.Status? r.Status.toNumber(): -1;
       // 如果还没出结果
-      if ( !r.DiceResult ) {
+      if ( status === -1 ) {
         r.DiceResult = { toNumber(){ return '-'; } }
-        return { state:'pending', value:!!r.RefundValue?'已手工退款':'等待开奖' };
+        // return { state:'pending', value:'待开奖' };
+        return { state:'pending', value:!!r.RefundValue?'已手工退款':'待开奖' };
       }
       let state='', value=0, prefix='';
-      if ( r.Status.toNumber()==0 ) {
+      if ( status===0 ) {
         state  = 'failure'
         value  = this.web3.fromWei(r.BetValue.toNumber())
         prefix = '-';
-      } else if ( r.Status.toNumber()==1 ) {
+      } else if ( status===1 ) {
         state  = 'success'
         value  = this.web3.fromWei(r.ProfitValue.toNumber())
         prefix = '+'
       } else {
-        state  = 'other'
-        value  = 0
+        switch(status) {
+          case 2: value='系统转账失败，请手工提现'; break;
+          case 3: value='已退款'; break;
+          case 4: value='自动退款失败，请手工提现'; break;
+          // case 5: value='待开奖'; break;
+          // case 6: value='已手工退款'; break;
+          default: value='-';
+        }
+        state  = 'warning'
         r.DiceResult = { toNumber(){ return '-' } }
       }
       return { state, value, prefix }
@@ -813,11 +890,11 @@ export default {
     window.addEventListener('hashchange', this.hashChange);
 
 
-    // this.getContract().maxNumber((err,result)=>{
-    //   console.log('___________________maxNumber');
-    //   console.log( result.toNumber() );
-    //   console.log('___________________maxNumber');
-    // })
+    this.getContract().maxNumber((err,result)=>{
+      console.log('___________________maxNumber');
+      console.log( err || result.toNumber() );
+      console.log('___________________maxNumber');
+    })
   }
 }
 </script>
