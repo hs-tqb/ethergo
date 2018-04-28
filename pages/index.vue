@@ -429,6 +429,7 @@ export default {
       hash:'',
       web3:undefined,
       isNetworkOK:false,
+      isNetworkChecked:false,
       isAccountOK:false,
       // 账户
       // account :{
@@ -993,6 +994,7 @@ export default {
     this.initWeb3();
 
     this.isNetworkOK = await this.checkNetwork();
+    this.isNetworkChecked = true;
     if ( this.isNetworkOK ) {
       this.hashChange();
       this.updatePageData(true)
@@ -1013,6 +1015,7 @@ export default {
     this.getContract().maxNumber((err,result)=>{
       console.log('___________________maxNumber');
       console.log( err || result.toNumber() );
+      console.log('xxxxxxxxxxx');
       console.log('___________________maxNumber');
     })
   }
