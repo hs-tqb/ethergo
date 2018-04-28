@@ -994,7 +994,7 @@ export default {
         this.showGuide = true;
       }
     } else {
-      this.commonErrorCatcher('无法连接到以太网公网')
+      this.commonErrorCatcher('未连接到以太坊主网')
       this.hash = location.hash = '#guide';
     }
 
