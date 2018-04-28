@@ -488,7 +488,7 @@ export default {
       },
       // 
       metamaskOpt: {
-        gas: 3000000,
+        gas: 300000,
         gasPrice: 3000000000
       },
       mountedRun: false,
@@ -917,8 +917,8 @@ export default {
           console.warn('支付成功');
           // this.record.all.push({})
           // this.record.user.push(result.args)
-          LogBet.stopWatching();
           this.updatePageData();
+          LogBet.stopWatching();
         })
         // 投注结果监控
         let LogResult = contract.LogResult();
