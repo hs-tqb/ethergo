@@ -126,7 +126,7 @@
       .inner-wrapper {
         position:relative; 
         padding:30px; width:500px; line-height:1.4; word-break:break-all;
-        background-color:rgba(0,0,0,0.5); .radius(10px);
+        background-color:rgba(0,0,0,0.7); .radius(10px);
         li { margin-bottom:12px; }
         i.close { position: absolute; right:0; top:0; width:60px; height:60px; background:url(@icon-failure) no-repeat center / 30px 30px; cursor: pointer; }
       }
@@ -139,6 +139,14 @@
     #page-home { 
       .panel#panel-bet,
       .panel#panel-roll { height:100%; }
+    }
+    #page-home #dialog-guide {
+      .inner-wrapper {
+        background-color:rgba(0,0,0,0.9)!important;
+        i.close { left:50%; top:auto; right:auto; bottom:50px; margin-left:-30px; }
+        width:100%!important; height:100%;
+        .flow; justify-content:center; align-items:center;
+      }
     }
   }
   @media screen and (min-width:412px) {
