@@ -224,8 +224,9 @@
         <!-- <h3>投注结果小于 <span>{{+bet.range.value+1}}</span></h3> -->
         <p>投注金额 <span>{{computedWager}} ETH&nbsp;</span></p>
         <p>用户收益 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
-        <p class="info" v-if="isNetworkOK&&isAccountOK">&nbsp;
-          <span v-if="!isUserProfitOK">(已超过最大收益限制，请调整投注金额或胜率)</span>
+        <p class="info">&nbsp;
+          <span v-if="isNetworkOK&&isAccountOK&&!isUserProfitOK">
+            (已超过最大收益限制，请调整投注金额或胜率)</span>
         </p>
       </div>
       <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll">
@@ -851,6 +852,9 @@ export default {
       if ( !this.record.all.length ) {
         this.getRecord()
       }
+      if ( !localStorage.getItem('hasReadGuide') )  {
+        this.showGuide = true;
+      }
     },
 
     // --------- bet ----------
@@ -989,9 +993,6 @@ export default {
       this.hashChange();
       this.updatePageData()
       console.warn(`合约地址: ${this.contract.address}`);
-      if ( !localStorage.getItem('hasReadGuide') )  {
-        this.showGuide = true;
-      }
     } else {
       this.commonErrorCatcher('未连接到以太坊主网')
       this.hash = location.hash = '#guide';
