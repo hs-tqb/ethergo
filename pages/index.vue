@@ -143,7 +143,7 @@
     #page-home #dialog-guide {
       .inner-wrapper {
         background-color:rgba(0,0,0,0.9)!important;
-        i.close { left:50%; top:auto; right:auto; bottom:50px; margin-left:-30px; }
+        i.close { left:50%; top:auto; right:auto; bottom:30px; margin-left:-30px; }
         width:100%!important; height:100%;
         .flow; justify-content:center; align-items:center;
       }
