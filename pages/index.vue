@@ -483,7 +483,7 @@ export default {
       // console.log('______________________blockNumber', blockNumber)
       
       // 估计n天的区块数, (假设一分钟上链10个)
-      let dayBlockNumber = (60*24*10) * 1;
+      let dayBlockNumber = (60*24*15) * 1;
 
       // 获取合约
       let contract = this.getContract();
@@ -506,13 +506,13 @@ export default {
       );
       
       LogBet.watch((err,result)=>{
-        if ( err ) return;
+        if ( err ) return console.error(err);
         if ( bets.some(r=>r.args.BetID===result.args.BetID) ) return;
         bets.push( result );
         this.disposeRecord(bets, results, refunds);
       })
       ResultBet.watch((err,result)=>{
-        if ( err ) return;
+        if ( err ) return console.error(err);
         if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
         // console.log( '______________record_result' )
         // console.log( result.args.BetID, ': ', result.args.Status.toNumber() )
@@ -520,12 +520,11 @@ export default {
         this.disposeRecord(bets, results, refunds);
       });
       LogRefund.watch((err,result)=>{
-        if (err) return;
+        if ( err ) return console.error(err);
         if ( refunds.some(r=>r.args.BetID===result.args.BetID) ) return;
         refunds.push( result );
         this.disposeRecord(bets, results, refunds);
       })
-      
       this.loadRankRecord()
     },
     // 获取待提现金额
@@ -542,6 +541,7 @@ export default {
       .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getPendingWithdrawal'}));
     },
     disposeRecord(bets,results,refunds) {
+      // console.log('dispose')
       clearTimeout(this.disposeRecordTimer);
       this.disposeRecordTimer = setTimeout(()=>{
         if ( this.record.all.length && this.record.all.length!==bets.length ) {
