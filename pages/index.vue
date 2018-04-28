@@ -138,7 +138,7 @@
   @media screen and (max-width:411px) {
     #page-home { 
       .panel#panel-bet,
-      .panel#panel-roll { height:100%; }
+      .panel#panel-roll { min-height:100%; }
     }
     #page-home #dialog-guide {
       .inner-wrapper {
