@@ -9,7 +9,7 @@
       text-align:right; font-size:12px; cursor:pointer;
       // #address { margin-bottom:3px; }
       h4 { margin-bottom:3px; }
-      a { 
+      #address a { 
         color:inherit; 
         &:hover { color:@color-primary-light-2; }
       }
@@ -49,8 +49,8 @@
     <div id="account-info" :style="`opacity:${account.address?1:0}`">
       <h4 id="address"><a :href="`https://etherscan.io/address/${account.address}`">钱包: {{account.address}}</a></h4>
       <h4 id="balance">余额: {{account.balance}} ETH</span></h4>
-      <h4 id="pendingWithdrawal">
-        <a href="#withdraw">待提现金额: {{account.pendingWithdrawal}} ETH</a>
+      <h4 id="pendingWithdrawal" v-if="!!account.pendingWithdrawal">
+        <a href="#withdraw" class="text-warning">待提现金额: {{account.pendingWithdrawal}} ETH</a>
         <!-- <div class="bubble">1231</div> -->
       </h4>
     </div>

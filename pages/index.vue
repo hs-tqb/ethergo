@@ -3,7 +3,7 @@
   #page-home {
     // 赌注
     #panel-bet {
-      .flow; justify-content:space-around; 
+      .flow; justify-content:space-between; max-height:800px;
       .selection { 
         .flow(row);height:40px; line-height:40px; align-items:stretch;
         .preview { padding:0 10px; min-width:70px; font-size:26px; text-align:center; color:@color-primary; background-color:#fff; .radius; }
@@ -56,7 +56,7 @@
           span { font-size:60px; }
           line-height:60px; 
         }
-        span { float:right; color:@color-danger; }
+        span { float:right; color:@color-primary; }
         p.info { 
           font-size:12px; color:@color-text-placeholder; 
           span { font-size:16px; color:@color-danger; }
@@ -65,11 +65,13 @@
     }
     // 投注
     #panel-roll {
-      .flow; text-align:center;
+      .flow; justify-content:space-between; max-height:800px; text-align:center;
+      h2 { text-align:left; }
       .border { margin:0 30px; }
       .number-block { font-size:100px; }
       .inner-panel { 
         h3 { margin:10px 0 20px 0; }
+        .tips { margin:20px 0; }
       }
       .btn-wrapper { 
         padding:0 15px;
@@ -202,14 +204,12 @@
     </div>
     <!-- 开奖 -->
     <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
-      <div class="filler"></div>
+      <h2>投注结果</h2>
       <div class="inner-panel">
         <h3>投注数字</h3>
         <p class="number-block">{{+bet.range.value+1}}</p>
       </div>
-      <div class="filler"></div>
       <div class="border"></div>
-      <div class="filler"></div>
       <div class="inner-panel">
         <h3>开奖数字</h3>
         <p class="number-block">
@@ -227,7 +227,6 @@
           <span v-else-if="roll.result===4" class="text-warning">投注失败, 请手动提现</span>
         </p>
       </div>
-      <div class="filler"></div>
       <div class="btn-wrapper" v-if="typeof roll.result==='number'">
         <input type="button" 
           class="btn primary block"
@@ -246,7 +245,10 @@
       <p>我们支付所有赢得的投注和/或即时退款。但是，如果由于任何原因，我们无法从胜利或退款中向您发送Eth，您可以在此与我们解决此问题。</p>
       <p>账户: <a :href="`https://etherscan.io/address/${account.address}`" target="_blank">{{account.address}}</a></p>
       <!-- <p>可提现金额: <span class="text-success">{{account.pendingWithdrawal}}<span> ETH</p> -->
-      <input type="button" class="btn primary" @click="doWithdraw" :value="`提现`">
+      <input type="button" class="btn primary" 
+      :disabled="!account.pendingWithdrawal"
+      @click="doWithdraw" 
+      :value="`提现`">
     </div>
     <!-- 记录 -->
     <div id="panel-record" class="panel" v-show="hash==='#record'">
@@ -308,18 +310,17 @@
     <div id="panel-guide" class="panel" v-show="hash.indexOf('#guide')===0">
       <h2>怎么玩</h2>
       <ul class="anchors">
-        <li><a href="#guide-game">游戏规则</a></li>
-        <li><a href="#guide-metamask">使用 metamask</a></li>
+        <!-- <li><a href="#guide-game">游戏规则</a></li> -->
+        <!-- <li><a href="#guide-metamask">使用 metamask</a></li>
         <li><a href="#guide-browser">使用 mist 浏览器</a></li>
         <li><a href="#guide-mobile">使用手机</a></li>
-        <li><a href="#guide-tips">Hot Tips</a></li>
+        <li><a href="#guide-tips">Hot Tips</a></li> -->
       </ul>
       <div id="guide-game">
         <h3>游戏规则</h3>
         <ul>
           <li>
-            1.玩家在2~99中选择一个数字并投注
-            <br>如果骰子结果低于你的号码，你就可以获得对应赔率的ETH！
+            1.玩家在2~99中选择一个数字并投注如果骰子结果低于你的号码，你就可以获得对应赔率的ETH！
           </li>
           <li>
             2.系统在1~100中产生一个随机数（通过公平的、可证明的、不可篡改的、oraclize第三方随机数生成机制）
@@ -581,7 +582,7 @@ export default {
           if ( err ) reject(err);
           if ( !result ) return resolve(0);
           console.warn(`未提现: ${ result.toNumber() }`)
-          resolve(this.web3.fromWei(result.toNumber()))
+          resolve(+this.web3.fromWei(result.toNumber()))
         })
       })
       .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getPendingWithdrawal'}));
