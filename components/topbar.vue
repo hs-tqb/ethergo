@@ -9,6 +9,19 @@
       text-align:right; font-size:12px; cursor:pointer;
       // #address { margin-bottom:3px; }
       h4 { margin-bottom:3px; }
+      a { 
+        color:inherit; 
+        &:hover { color:@color-primary-light-2; }
+      }
+      #pendingWithdrawal {
+        position:relative;
+        .bubble { 
+          &::before { position: absolute; right:0; top:0; height:0; border:6px solid red; content:'\200B'; }
+          position:absolute; right:0; top:40px; color:#666;
+          padding:15px;
+          background-color:#fff; .radius;
+        }
+      }
     }
     #logo-wrapper {
       font-weight:bold; line-height:50px; font-size:30px; color:@color-warning;
@@ -33,9 +46,13 @@
       <!-- <img src="" alt="logo"> -->
       ETHERWOW
     </div>
-    <div id="account-info" @click="getAccountDetail" :style="`opacity:${account.address?1:0}`">
-      <h4 id="address">钱包: {{account.address}}</h4>
-      <h4 id="balance">余额: {{account.balance}} ETH</h4>
+    <div id="account-info" :style="`opacity:${account.address?1:0}`">
+      <h4 id="address"><a :href="`https://etherscan.io/address/${account.address}`">钱包: {{account.address}}</a></h4>
+      <h4 id="balance">余额: {{account.balance}} ETH</span></h4>
+      <h4 id="pendingWithdrawal">
+        <a href="#withdraw">待提现金额: {{account.pendingWithdrawal}} ETH</a>
+        <!-- <div class="bubble">1231</div> -->
+      </h4>
     </div>
   </div>
 </template>

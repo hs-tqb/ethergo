@@ -97,6 +97,22 @@
     #panel-loading {
       .flow; align-items:center; justify-content:center;
     }
+    #panel-guide {
+      
+      .anchors { 
+        line-height:1.2;
+        margin:20px 0;
+        li { margin:0; }
+        // .flow(row); flex-wrap:wrap; line-height:24px;
+        // li { margin-left:10px; }
+      }
+      li { margin-bottom:10px; line-height:1.4; }
+    }
+    #panel-withdraw {
+      line-height:1.4;
+      p { margin-bottom:10px; }
+      input { margin-top:20px; }
+    }
   }
 
   @panel-height-mb:calc( 100% - 90px );
@@ -226,7 +242,11 @@
 
     <!-- 提现 -->
     <div id="panel-withdraw" class="panel" v-show="hash==='#withdraw'">
-      <input type="button" class="btn primary" @click="doWithdraw" :value="`可提现金额: ${account.pendingWithdrawal}`">
+      <h2>提现</h2>
+      <p>我们支付所有赢得的投注和/或即时退款。但是，如果由于任何原因，我们无法从胜利或退款中向您发送Eth，您可以在此与我们解决此问题。</p>
+      <p>账户: <a :href="`https://etherscan.io/address/${account.address}`" target="_blank">{{account.address}}</a></p>
+      <!-- <p>可提现金额: <span class="text-success">{{account.pendingWithdrawal}}<span> ETH</p> -->
+      <input type="button" class="btn primary" @click="doWithdraw" :value="`提现`">
     </div>
     <!-- 记录 -->
     <div id="panel-record" class="panel" v-show="hash==='#record'">
@@ -298,20 +318,21 @@
         <h3>游戏规则</h3>
         <ul>
           <li>
-            1. 你正在押注100面骰子滚动的结果。骰子掷出的结果是1-100。选择一个1-100的数字作为你的投注值
+            1.玩家在2~99中选择一个数字并投注
             <br>如果骰子结果低于你的号码，你就可以获得对应赔率的ETH！
           </li>
           <li>
-            2. 首先设置您的赌注大小（ETH为单位）。
-            <br>然后，调整“胜率大小”滑块来改变您获胜的比例。
-            <br>要获胜，骰子的结果必须低于你的号码。
-            <br>点击'投注'，即可开始游戏
+            2.系统在1~100中产生一个随机数（通过公平的、可证明的、不可篡改的、oraclize第三方随机数生成机制）
           </li>
           <li>
-            3. 如果掷骰子的结果低于您的“掷骰子”号码，您立即获胜并获得相应赔率奖励！
-            <br>如果输了，智能合约会返给你1Wei（0.0000000000000001ETH）。
+            3.玩家选择的数字大于系统产生的随机数则玩家赢，系统自动将本金+收益转到玩家钱包
           </li>
-          <li>注意：如果获胜，则从退回给玩家的总金额中扣除1％的佣金。您将承担小额gas费用进行下注。 我们不会收到gas费用。所有费用用于维护以太坊区块链。</li>
+          <li>
+            4.否则玩家输，系统将发送1wei（0.0000000000000001ETH）到玩家钱包
+          </li>
+          <li>
+            5.玩家选择的数字越大，胜率越高，但收益越小
+          </li>
         </ul>
       </div>
       <!-- <div id="guide-metamask">
