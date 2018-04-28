@@ -225,9 +225,6 @@
         <p>投注金额 <span>{{computedWager}} ETH&nbsp;</span></p>
         <p>用户收益 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
         <p class="info">&nbsp;
-          {{isNetworkOK}}<br>
-          {{isAccountOK}}, {{account}}<br>
-          {{!isUserProfitOK}}
           <span v-if="isNetworkOK&&isAccountOK&&!isUserProfitOK">
             (已超过最大收益限制，请调整投注金额或胜率)</span>
         </p>
@@ -538,8 +535,6 @@ export default {
           if ( err ) return reject(err)
           // else if ( !result.length ) return reject('没找到账户信息');
           // else if ( !result.length ) return reject.call(null,{show:false});
-          console.log( '______________________result' );
-          console.log( result )
           this.isAccountOK = result.length&&!!result[0]? true: false;
           resolve(result)
         })
@@ -1020,7 +1015,6 @@ export default {
     this.getContract().maxNumber((err,result)=>{
       console.log('___________________maxNumber');
       console.log( err || result.toNumber() );
-      console.log('xxxxxxxxxxx');
       console.log('___________________maxNumber');
     })
   }
