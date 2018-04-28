@@ -540,7 +540,7 @@ export default {
           // else if ( !result.length ) return reject.call(null,{show:false});
           console.log( '______________________result' );
           console.log( result )
-          this.isAccountOK = result.length? true: false;
+          this.isAccountOK = result.length&&!!result[0]? true: false;
           resolve(result)
         })
       })
