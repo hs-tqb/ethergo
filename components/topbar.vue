@@ -21,7 +21,8 @@
   @media screen and (min-width:412px) {
     #topbar {
       .flow(row);
-      #account-info { flex:1; .flow; justify-content:center;  }
+      #logo-wrapper { flex:1; }
+      #account-info { .flow; justify-content:center;  }
     }
   }
 </style>

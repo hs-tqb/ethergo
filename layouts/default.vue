@@ -4,7 +4,7 @@
   body { background:rgba(0,0,0,0.5); }
   #__default {
     h2 { margin-bottom:15px; font-size:40px; }
-    h3 { margin:10px 0; }
+    h3 { margin:10px 0; font-size:18px; font-weight:500; }
     h5 { font-size:12px; }
     .panel { padding:5px 10px; }
     .btn.block { height:52px; font-size:22px; }
@@ -85,7 +85,7 @@
 
 <template>
   <div id="__default" class="page-root">
-    <div id="menu" :class="showMenu?'':'hide'">
+    <div id="menu" :class="showMenu?'':'hide'" @click="$store.commit('toggleMenu', false)">
       <ul>
         <li><a @click="routeTo('#guide')">怎么玩</a></li>
         <li><a @click="routeTo('#withdraw')">提现</a></li>
@@ -119,7 +119,7 @@ export default {
   methods: {
     routeTo(hash) {
       location.hash = hash;
-      this.$store.commit('toggleMenu', false);
+      // this.$store.commit('toggleMenu', false);
     },
   },
   mounted() {

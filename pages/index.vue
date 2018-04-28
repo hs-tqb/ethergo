@@ -3,9 +3,8 @@
   #page-home {
     // 赌注
     #panel-bet {
-      .flow; justify-content:space-around;
       .selection { 
-        .flow(row); .flow(row); height:40px; line-height:40px; align-items:stretch;
+        .flow(row);height:40px; line-height:40px; align-items:stretch;
         .preview { padding:0 10px; min-width:70px; font-size:26px; text-align:center; color:@color-primary; background-color:#fff; .radius; }
         .preview + * { flex:1; }
       }
@@ -71,7 +70,14 @@
       .inner-panel { 
         h3 { margin:10px 0 20px 0; }
       }
-      .btn { margin-bottom:20px; }
+      .btn-wrapper { 
+        padding:0 15px;
+        margin-bottom:20px; 
+        // padding:0 5px 0 25px;
+        // .flow(row);
+        // .block { flex:1; }
+        // .text  { margin-left:10px; }
+      }
     }
     // 历史
     #panel-record {
@@ -95,14 +101,21 @@
   @panel-height:calc( 100% - 90px );
   @media screen and (max-width:411px) {
     #page-home { 
-      .panel#panel-bet { min-height:@panel-height; }
+      .panel#panel-bet,
+      .panel#panel-roll { height:100%; }
+      #panel-bet { 
+        .flow; justify-content:space-around; 
+      }
     }
   }
   @media screen and (min-width:412px) {
     #page-home { 
       .flow(row); height:@panel-height; overflow:hidden;
       .panel { flex:1; margin:0 10px; height:100; min-width:375px; .scroll; }
-      #panel-bet { min-width:500px; }
+      #panel-bet { 
+        min-width:500px; 
+        & > * { margin-bottom:100px!important; }
+      }
       // #panel-bet, 
       // #panel-roll {  }
     }
@@ -113,9 +126,9 @@
   <div id="page-home">
     <!-- 赌注 -->
     <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
+      <h2>立刻投注（ETH）</h2>
       <div id="amount">
-        <h2>立刻投注（ETH）</h2>
-        <!-- <h3>立刻投注</h3> -->
+        <h3>投注金额</h3>
         <div id="wager">
           <div class="selection">
             <p class="preview">{{computedWager}}</p>
@@ -195,12 +208,15 @@
         </p>
       </div>
       <div class="filler"></div>
-      <input type="button" 
-        class="btn primary block"
-        v-if="typeof roll.result==='number'"
-        @click="backToRoll"
-        value="再玩一次" 
-      >
+      <div class="btn-wrapper" v-if="typeof roll.result==='number'">
+        <input type="button" 
+          class="btn primary block"
+          @click="backToRoll"
+          value="再玩一次" 
+        >
+        <!-- <input type="button" class="btn text" value="分享"> -->
+        <!-- <i class="icon">分享</i> -->
+      </div>
       <span v-else style="height:50px;"></span>
     </div>
 
@@ -212,13 +228,16 @@
     <div id="panel-record" class="panel" v-show="hash==='#record'">
       <div class="tabs">
         <input type="button" class="btn" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="最新投注">
-        <input type="button" class="btn" :class="record.show==='rank'?'primary':''" @click="record.show='rank'" value="一周收益排行">
+        <input type="button" class="btn" :class="record.show==='rank'?'primary':''" @click="record.show='rank'" value="奖金排行">
         <input type="button" class="btn" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="我的投注">
       </div>
       <div class="table-wrapper">
         <table>
           <thead v-if="record.show==='rank'">
-            <tr><td>收益累计</td><td>投注者</td></tr>
+            <tr>
+              <td>累计奖金(一周)</td>
+              <td>玩家地址</td>
+            </tr>
           </thead>
           <thead v-else>
             <tr>
@@ -227,7 +246,7 @@
               <td>投注金额</td>
               <td>玩家收益</td>
               <td>投注ID</td>
-              <td>账户</td>
+              <td>玩家地址</td>
             </tr>
           </thead>
           <tbody v-if="record.show==='rank'">
@@ -483,7 +502,7 @@ export default {
       // console.log('______________________blockNumber', blockNumber)
       
       // 估计n天的区块数, (假设一分钟上链10个)
-      let dayBlockNumber = (60*24*15) * 1;
+      let dayBlockNumber = (60*24*15) * 7;
 
       // 获取合约
       let contract = this.getContract();
@@ -510,6 +529,7 @@ export default {
         if ( bets.some(r=>r.args.BetID===result.args.BetID) ) return;
         bets.push( result );
         this.disposeRecord(bets, results, refunds);
+        this.disposeRankRecord(results, bets)
       })
       ResultBet.watch((err,result)=>{
         if ( err ) return console.error(err);
@@ -518,6 +538,7 @@ export default {
         // console.log( result.args.BetID, ': ', result.args.Status.toNumber() )
         results.push( result );
         this.disposeRecord(bets, results, refunds);
+        this.disposeRankRecord(results, bets)
       });
       LogRefund.watch((err,result)=>{
         if ( err ) return console.error(err);
@@ -525,7 +546,7 @@ export default {
         refunds.push( result );
         this.disposeRecord(bets, results, refunds);
       })
-      this.loadRankRecord()
+      // this.loadRankRecord()
     },
     // 获取待提现金额
     async getPendingWithdrawal() {
@@ -560,31 +581,31 @@ export default {
     },
 
     loadRankRecord() {
-      let blockNumber    = this.record.blockNumber;
-      let dayBlockNumber = (60*24*10) * 7;
-      let contract       = this.getContract()
+      // let blockNumber    = this.record.blockNumber;
+      // let dayBlockNumber = (60*24*10) * 7;
+      // let contract       = this.getContract()
 
-      let results=[], bets=[];
-      contract.LogBet(
-        { _userAddress: '' }, 
-        { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-      ).watch((err,result)=>{
-        if ( err ) return;
-        if ( bets.some(r=>r.args.BetID===result.args.BetID) ) return;
-        bets.push(result)
-        this.disposeRankRecord(results,bets)
-      })
-      contract.LogResult(
-        { _userAddress: '' }, 
-        { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-      ).watch((err,result)=>{
-        if ( err ) return;
-        if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
-        // console.log( '______________rank_result' )
-        // console.log( result.args.BetID, ': ', result.args.Status.toNumber() )
-        results.push(result)
-        this.disposeRankRecord(results,bets)
-      })
+      // let results=[], bets=[];
+      // contract.LogBet(
+      //   { _userAddress: '' }, 
+      //   { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+      // ).watch((err,result)=>{
+      //   if ( err ) return;
+      //   if ( bets.some(r=>r.args.BetID===result.args.BetID) ) return;
+      //   bets.push(result)
+      //   this.disposeRankRecord(results,bets)
+      // })
+      // contract.LogResult(
+      //   { _userAddress: '' }, 
+      //   { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
+      // ).watch((err,result)=>{
+      //   if ( err ) return;
+      //   if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
+      //   // console.log( '______________rank_result' )
+      //   // console.log( result.args.BetID, ': ', result.args.Status.toNumber() )
+      //   results.push(result)
+      //   this.disposeRankRecord(results,bets)
+      // })
 
       // let results = [];
       // contract.LogResult(
