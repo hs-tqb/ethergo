@@ -24,7 +24,7 @@
       }
     }
     #logo-wrapper {
-      font-weight:bold; line-height:50px; font-size:30px; color:@color-warning;
+      font-weight:bold; line-height:50px; font-size:30px; color:@color-warning; cursor:pointer;
     }
   }
   @media screen and (max-width:412px) {
@@ -33,8 +33,8 @@
   }
   @media screen and (min-width:412px) {
     #topbar {
-      .flow(row);
-      #logo-wrapper { flex:1; }
+      .flow(row); justify-content:space-between;
+      // #logo-wrapper { flex:1; }
       #account-info { .flow; justify-content:center;  }
     }
   }

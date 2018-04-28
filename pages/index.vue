@@ -110,8 +110,8 @@
     }
     #panel-withdraw {
       line-height:1.4;
-      p { margin-bottom:10px; }
-      input { margin-top:20px; }
+      p { margin-bottom:10px; word-break:break-word; }
+      input { margin:20px 0; }
     }
   }
 
