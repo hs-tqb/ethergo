@@ -533,8 +533,8 @@ export default {
         this.web3.eth.getAccounts((err, result)=>{
           if ( err ) return reject(err)
           // else if ( !result.length ) return reject('没找到账户信息');
-          else if ( !result.length ) return;
-          this.isAccountOK = true;
+          // else if ( !result.length ) return reject.call(null,{show:false});
+          this.isAccountOK = result.length? true: false;
           resolve(result)
         })
       })
@@ -845,10 +845,13 @@ export default {
       this.$store.commit('showMessageDialog',{type:'failure', html:opt&&opt.html, text:err.toString()});
     },
     // 刷新页面数据
-    async updatePageData() {
+    async updatePageData(flag) {
       if ( !this.isNetworkOK ) return;
       this.getUserMaxProfit();
       await this.getAccountInfo();
+      if ( flag && !this.isAccountOK ) {
+        this.hash = '#guide';
+      }
       this.getPendingWithdrawal();
       if ( !this.record.all.length ) {
         this.getRecord()
@@ -992,12 +995,16 @@ export default {
     this.isNetworkOK = await this.checkNetwork();
     if ( this.isNetworkOK ) {
       this.hashChange();
-      await this.updatePageData()
+      this.updatePageData(true)
       console.warn(`合约地址: ${this.contract.address}`);
+      // if ( !this.isAccountOK ) {
+      //   this.hash = location.hash = '#guide';
+      // }
     } else {
-      this.commonErrorCatcher('未连接到以太坊主网')
+      // this.commonErrorCatcher('未连接到以太坊主网')
       this.hash = location.hash = '#guide';
     }
+    // console.log( '______________isNetw', this.isNetworkOK );
 
 
     window.addEventListener('hashchange', this.hashChange);
