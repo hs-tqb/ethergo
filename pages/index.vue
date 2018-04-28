@@ -153,11 +153,11 @@
     <!-- 赌注 -->
     <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
       <h2>立刻投注</h2>
-      <div id="explain">
+      <!-- <div id="explain">
         <p>玩家在[2,99]间选择一个数字并使用ETH投注</p>
         <p>系统在[1,100]间产生一个随机数</p>
         <p>玩家选择的数字大于系统随机数则赢了！</p>
-      </div>
+      </div> -->
       <div id="amount">
         <h3>投注金额</h3>
         <div id="wager">
