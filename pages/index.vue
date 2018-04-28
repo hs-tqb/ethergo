@@ -925,10 +925,10 @@ export default {
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'LogResult.watch'});
           if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 result');
           
-          LogResult.stopWatching();
           this.roll.result = +result.args.Status.toNumber()
           this.roll.value  = +result.args.DiceResult.toNumber()
           this.updatePageData();
+          LogResult.stopWatching();
         })
       })
     },
