@@ -46,14 +46,22 @@
       <!-- <img src="" alt="logo"> -->
       ETHERWOW
     </div>
-    <div id="account-info" :style="`opacity:${account.address?1:0}`">
-      <h4 id="address"><a :href="`https://etherscan.io/address/${account.address}`">钱包: {{account.address}}</a></h4>
-      <h4 id="balance">余额: {{account.balance}} ETH</span></h4>
-      <h4 id="pendingWithdrawal" v-if="!!account.pendingWithdrawal">
-        <a href="#withdraw" class="text-warning">待提现金额: {{account.pendingWithdrawal}} ETH</a>
-        <!-- <div class="bubble">1231</div> -->
-      </h4>
+    <div id="account-info">
+      <template v-if="account.address">
+        <h4 id="address"><a :href="`https://etherscan.io/address/${account.address}`">钱包: {{account.address}}</a></h4>
+        <h4 id="balance">余额: {{account.balance}} ETH</span></h4>
+        <h4 id="pendingWithdrawal" v-if="!!account.pendingWithdrawal">
+          <a href="#withdraw" class="text-warning">待提现金额: {{account.pendingWithdrawal}} ETH</a>
+          <!-- <div class="bubble">1231</div> -->
+        </h4>
+      </template>
+      <template v-else>
+        <h4 class="" style="text-align:left">请安装
+          <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank">metamask</a> 插件或使用 
+          <a href="https://www.cmcmbc.com/zh-cn/dapp-browser/" target="_blank">dapp</a> 浏览器访问</h4>
+      </template>
     </div>
+
   </div>
 </template>
 
@@ -71,6 +79,9 @@ export default {
     toggleMenu() {
       this.$store.commit('toggleMenu', !this.$store.state.showMenu);
     },
+  },
+  mounted() {
+
   }
 }
 </script>

@@ -224,8 +224,7 @@
         <!-- <h3>投注结果小于 <span>{{+bet.range.value+1}}</span></h3> -->
         <p>投注金额 <span>{{computedWager}} ETH&nbsp;</span></p>
         <p>用户收益 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
-        <p class="info">&nbsp;
-          <!-- commission: {{1}}%  -->
+        <p class="info" v-if="isNetworkOK&&isAccountOK">&nbsp;
           <span v-if="!isUserProfitOK">(已超过最大收益限制，请调整投注金额或胜率)</span>
         </p>
       </div>
