@@ -488,7 +488,7 @@ export default {
       },
       // 
       metamaskOpt: {
-        gas: 300000,
+        gas: 400000,
         gasPrice: 3000000000
       },
       mountedRun: false,
