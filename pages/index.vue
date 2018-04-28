@@ -241,6 +241,7 @@
       <div class="border"></div>
       <div class="inner-panel">
         <h3>开奖数字</h3>
+        {{roll}}
         <p class="number-block">
           <!-- {{roll.result}} -->
           <template v-if="typeof roll.result !=='number'">
@@ -480,7 +481,7 @@ export default {
       roll: {
         state:'ready',
         result:'',
-        value:undefined,
+        value:-1,
 
         // state:'roll',
         // result:4,
