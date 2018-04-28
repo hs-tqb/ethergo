@@ -129,7 +129,7 @@
       // padding: 0 20px;
       .flow(row); height:@panel-height-pc; overflow:hidden;
       .panel { 
-        margin:0 10px; height:100; min-width:375px; .scroll; 
+        flex:1; margin:0 10px; min-width:375px; .scroll;
         // &:not(#panel-bet):not(#panel-roll) { flex:1; }
       }
       #panel-bet { 
