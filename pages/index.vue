@@ -225,6 +225,9 @@
         <p>投注金额 <span>{{computedWager}} ETH&nbsp;</span></p>
         <p>用户收益 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
         <p class="info">&nbsp;
+          {{isNetworkOK}}<br>
+          {{isAccountOK}}, {{account}}<br>
+          {{!isUserProfitOK}}
           <span v-if="isNetworkOK&&isAccountOK&&!isUserProfitOK">
             (已超过最大收益限制，请调整投注金额或胜率)</span>
         </p>
@@ -504,7 +507,7 @@ export default {
       return ((((this.computedWager * (100-(range.value))) / (range.value)+this.computedWager))*990/1000)-this.computedWager;
     },
     isUserProfitOK() {
-      return this.computedUserProfit <= this.bet.profit.max;
+      return this.computedUserProfit? this.computedUserProfit <= this.bet.profit.max: false;
     },
     rollable() {
       return this.isNetworkOK && this.isAccountOK && this.isUserProfitOK;
