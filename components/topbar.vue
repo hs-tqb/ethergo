@@ -28,8 +28,12 @@
     }
   }
   @media screen and (max-width:412px) {
-    #topbar { position:fixed; top:0; left:0; z-index:100; width:100%; background:#777; }
-    .page-container { padding-top:90px; }
+    #topbar { 
+      position:fixed; top:0; left:0; z-index:100; width:100%; background:#777; 
+      .page-container { padding-top:95px; }
+      // &.acc-available   + .page-container { padding-top:95px; }
+      // &.acc-unavailable + .page-container { padding-top:70px; }
+    }
   }
   @media screen and (min-width:412px) {
     #topbar {
@@ -46,8 +50,8 @@
       <!-- <img src="" alt="logo"> -->
       ETHERWOW
     </div>
-    <div id="account-info">
-      <template v-if="account.address">
+    <div id="account-info" v-show="account.loaded">
+      <template v-if="account.address" class="hasAddress">
         <h4 id="address"><a :href="`https://etherscan.io/address/${account.address}`">钱包: {{account.address}}</a></h4>
         <h4 id="balance">余额: {{account.balance}} ETH</span></h4>
         <h4 id="pendingWithdrawal" v-if="!!account.pendingWithdrawal">

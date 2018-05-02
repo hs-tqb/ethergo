@@ -225,7 +225,7 @@
         <p>投注金额 <span>{{computedWager}} ETH&nbsp;</span></p>
         <p>用户收益 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
         <p class="info">&nbsp;
-          <span v-if="isNetworkOK&&isAccountOK&&!isUserProfitOK">
+          <span v-if="computedUserProfit&&!isUserProfitOK">
             (已超过最大收益限制，请调整投注金额或胜率)</span>
         </p>
       </div>
@@ -429,7 +429,6 @@ export default {
       hash:'',
       web3:undefined,
       isNetworkOK:false,
-      isNetworkChecked:false,
       isAccountOK:false,
       // 账户
       // account :{
@@ -546,6 +545,7 @@ export default {
       .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getAccountInfo'}));
 
       if ( !address ) {
+        this.$store.commit('setAccount', {...this.account, loaded:true});
         return;
       }
 
@@ -567,7 +567,7 @@ export default {
       let balance = +this.web3.fromWei( wei );
       console.warn(`余额: ${balance} (eth)`)
 
-      this.$store.commit('setAccount', { ...this.account, address, wei, balance })
+      this.$store.commit('setAccount', { ...this.account, address, wei, balance, loaded:true })
     },
     // 获取合约
     getContract() {
@@ -846,12 +846,14 @@ export default {
       this.$store.commit('showMessageDialog',{type:'failure', html:opt&&opt.html, text:err.toString()});
     },
     // 刷新页面数据
-    async updatePageData(flag) {
+    async updatePageData(isFirstTime) {
       if ( !this.isNetworkOK ) return;
       this.getUserMaxProfit();
       await this.getAccountInfo();
-      if ( flag && !this.isAccountOK ) {
+      if ( isFirstTime && !this.isAccountOK ) {
         this.hash = '#guide';
+      } else {
+        this.hashChange();
       }
       this.getPendingWithdrawal();
       if ( !this.record.all.length ) {
@@ -996,9 +998,8 @@ export default {
     this.initWeb3();
 
     this.isNetworkOK = await this.checkNetwork();
-    this.isNetworkChecked = true;
     if ( this.isNetworkOK ) {
-      this.hashChange();
+      // this.hashChange();
       this.updatePageData(true)
       console.warn(`合约地址: ${this.contract.address}`);
       // if ( !this.isAccountOK ) {

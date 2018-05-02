@@ -12,6 +12,7 @@ const store = () => new Vuex.Store({
       wei:0,
       balance:0,
       pendingWithdrawal:0,
+      loaded:false
     },
     messageDialog: {
       show:false,
