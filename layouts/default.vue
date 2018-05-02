@@ -11,10 +11,6 @@
     .text-pending { .text-warning; }
   }
       
-  .page-container {  
-  }
-
-
 
   @import url(~assets/css/icons/success.less);
   @import url(~assets/css/icons/failure.less);
@@ -94,7 +90,7 @@
         <li><a @click="routeTo('#guide')">怎么玩</a></li>
         <li><a @click="routeTo('#withdraw')">提现</a></li>
         <li><a @click="routeTo('#record')">记录</a></li>
-        <li><a @click="routeTo('#help')">帮助</a></li>
+        <li><a @click="routeTo('#source')">合约源码</a></li>
       </ul>
     </div>
     <topbar />
