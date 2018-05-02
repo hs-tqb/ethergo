@@ -4,6 +4,7 @@
   #topbar { 
     // .flow; justify-content:space-between; align-items:center;  
     // #logo   {  }
+    background-color:@color-primary;
     padding:0 20px;
     #account-info {
       text-align:right; font-size:12px; cursor:pointer;
@@ -24,13 +25,13 @@
       }
     }
     #logo-wrapper {
-      font-weight:bold; line-height:50px; font-size:30px; color:@color-warning; cursor:pointer;
+      font-weight:bold; line-height:50px; font-size:30px; color:#ffdf1b; cursor:pointer;
     }
   }
   @media screen and (max-width:412px) {
     #topbar { 
-      position:fixed; top:0; left:0; z-index:100; width:100%; background:#777; 
-      .page-container { padding-top:95px; }
+      position:fixed; top:0; left:0; z-index:100; width:100%;
+      & + .page-container { padding-top:95px; }
       // &.acc-available   + .page-container { padding-top:95px; }
       // &.acc-unavailable + .page-container { padding-top:70px; }
     }

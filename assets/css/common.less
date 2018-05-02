@@ -9,7 +9,7 @@ h1{font-size:20px}
 h2{font-size:18px}
 h3{font-size:16px}
 img { border:0 none; }
-a{color:@link-color; text-decoration:none}
+a{ .link-color; }
 
 
 // 去掉移动端点击时产生的阴影
@@ -23,7 +23,6 @@ ul { list-style:none; }
 img { border:0 none; max-width:100%; }
 a, input { 
   outline:0 none;
-  text-decoration:none;
   -webkit-tap-highlight-color:rgba(0, 0, 0, 0);  
   -moz-tap-highlight-color:rgba(0, 0, 0, 0);  
   -ms-tap-highlight-color:rgba(0, 0, 0, 0);  
@@ -63,13 +62,13 @@ input[type=text], input[type=button], input[type=submit], input[type=number], bu
   height: 42px;
   width: 42px;
   animation: loading-rotate 2s linear infinite; 
-  color:blue;
+  color:#14805e;
   .path {
     animation: loading-dash 1.5s ease-in-out infinite;
     stroke-dasharray: 90,150;
     stroke-dashoffset: 0;
     stroke-width: 2;
-    stroke: #409eff;
+    stroke: #4acfa5;
     stroke-linecap: round;
   }
 }

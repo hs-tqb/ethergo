@@ -1,7 +1,7 @@
 <style lang="less">
   @import url(~assets/css/variables.less);
   #__nuxt, #__layout, .page-root, .page-container { height:100%; }
-  body { background:rgba(0,0,0,0.5); }
+  body { background:#999; }
   #__default {
     h2 { margin-bottom:15px; font-size:40px; }
     h3 { margin:10px 0; font-size:18px; font-weight:500; }
@@ -59,10 +59,16 @@
       pointer-events:none;
       ul { transform:translate3d(0,-100%,0);  }
     }
-    ul { .flow(row); flex-wrap:wrap; padding:20px 20px 50px 20px; background:#000; transition-duration:300ms; } 
+    ul { .flow(row); flex-wrap:wrap; padding:20px 20px 50px 20px; background:@color-primary; transition-duration:300ms; } 
     li { 
-      width:33%; line-height:50px; text-align:center; 
-      a { display:block; margin:0 15px; .border(bottom); }
+      width:33%; line-height:50px; text-align:center; cursor:pointer;
+      a { 
+        display:block; margin:0 35px; 
+        .border(bottom); 
+        color:@color-white; 
+        text-decoration:none;
+        &:hover { color:@color-highlight; }
+      }
     }
   }
 
@@ -72,7 +78,7 @@
       display:flex;
       justify-content:center;
       align-items:center;
-      background:#000;
+      background:@color-primary;
       ul { padding-bottom:20px; }
       li { 
         width:100%; height:100%; 

@@ -18,7 +18,7 @@
           .list { 
             flex:1; .flow(row); margin-left:20px;
             li { 
-              padding:0 10px; .radius; 
+              padding:0 10px; .radius; cursor:pointer;
               &.selected { background-color:@color-primary-light-1; }
             }
           }
@@ -36,10 +36,15 @@
           div { 
             position:relative; display:flex; align-items:center;  margin:0 15px 0 20px; 
             input { 
-              width:100%;  height:15px; background:transparent; background:url(~assets/img/range-background.svg) no-repeat center/ 100% auto; .radius; cursor:pointer; -webkit-appearance:none; 
+              width:100%;  height:25px; background:transparent; 
+              // background:url(~assets/img/range-background.svg) no-repeat center/ 100% auto; 
+              &::after { position:absolute; top:18px; content:'\200B'; width:100%; height:3px; background:@color-primary-light-2; }
+              .radius; cursor:pointer; -webkit-appearance:none; 
               &::-webkit-slider-thumb {
-                width:16px; height:28px; 
+                position:relative; z-index:10;
+                width:22px; height:35px;
                 -webkit-appearance:none;
+                cursor:pointer;
                 .radius(10px);
                 // border:10px solid transparent;
                 border:0 none;
@@ -49,7 +54,7 @@
             }
             ul { 
               .flow(row); position:relative; width:100%; font-size:10px;
-              li { position:absolute; top:0; bottom:0; transform:translate3d(-50%,0,0); }
+              li { position:absolute; top:0; bottom:0; cursor:pointer; transform:translate3d(-50%,0,0); }
             }
           }
         }
@@ -60,7 +65,7 @@
           span { font-size:60px; }
           line-height:60px; 
         }
-        span { float:right; color:@color-primary; }
+        span { float:right; color:@color-highlight; }
         p.info { 
           font-size:12px; color:@color-text-placeholder; 
           span { font-size:16px; color:@color-danger; }
@@ -89,13 +94,15 @@
     // 历史
     #panel-record {
       // li { .border(bottom); }
-      .tabs { padding:5px; text-align:right; .border(bottom); }
-      .tabs .btn { margin-left:5px; }
+      // padding-top:20px;
+      .tabs {text-align:right;}
+      .tabs .btn { .radius(5px); border-bottom-left-radius:0; border-bottom-right-radius:0; }
+      .tabs .btn.primary { background-color:@color-primary; color:#fff; }
       .table-wrapper { width:100%; min-width:100%; height:calc(100%-46px); .scroll; }
       table { min-width:100%; border-collapse:collapse; }
       table td { padding:10px; white-space:nowrap; }
-      table tr:nth-child(even) { background-color:rgba(0,0,0,0.3); }
-      table tr:nth-child(odd) { background-color:rgba(0,0,0,0.5); }
+      table tr:nth-child(even) { background-color:#808080; }
+      table tr:nth-child(odd) { background-color:#909090; }
       // table tbody td { text-align:center; }
       // table td span { .text-ellipsis; width:auto; max-width:20vw;  }
     }
@@ -116,7 +123,7 @@
     }
     #panel-withdraw {
       line-height:1.4;
-      p { margin-bottom:10px; word-break:break-word; }
+      p { margin-bottom:10px; word-break:break-all; }
       input { margin:20px 0; }
     }
     #panel-source {
@@ -161,7 +168,7 @@
 
     #page-home { 
       // padding: 0 20px;
-      .flow(row); height:@panel-height-pc; overflow:hidden;
+      .flow(row); height:@panel-height-pc; padding-top:10px; overflow:hidden;
       .panel { 
         flex:1; margin:0 10px; min-width:375px; .scroll;
         // &:not(#panel-bet):not(#panel-roll) { flex:1; }
@@ -294,9 +301,9 @@
     <!-- 记录 -->
     <div id="panel-record" class="panel" v-show="hash==='#record'">
       <div class="tabs">
-        <input type="button" class="btn" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="最新投注">
-        <input type="button" class="btn" :class="record.show==='rank'?'primary':''" @click="record.show='rank'" value="奖金排行">
-        <input type="button" class="btn" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="我的投注">
+        <input type="button" class="btn text" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="最新投注">
+        <input type="button" class="btn text" :class="record.show==='rank'?'primary':''" @click="record.show='rank'" value="奖金排行">
+        <input type="button" class="btn text" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="我的投注">
       </div>
       <div class="table-wrapper">
         <table>
