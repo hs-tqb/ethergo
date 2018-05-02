@@ -1032,6 +1032,7 @@ export default {
     } else {
       // this.commonErrorCatcher('未连接到以太坊主网')
       this.hash = location.hash = '#guide';
+      this.$store.commit('setAccount', {...this.account, loaded:true});
     }
     // console.log( '______________isNetw', this.isNetworkOK );
 

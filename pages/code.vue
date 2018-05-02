@@ -1,6 +1,7 @@
 <style lang="less">
   #frame {
-    font-size:12px; word-break:break-all; background:#fff;
+    // font-size:12px; 
+    word-break:break-all; background:#fff;
     .syntaxhighlighter { margin:0!important; }
     overflow-x:hidden;
   }
