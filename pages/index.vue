@@ -119,6 +119,14 @@
       p { margin-bottom:10px; word-break:break-word; }
       input { margin:20px 0; }
     }
+    #panel-source {
+      // overflow:hidden;
+      // padding:0;
+      // padding-bottom:0;
+      padding:0 0 10px 0;
+      overflow:hidden;
+      iframe { border:0 none; outline:0 none; min-height:100%; width:100%; height:auto!important; }
+    }
     #dialog-guide {
       @import url(~assets/css/icons/failure.less);
       .flow; justify-content:center; align-items:center;
@@ -391,6 +399,9 @@
     <div id="panel-help" class="panel" v-show="hash==='#help'">
       <h2>帮助</h2>
     </div>
+    <div id="panel-source" class="panel" v-if="hash==='#source'">
+      <iframe src="/code" />
+    </div>
     <div id="panel-loading" class="panel" v-show="!hash">
       <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
     </div>
@@ -423,6 +434,12 @@
 import contract from '~/assets/js/contract'
 import Web3 from 'web3'
 export default {
+  head() {
+    return {
+      // meta: {
+      // }
+    }
+  },
   data() {
     return {
       showGuide:false,
@@ -1020,6 +1037,11 @@ export default {
       console.log( err || result.toNumber() );
       console.log('___________________maxNumber');
     })
+  },
+  mounted() {
+    // setTimeout(function() {
+      // SyntaxHighlighter.all();
+    // }, 3000);
   }
 }
 </script>

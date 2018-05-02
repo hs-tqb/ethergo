@@ -15,13 +15,22 @@ module.exports = {
     // script: [
     //   { src:'/js/web3/web3.min.js' }
     // ]
+    script:[
+      { src:'/syntaxhighlighter/scripts/shCore.js' }, 
+      { src:'/syntaxhighlighter/scripts/shBrushJScript.js' },
+      { src:'/syntaxhighlighter/scripts/init.js' },
+    ],
+    link:[
+      { src:'~/syntaxhighlighter/styles/shCore.css' },
+      { src:'~/syntaxhighlighter/styles/shThemeDefault.css' }
+    ]
   },
   /*
   ** Customize the progress bar color
   */
-  loading: { color: '#3B8070' },
-  css: [
-    { src:'~assets/css/common.less',lang:'less' }
+ loading: { color: '#3B8070' },
+ css: [
+   { src:'~assets/css/common.less',lang:'less' },
   ],
   /*
   ** Build configuration

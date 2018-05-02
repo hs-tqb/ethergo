@@ -84,6 +84,7 @@
       }
     }
   }
+  
 </style>
 
 <template>
