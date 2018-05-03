@@ -150,7 +150,7 @@
       p { margin-bottom:10px; word-break:break-all; }
       input { margin:20px 0; }
     }
-    #panel-source {
+    #panel-contract {
       // overflow:hidden;
       // padding:0;
       // padding-bottom:0;
@@ -190,7 +190,7 @@
         .flow; justify-content:center; align-items:center;
       }
     }
-    #panel-source {
+    #panel-contract {
       height:100vh;
     }
   }
@@ -207,7 +207,7 @@
         min-width:500px; 
         // & > * { margin-bottom:80px!important; }
       }
-      #panel-source {
+      #panel-contract {
         height:calc( 100% - 10px);
         // height:100%;
         iframe { height:calc( 100% - 38px); }
@@ -454,7 +454,7 @@
     <div id="panel-help" class="panel" v-show="hash==='#help'">
       <h2>帮助</h2>
     </div>
-    <div id="panel-source" class="panel" v-if="hash==='#source'">
+    <div id="panel-contract" class="panel" v-if="hash==='#contract'">
       <h3>
         <a :href="`https://etherscan.io/address/${contract.address}#code`" target="_blank">主网智能合约地址</a>
       </h3>

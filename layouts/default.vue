@@ -103,7 +103,7 @@
         <li><a @click="routeTo('#guide')">玩法</a></li>
         <li><a @click="routeTo('#withdraw')">退款</a></li>
         <li><a @click="routeTo('#record')" :class="">记录</a></li>
-        <li><a @click="routeTo('#source')">智能合约</a></li>
+        <li><a @click="routeTo('#contract')">智能合约</a></li>
       </ul>
     </div>
     <topbar />
@@ -113,7 +113,7 @@
         <li><a @click="routeTo('#guide')">玩法</a></li>
         <li><a @click="routeTo('#withdraw')">退款</a></li>
         <li><a @click="routeTo('#record')">记录</a></li>
-        <li><a @click="routeTo('#source')">智能合约</a></li>
+        <li><a @click="routeTo('#contract')">智能合约</a></li>
       </ul>
     </div>
     <!-- 全局消息弹窗 -->
