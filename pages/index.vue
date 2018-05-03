@@ -205,7 +205,9 @@
         // & > * { margin-bottom:80px!important; }
       }
       #panel-source {
-        height:calc(@panel-height-pc - 30px);
+        height:calc( 100% - 10px);
+        // height:100%;
+        iframe { height:calc( 100% - 38px); }
       }
       // #panel-bet, 
       // #panel-roll {  }
