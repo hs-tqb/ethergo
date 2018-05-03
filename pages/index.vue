@@ -73,6 +73,7 @@
           span { font-size:16px; color:@color-danger; }
         }
       }
+      #compensate + .btn { margin-bottom:10px; }
     }
     // 投注
     #panel-roll {
@@ -141,7 +142,7 @@
       // overflow:hidden;
       // padding:0;
       // padding-bottom:0;
-      padding:0 0 10px 0;
+      // padding:0 0 10px 0;
       overflow:hidden;
       iframe { border:0 none; outline:0 none; min-height:100%; width:100%; height:auto!important; }
     }
@@ -164,8 +165,8 @@
   @media screen and (max-width:411px) {
     #page-home { 
       .panel#panel-bet,
-      .panel#panel-roll { margin:0; min-height:100%; }
-      .panel { margin:70px 0; }
+      .panel#panel-roll { margin:0; padding:5px 10px; min-height:100%; }
+      .panel { padding:70px 10px; min-height:100%; }
       // .panel#panel-bet + .panel,
       // .panel#panel-roll + .panel { margin:40px 0; }
     }
