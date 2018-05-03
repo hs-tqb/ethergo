@@ -91,19 +91,6 @@
             opacity:0; 
             // &:nth-child(1) { opacity:1; }
           }
-          ul {
-            &.roll { 
-              li:nth-child(1) { opacity:1 }
-            }
-            &.bet { 
-              transform:translate3d(0,-32px,0);
-              li:nth-child(2) { opacity:1 }
-            }
-            &.bet-2 {
-              transform:translate3d(0,-48px,0);
-              li:nth-child(3) { opacity:1 }
-            }
-          }
         }
       }
       .btn-wrapper { 
@@ -193,9 +180,27 @@
     #panel-contract {
       height:100vh;
     }
+    #page-home #panel-roll .inner-panel .ads {
+      ul {
+        &.roll { 
+          li:nth-child(1) { opacity:1 }
+        }
+        &.bet { 
+          transform:translate3d(0,-32px,0);
+          li:nth-child(2) { opacity:1 }
+        }
+        &.bet-2 {
+          transform:translate3d(0,-48px,0);
+          li:nth-child(3) { opacity:1 }
+        }
+        &.result {
+          transform:translate3d(0,-60px,0);
+        }
+
+      }
+    }
   }
   @media screen and (min-width:412px) {
-
     #page-home { 
       // padding: 0 20px;
       .flow(row); height:@panel-height-pc; padding-top:10px; overflow:hidden;
@@ -214,6 +219,24 @@
       }
       // #panel-bet, 
       // #panel-roll {  }
+      #panel-roll .inner-panel .ads {
+        ul {
+          &.roll { 
+            li:nth-child(1) { opacity:1 }
+          }
+          &.bet { 
+            transform:translate3d(0,-16px,0);
+            li:nth-child(2) { opacity:1 }
+          }
+          &.bet-2 {
+            transform:translate3d(0,-32px,0);
+            li:nth-child(3) { opacity:1 }
+          }
+          &.result {
+            transform:translate3d(0,-48px,0);
+          }
+        }
+      }
     }
   }
 </style>
@@ -553,7 +576,7 @@ export default {
       },
       // 投注状态
       roll: {
-        state:'ready',
+        state:'roll',
         result:'',
         value:-1,
 
