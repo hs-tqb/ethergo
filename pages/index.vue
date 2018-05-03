@@ -576,7 +576,7 @@ export default {
       },
       // 投注状态
       roll: {
-        state:'roll',
+        state:'ready',
         result:'',
         value:-1,
 
