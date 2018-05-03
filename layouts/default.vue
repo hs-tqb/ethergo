@@ -96,7 +96,7 @@
         <li><a @click="routeTo('#guide')">怎么玩</a></li>
         <li><a @click="routeTo('#withdraw')">提现</a></li>
         <li><a @click="routeTo('#record')">记录</a></li>
-        <li><a @click="routeTo('#source')">合约源码</a></li>
+        <li><a @click="routeTo('#source')">智能合约</a></li>
       </ul>
     </div>
     <topbar />
