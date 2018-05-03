@@ -1,7 +1,7 @@
 <style lang="less">
   @import url(~assets/css/variables.less);
   #__nuxt, #__layout, .page-root, .page-container { height:100%; }
-  body { background:#999; }
+  body { background:#333; }
   #__default {
     h2 { margin-bottom:15px; font-size:40px; }
     h3 { margin:10px 0; font-size:18px; font-weight:500; }

@@ -2,5 +2,5 @@
   <nuxt />
 </template>
 <style>
-#__nuxt, #__layout, #frame { height:100%; background:#fff; }
+#__nuxt, #__layout, #frame { height:100%; }
 </style>

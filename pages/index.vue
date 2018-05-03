@@ -18,8 +18,10 @@
           .list { 
             flex:1; .flow(row); margin-left:20px;
             li { 
-              padding:0 10px; .radius; cursor:pointer;
+              padding:0 10px; .radius(); cursor:pointer;
+              transition-duration:300ms;
               &.selected { background-color:@color-primary-light-1; }
+              &:hover {  background-color:@color-primary-light-5; }
             }
           }
         }
@@ -79,8 +81,30 @@
       .border { margin:0 30px; }
       .number-block { font-size:100px; }
       .inner-panel { 
+        position:relative;
         h3 { margin:10px 0 20px 0; }
         .tips { margin:20px 0; }
+        .ads  { 
+          margin-top:-12px; height:16px; font-size:12px; line-height:16px; overflow:visible;
+          ul, ul li { transition-duration:300ms; }
+          li { 
+            opacity:0; 
+            // &:nth-child(1) { opacity:1; }
+          }
+          ul {
+            &.roll { 
+              li:nth-child(1) { opacity:1 }
+            }
+            &.bet { 
+              transform:translate3d(0,-32px,0);
+              li:nth-child(2) { opacity:1 }
+            }
+            &.bet-2 {
+              transform:translate3d(0,-48px,0);
+              li:nth-child(3) { opacity:1 }
+            }
+          }
+        }
       }
       .btn-wrapper { 
         padding:0 15px;
@@ -99,10 +123,11 @@
       .tabs .btn { .radius(5px); border-bottom-left-radius:0; border-bottom-right-radius:0; }
       .tabs .btn.primary { background-color:@color-primary; color:#fff; }
       .table-wrapper { width:100%; min-width:100%; height:calc(100%-46px); .scroll; }
+      table thead td { color:@color-highlight; }
       table { min-width:100%; border-collapse:collapse; }
-      table td { padding:10px; white-space:nowrap; }
-      table tr:nth-child(even) { background-color:#808080; }
-      table tr:nth-child(odd) { background-color:#909090; }
+      table td { padding:10px; font-size:16px; white-space:nowrap; }
+      table tr:nth-child(even) { background-color:#666; }
+      table tr:nth-child(odd) { background-color:#555; }
       // table tbody td { text-align:center; }
       // table td span { .text-ellipsis; width:auto; max-width:20vw;  }
     }
@@ -111,7 +136,6 @@
       .flow; align-items:center; justify-content:center;
     }
     #panel-guide {
-      
       .anchors { 
         line-height:1.2;
         margin:20px 0;
@@ -163,6 +187,9 @@
         .flow; justify-content:center; align-items:center;
       }
     }
+    #panel-source {
+      height:100vh;
+    }
   }
   @media screen and (min-width:412px) {
 
@@ -176,6 +203,9 @@
       #panel-bet { 
         min-width:500px; 
         // & > * { margin-bottom:80px!important; }
+      }
+      #panel-source {
+        height:calc(@panel-height-pc - 30px);
       }
       // #panel-bet, 
       // #panel-roll {  }
@@ -247,7 +277,7 @@
       <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll">
     </div>
     <!-- 开奖 -->
-    <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
+    <div id="panel-roll" class="panel" v-else>
       <h2>投注结果</h2>
       <div class="inner-panel">
         <h3>投注数字</h3>
@@ -255,13 +285,26 @@
       </div>
       <div class="border"></div>
       <div class="inner-panel">
-        <h3>开奖数字</h3>
+        <h3 v-if="roll.state==='roll'">正在开奖请耐心等待...</h3>
+        <h3 v-else-if="roll.state==='bet'">已收到投注，正在生成随机数...</h3>
+        <h3 v-else-if="roll.state==='result'">开奖数字</h3>
+        <div class="ads">
+          <ul ref="ads-list">
+            <li>Etherwow是中国最火的以太坊猜数字小游戏，无需注册，即点即玩，最高50倍收益！</li>
+            <li>随机数通过<a href="random.org">random.org</a>根据实时大气扰动得出，保证公平</li>
+            <li>为增加透明性，本网站智能合约源码已开源，玩家可以随时查看</li>
+          </ul>
+        </div>
         <p class="number-block">
           <!-- {{roll.result}} -->
           <template v-if="typeof roll.result !=='number'">
             <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
           </template>
-          <template v-else-if="roll.result<3">{{roll.value}}</template>
+          <template v-else-if="roll.result<3">
+            <span v-if="roll.result===0" class="text-success">{{roll.value}}</span>
+            <span v-else-if="roll.result===1" class="text-danger">{{roll.value}}</span>
+            <span v-else class="text-warning">{{roll.value}}</span>
+          </template>
         </p>
         <p class="tips" v-if="typeof roll.result==='number'">
           <span v-if="roll.result===0" class="text-success">- {{computedWager}} ETH</span>
@@ -284,7 +327,7 @@
         <!-- <input type="button" class="btn text" value="分享"> -->
         <!-- <i class="icon">分享</i> -->
       </div>
-      <span v-else style="height:50px;"></span>
+      <div class="btn-wrapper" v-else style="height:52px"></div>
     </div>
 
     <!-- 提现 -->
@@ -407,6 +450,9 @@
       <h2>帮助</h2>
     </div>
     <div id="panel-source" class="panel" v-if="hash==='#source'">
+      <h3>
+        <a :href="`https://etherscan.io/address/${contract.address}#code`" target="_blank">主网智能合约地址</a>
+      </h3>
       <iframe src="/code" />
     </div>
     <div id="panel-loading" class="panel" v-show="!hash">
@@ -475,6 +521,7 @@ export default {
       },
       // 赌注设置
       bet: {
+        hasBet:false,
         wager: {
           selected:0,
           list:[
@@ -692,47 +739,6 @@ export default {
         this.recordDisposed = true;
       }, 500);
     },
-
-    loadRankRecord() {
-      // let blockNumber    = this.record.blockNumber;
-      // let dayBlockNumber = (60*24*10) * 7;
-      // let contract       = this.getContract()
-
-      // let results=[], bets=[];
-      // contract.LogBet(
-      //   { _userAddress: '' }, 
-      //   { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-      // ).watch((err,result)=>{
-      //   if ( err ) return;
-      //   if ( bets.some(r=>r.args.BetID===result.args.BetID) ) return;
-      //   bets.push(result)
-      //   this.disposeRankRecord(results,bets)
-      // })
-      // contract.LogResult(
-      //   { _userAddress: '' }, 
-      //   { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-      // ).watch((err,result)=>{
-      //   if ( err ) return;
-      //   if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
-      //   // console.log( '______________rank_result' )
-      //   // console.log( result.args.BetID, ': ', result.args.Status.toNumber() )
-      //   results.push(result)
-      //   this.disposeRankRecord(results,bets)
-      // })
-
-      // let results = [];
-      // contract.LogResult(
-      //   { _userAddress: '' }, 
-      //   { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
-      // ).watch((err,result)=>{
-      //   if ( err ) return;
-      //   if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
-      //   // console.log( '______________rank_result' )
-      //   // console.log( result.args.BetID, ': ', result.args.Status.toNumber() )
-      //   results.push(result)
-      //   this.disposeRankRecord(results)
-      // })
-    },
     disposeRankRecord(results,bets) {
       clearTimeout( this.disposeRankRecordTimer )
       this.disposeRankRecordTimer = setTimeout(()=>{
@@ -934,6 +940,7 @@ export default {
         let LogBet = contract.LogBet();
         // 
         this.roll.state = 'roll';
+        this.showAds('roll');
         // 投注支付监控
         LogBet.watch((err, result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'userRollDice'})
@@ -941,6 +948,8 @@ export default {
           
           // console.log( result )
           console.warn('支付成功');
+          this.roll.state = 'bet';
+          this.showAds('bet');
           // this.record.all.push({})
           // this.record.user.push(result.args)
           this.updatePageData();
@@ -951,6 +960,9 @@ export default {
         LogResult.watch((err, result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'LogResult.watch'});
           if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 result');
+
+          this.roll.state = 'result';
+          this.showAds('result');
           
           this.roll.result = +result.args.Status.toNumber()
           this.roll.value  = +result.args.DiceResult.toNumber()
@@ -958,6 +970,23 @@ export default {
           LogResult.stopWatching();
         })
       })
+    },
+    showAds(state) {
+      let list  = this.$refs['ads-list'];
+      if ( !list ) {
+        this.$nextTick(this.showAds.bind(this,state));
+        return;
+      }
+
+      if ( list.className === 'result' ) {
+        return;
+      }
+      
+      if ( state === 'bet' ) {
+        setTimeout(this.showAds.bind(this,'bet-2'),3000)
+      }
+
+      list.className = state;
     },
     // 返回
     backToRoll() {
