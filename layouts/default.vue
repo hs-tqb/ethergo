@@ -72,6 +72,13 @@
     }
   }
 
+  #footer ul { 
+    .flow(row); justify-content:center; align-items:center; line-height:50px;
+    li { position:relative; margin:0 10px; cursor:pointer; }
+    li:not(:last-child)::after { position:absolute; right:-12px; top:24px; width:4px; height:4px; .radius; background-color:@color-white; content:'\200B'; }
+    li a { text-decoration:none; }
+  }
+
   @media screen and (max-width:411px) {
     #menu { 
       top:0; height:100%;
@@ -93,14 +100,22 @@
   <div id="__default" class="page-root">
     <div id="menu" :class="showMenu?'':'hide'" @click="$store.commit('toggleMenu', false)">
       <ul>
-        <li><a @click="routeTo('#guide')">怎么玩</a></li>
-        <li><a @click="routeTo('#withdraw')">提现</a></li>
-        <li><a @click="routeTo('#record')">记录</a></li>
+        <li><a @click="routeTo('#guide')">玩法</a></li>
+        <li><a @click="routeTo('#withdraw')">退款</a></li>
+        <li><a @click="routeTo('#record')" :class="">记录</a></li>
         <li><a @click="routeTo('#source')">智能合约</a></li>
       </ul>
     </div>
     <topbar />
     <nuxt class="page-container" :data-page="$route.name"/>
+    <div id="footer">
+      <ul>
+        <li><a @click="routeTo('#guide')">玩法</a></li>
+        <li><a @click="routeTo('#withdraw')">退款</a></li>
+        <li><a @click="routeTo('#record')">记录</a></li>
+        <li><a @click="routeTo('#source')">智能合约</a></li>
+      </ul>
+    </div>
     <!-- 全局消息弹窗 -->
     <div id="dialog-message" class="dialog-container" :class="messageDialog.show?'show':''">
       <div class="inner-wrapper" :data-type="messageDialog.type||''" v-if="messageDialog.html" v-html="messageDialog.html"></div>
@@ -114,6 +129,11 @@ import bet from '~/components/bet'
 import topbar from '~/components/topbar'
 export default {
   components: { topbar, bet },
+  data() {
+    return {
+      hash:''
+    }
+  },
   computed: {
     messageDialog() {
       return this.$store.state.messageDialog
@@ -138,6 +158,8 @@ export default {
       document.body.appendChild(script)
       script.src = '//cdn.bootcss.com/eruda/1.4.2/eruda.min.js'
     }
+
+    this.hash = location.hash
   }
 }
 </script>

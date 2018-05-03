@@ -173,11 +173,14 @@
   }
 
   @panel-height-mb:calc( 100% - 90px );
-  @panel-height-pc:calc( 100% - 60px );
+  @panel-height-pc:calc( 100% - 110px );
   @media screen and (max-width:411px) {
     #page-home { 
       .panel#panel-bet,
-      .panel#panel-roll { min-height:100%; }
+      .panel#panel-roll { margin:0; min-height:100%; }
+      .panel { margin:70px 0; }
+      // .panel#panel-bet + .panel,
+      // .panel#panel-roll + .panel { margin:40px 0; }
     }
     #page-home #dialog-guide {
       .inner-wrapper {
