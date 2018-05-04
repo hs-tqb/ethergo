@@ -62,8 +62,8 @@
       </template>
       <template v-else>
         <h4 class="" style="text-align:left">请安装
-          <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank">metamask</a> 插件或使用 
-          <a href="https://www.cmcmbc.com/zh-cn/dapp-browser/" target="_blank">dapp</a> 浏览器访问</h4>
+          <a href="http://p6cirevb0.sabkt.gdipper.com/metamask%204.6.1.crx" target="_blank">metamask</a> 插件或使用 
+          <a href="http://p6cirevb0.sabkt.gdipper.com/dappB.apk" target="_blank">dapp</a> 浏览器访问</h4>
       </template>
     </div>
 
