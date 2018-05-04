@@ -109,14 +109,14 @@
     </div>
     <topbar />
     <nuxt class="page-container" :data-page="$route.name"/>
-    <div id="footer">
+    <!-- <div id="footer">
       <ul>
         <li><a @click="routeTo('#guide')">玩法</a></li>
         <li><a @click="routeTo('#withdraw')">退款</a></li>
         <li><a @click="routeTo('#record')">记录</a></li>
         <li><a @click="routeTo('#contract')">智能合约</a></li>
       </ul>
-    </div>
+    </div> -->
     <!-- 全局消息弹窗 -->
     <div id="dialog-message" class="dialog-container" :class="messageDialog.show?'show':''">
       <div class="inner-wrapper" :data-type="messageDialog.type||''" v-if="messageDialog.html" v-html="messageDialog.html"></div>

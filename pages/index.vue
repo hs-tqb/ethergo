@@ -361,6 +361,8 @@
       <div class="btn-wrapper" v-else style="height:52px"></div>
     </div>
 
+    <footer1 />
+
     <!-- 提现 -->
     <div id="panel-withdraw" class="panel" v-show="hash==='#withdraw'">
       <h2>提现</h2>
@@ -517,6 +519,7 @@
 <script>
 import contract from '~/assets/js/contract'
 import Web3 from 'web3'
+import footer1 from '~/components/footer'
 export default {
   head() {
     return {
@@ -1110,6 +1113,9 @@ export default {
     // setTimeout(function() {
       // SyntaxHighlighter.all();
     // }, 3000);
+  },
+  components: {
+    footer1
   }
 }
 </script>
