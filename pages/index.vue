@@ -20,8 +20,9 @@
             li { 
               padding:0 10px; .radius(); cursor:pointer;
               transition-duration:300ms;
-              &.selected { background-color:@color-primary-light-1; }
-              &:hover {  background-color:@color-primary-light-5; }
+              &.selected { background-color:@color-primary-light-1; transition-delay:0; }
+              &:active {  background-color:@color-primary-light-5; }
+              // &:actived { background-color:@color-primary-light-1; }
             }
           }
         }
