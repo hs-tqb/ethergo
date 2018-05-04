@@ -92,6 +92,7 @@
         a { border:0 none; }
       }
     }
+    #footer { position:absolute; top:100%; left:0; width:100%;  }
   }
   
 </style>
