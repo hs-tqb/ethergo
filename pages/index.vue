@@ -38,12 +38,14 @@
           div { 
             position:relative; display:flex; align-items:center;  margin:0 15px 0 20px; 
             input { 
+              position:relative;
               width:100%;  height:25px; background:transparent; 
-              // background:url(~assets/img/range-background.svg) no-repeat center/ 100% auto; 
-              &::after { position:absolute; top:18px; content:'\200B'; width:100%; height:3px; background:@color-primary-light-2; }
               .radius; cursor:pointer; -webkit-appearance:none; 
+              // background:url(~assets/img/range-background.svg) no-repeat center/ 100% auto; 
+
+              &::after { position:absolute; top:12px; left:0; z-index:1; content:'\200B'; width:100%; height:3px; background:@color-primary-light-1; }
               &::-webkit-slider-thumb {
-                position:relative; z-index:10;
+                position:relateve; z-index:10;
                 width:22px; height:35px;
                 -webkit-appearance:none;
                 cursor:pointer;
