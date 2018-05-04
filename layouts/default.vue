@@ -154,6 +154,8 @@ export default {
   mounted() {
     // 测试环境下的移动端页面, 加载debug工具
     if ( process.env.NODE_ENV === 'development' && (/iphone|ios|android|ipad/gi).test(navigator.userAgent) ) {
+      localStorage.removeItem('hasReadGuide')
+      
       let script = document.createElement('script');
       script.onload = function() { eruda.init(); }
       document.body.appendChild(script)
