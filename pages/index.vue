@@ -165,10 +165,11 @@
   @panel-height-mb:calc( 100% - 90px );
   @panel-height-pc:calc( 100% - 110px );
   @media screen and (max-width:411px) {
+    
     #page-home { 
       .panel#panel-bet,
       .panel#panel-roll { margin:0; padding:5px 10px; min-height:100%; }
-      .panel { padding:70px 10px; min-height:100%; }
+      .panel { padding:30px 10px; min-height:100%; }
       // .panel#panel-bet + .panel,
       // .panel#panel-roll + .panel { margin:40px 0; }
     }
@@ -241,6 +242,7 @@
         }
       }
     }
+    #comp-footer { position:absolute; bottom:0; left:0; width:100%;  }
   }
 </style>
 

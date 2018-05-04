@@ -8,10 +8,10 @@
     li a { text-decoration:none; }
   }
   @media screen and (max-width:411px) {
-    #comp-footer { position:absolute; top:100%; left:0; width:100%;  }
+    // #comp-footer { position:absolute; top:100%; left:0; width:100%;  }
   }
   @media screen and (min-width:412px) {
-    #comp-footer { position:absolute; bottom:0; left:0; width:100%;  }
+    // #comp-footer { position:absolute; bottom:0; left:0; width:100%;  }
   }
 </style>
 
