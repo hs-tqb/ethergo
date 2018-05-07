@@ -588,6 +588,7 @@ export default {
         state:'ready',
         result:'',
         value:-1,
+        BetID:'',
 
         // state:'roll',
         // result:4,
@@ -976,16 +977,19 @@ export default {
         // if ( err ) return this.commonErrorCatcher(err);
         let LogBet = contract.LogBet();
         // 
+        console.log("roll-----------");
         this.roll.state = 'roll';
         this.showAds('roll');
         // 投注支付监控
         LogBet.watch((err, result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'userRollDice'})
-          if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 bet');
-          
+          if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
+
           // console.log( result )
           console.warn('支付成功');
           this.roll.state = 'bet';
+          this.roll.BetID = result.args.BetID;
+
           this.showAds('bet');
           // this.record.all.push({})
           // this.record.user.push(result.args)
@@ -997,6 +1001,8 @@ export default {
         LogResult.watch((err, result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'LogResult.watch'});
           if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 result');
+          if ( result.args.BetID !== this.roll.BetID ) return console.log('其它的 bet');
+
 
           this.roll.state = 'result';
           this.showAds('result');
@@ -1027,9 +1033,10 @@ export default {
     },
     // 返回
     backToRoll() {
+      this.roll.BetID  = '';
       this.roll.state  = 'ready';
       this.roll.result = '';
-      this.roll.value  = undefined
+      this.roll.value  = undefined;
     },
     // --------- record ----------
     computeProfit(r) {
