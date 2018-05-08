@@ -4,28 +4,79 @@
     // 赌注
     #panel-bet {
       position:relative; .flow; justify-content:space-between; max-height:800px;
-      .inner-panel {
-        .flow(row); 
-        .label { padding:10px 0; .flow(column); justify-content:space-between; }
-        ul { .flow(row); flex:1; margin-left:30px; }
-        ul li { 
-          .flow(column); flex:1; justify-content:space-between; 
-          margin:0 15px; padding:10px 0;
-          text-align:center; 
-          background-color:#666;
-          .radius(8px);
-          cursor:pointer;
-          transition-duration:300ms;
-          &:active { background-color:@color-primary-light-3; }
-          &.selected { background:@color-primary-light-1;  }
+      .selection { 
+        .flow(row);height:40px; line-height:40px; align-items:stretch;
+        .preview { padding:0 10px; min-width:70px; font-size:26px; text-align:center; color:@color-primary; background-color:#fff; .radius; }
+        .preview + * { flex:1; }
+      }
+      #explain {
+        position:absolute; top:55px; left:10px; width:100%;
+        line-height:16px; font-size:12px;
+      }
+      #wager {
+        .selection { 
+          .list { 
+            flex:1; .flow(row); margin-left:20px;
+            li { 
+              padding:0 10px; .radius(); cursor:pointer;
+              transition-duration:300ms;
+              &.selected { background-color:@color-primary-light-1; transition-delay:0; }
+              &:active {  background-color:@color-primary-light-5; }
+              // &:actived { background-color:@color-primary-light-1; }
+            }
+          }
         }
-        ul li p { margin:10px 0; }
+        .condition { margin:10px 0; font-size:12px; color:@color-text-placeholder; }
       }
-      // #compensate + .btn { margin-bottom:10px; }
-      p.info { 
-        font-size:12px; line-height:20px; color:@color-text-placeholder; text-align:right;
-        span { font-size:12px; color:@color-danger; }
+      #range {
+        margin-bottom:40px;
+        .selection {
+          .supp-info {
+            position:absolute; left:0; top:100%; line-height:25px; font-size:12px; color:#fff; 
+          }
+          .preview { position:relative; }
+          .preview::after { position:absolute; right:5px; font-size:10px; content:'%'; }
+          div { 
+            position:relative; display:flex; align-items:center;  margin:0 15px 0 20px; 
+            input { 
+              position:relative;
+              width:100%;  height:25px; background:transparent; 
+              .radius; cursor:pointer; -webkit-appearance:none; 
+              // background:url(~assets/img/range-background.svg) no-repeat center/ 100% auto; 
+
+              &::after { position:absolute; top:12px; left:0; z-index:1; content:'\200B'; width:100%; height:3px; background:@color-primary-light-1; }
+              &::-webkit-slider-thumb {
+                position:relateve; z-index:10;
+                width:22px; height:35px;
+                -webkit-appearance:none;
+                cursor:pointer;
+                .radius(10px);
+                // border:10px solid transparent;
+                border:0 none;
+                background-color:@color-primary-light-1;
+                // box-shadow:0 1px 1px #def3f8, inset 0 .125em .125em #0d1112;
+              }
+            }
+            ul { 
+              .flow(row); position:relative; width:100%; font-size:10px;
+              li { position:absolute; top:0; bottom:0; cursor:pointer; transform:translate3d(-50%,0,0); }
+            }
+          }
+        }
       }
+      #compensate {
+        line-height:20px;
+        h2 {
+          span { font-size:60px; }
+          line-height:60px; 
+        }
+        span { float:right; color:@color-highlight; }
+        p.info { 
+          font-size:12px; color:@color-text-placeholder; 
+          span { font-size:16px; color:@color-danger; }
+        }
+      }
+      #compensate + .btn { margin-bottom:10px; }
     }
     // 投注
     #panel-roll {
@@ -110,19 +161,6 @@
         i.close { position: absolute; right:0; top:0; width:60px; height:60px; background:url(@icon-failure) no-repeat center / 30px 30px; cursor: pointer; }
       }
     }
-    #dialog-agreement {
-      .flow; justify-content:center; align-items:center;
-      background-color:rgba(0,0,0,0);
-      .inner-wrapper {
-        position:relative; 
-        padding:20px 30px; width:400px; line-height:1.4; word-break:break-all;
-        background-color:rgba(0,0,0,0.9); .radius(10px);
-        .btn-wrapper { 
-          margin-top:20px; text-align:center; 
-          .btn { width:200px; }
-        }
-      }
-    }
   }
 
   @panel-height-mb:calc( 100% - 90px );
@@ -133,11 +171,6 @@
       .panel#panel-bet,
       .panel#panel-roll { margin:0; padding:5px 10px; min-height:100%; }
       .panel { padding:30px 10px; min-height:100%; }
-
-      #panel-bet .inner-panel {
-        ul { margin-left:10px; }
-        ul li { margin:0 5px; }
-      }
       // .panel#panel-bet + .panel,
       // .panel#panel-roll + .panel { margin:40px 0; }
     }
@@ -147,11 +180,6 @@
         i.close { left:50%; top:auto; right:auto; bottom:30px; margin-left:-30px; }
         width:100%!important; height:100%;
         .flow; justify-content:center; align-items:center;
-      }
-    }
-    #page-home #dialog-agreement {
-      .inner-wrapper {
-        width:auto; margin:0 15px;
       }
     }
     #panel-contract {
@@ -223,35 +251,71 @@
   <div id="page-home">
     <!-- 赌注 -->
     <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
-      <h2>选择投注类型</h2>
-      <div class="inner-panel">
-        <div class="label">
-          <h3>投币数</h3>
-          <h3>赢币数</h3>
-          <h3>胜率</h3>
+      <h2>立刻投注</h2>
+      <!-- <div id="explain">
+        <p>玩家在[2,99]间选择一个数字并使用ETH投注</p>
+        <p>系统在[1,100]间产生一个随机数</p>
+        <p>玩家选择的数字大于系统随机数则赢了！</p>
+      </div> -->
+      <div id="amount">
+        <h3>投注金额</h3>
+        <div id="wager">
+          <div class="selection">
+            <p class="preview">{{computedWager}}</p>
+            <ul class="list">
+              <li 
+              v-for="(s,i) in bet.wager.list" 
+              :key="`wager${i}`"
+              @click="selectBetWager(i)"
+              :class="i===bet.wager.selected?'selected':''"
+              >{{s.name}}</li>
+            </ul>
+          </div>
+          <div class="condition">
+            <p>最小投注 {{bet.wager.list[0].value}} ETH</p>
+            <p>最大收益 {{bet.profit.max}} ETH</p>
+          </div>
         </div>
-        <ul class="multiplying">
-          <li v-for="(w,i) in this.bet.wager" :key="`wager${i}`" :class="bet.selected===i?'selected':''" @click="selectBetWager(i)">
-            <p>{{w.eth}}</p>
-            <p>{{w.profit}}</p>
-            <p>{{w.rate}}%</p>
-          </li>
-        </ul>
       </div>
-      <div>
+      <div id="range">
+        <h3>胜率大小</h3>
+        <div class="selection">
+          <p class="preview">
+            {{bet.range.value}}
+            <!-- <span class="supp-info">min change</span> -->
+          </p>
+          <div>
+            <input type="range" 
+            :min="bet.range.min" 
+            :max="bet.range.max" 
+            v-model="bet.range.value"
+            >
+            <ul class="signs supp-info">
+              <li v-for="i in 5" :key="`range${i}`" :style="`left:${(i-1)*25}%;`" @click="setRange(i)">
+                {{(i-1)*25}}%
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="compensate">
+        <h2>投注结果小于 <span>{{+bet.range.value+1}}</span></h2>
+        <!-- <h3>投注结果小于 <span>{{+bet.range.value+1}}</span></h3> -->
+        <p>投注金额 <span>{{computedWager}} ETH&nbsp;</span></p>
+        <p>用户收益 <span>{{computedUserProfit}} ETH&nbsp;</span></p>
         <p class="info">&nbsp;
-          <span v-if="bet.profit.max&&computedUserProfit&&!isUserProfitOK">
-            已超过最大收益限制 ( {{bet.profit.max}} eth )，请调整投注金额或胜率</span>
+          <span v-if="computedUserProfit&&!isUserProfitOK">
+            (已超过最大收益限制，请调整投注金额或胜率)</span>
         </p>
-        <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="acknowledgeContract">
       </div>
+      <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll">
     </div>
     <!-- 开奖 -->
     <div id="panel-roll" class="panel" v-else>
       <h2>投注结果</h2>
       <div class="inner-panel">
         <h3>投注数字</h3>
-        <p class="number-block">{{+computedUserRate+1}}</p>
+        <p class="number-block">{{+bet.range.value+1}}</p>
       </div>
       <div class="border"></div>
       <div class="inner-panel">
@@ -452,20 +516,11 @@
         </div>
       </div>
     </div>
-    <div id="dialog-agreement" class="dialog-container" :class="showAgreement?'show':''">
-      <div class="inner-wrapper">
-        <p>系统在1~100中产生一个随机数（随机数算法可证明公平；如果玩家选择的档位大于系统产生的随机数则玩家赢，系统自动将本金+收益转到玩家钱包</p>
-        <div class="btn-wrapper">
-          <input type="button" class="btn primary" value="确定" @click="doRoll">
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import contract from '~/assets/js/contract'
-import vppContract from '~/assets/js/vppContract'
 import Web3 from 'web3'
 import footer1 from '~/components/footer'
 export default {
@@ -478,7 +533,6 @@ export default {
   data() {
     return {
       showGuide:false,
-      showAgreement:false,
       hash:'',
       web3:undefined,
       isNetworkOK:false,
@@ -495,10 +549,6 @@ export default {
         ...contract,
         instance:null,
       },
-      vppContract: {
-        ...vppContract,
-        instance:null,
-      },
       // 投注记录
       record: {
         show:'all',
@@ -508,24 +558,24 @@ export default {
       },
       // 赌注设置
       bet: {
-        selected:0,
-        wager: [
-          // {name:'0.1', value:0.1},
-          // {name:'0.5', value:0.5},
-          // {name:'1.0', value:1.0},
-          { eth:0.1, profit:1.000, rate:8, real:1.0250000000000001 },
-          { eth:0.5, profit:2.500, rate:15, real:2.5 },
-          { eth:1,   profit:2.000, rate:30, real:2 }
-        ],
-        range: {
-          value:0,
-          min:1,
-          max:100
-        },
-        multiplying: {
+        hasBet:false,
+        wager: {
+          selected:0,
           list:[
-            {  }
-          ]
+            {name:'0.1', value:0.1},
+            {name:'0.3', value:0.3},
+            {name:'0.5', value:0.5},
+            {name:'0.7', value:0.7},
+            {name:'1.0', value:1.0},
+          ],
+        },
+        range: {
+          min:1,
+          max:98,
+          value:50
+        },
+        roll: {
+          value:51,
         },
         profit: {
           max:0,
@@ -554,17 +604,12 @@ export default {
   },
   computed: {
     computedWager() {
-      // return this.bet.wager.list[this.bet.wager.selected].value;
-      return this.bet.wager[this.bet.selected].eth;
+      return this.bet.wager.list[this.bet.wager.selected].value;
     },
     computedUserProfit() {
-      return this.bet.wager[this.bet.selected].profit;
-      // let { wager, range, roll, profit } = this.bet;
-      // if ( !profit.max ) return 0;
-      // return ((((this.computedWager * (100-(range.value))) / (range.value)+this.computedWager))*900/1000)-this.computedWager;
-    },
-    computedUserRate() {
-      return this.bet.wager[this.bet.selected].rate;
+      let { wager, range, roll, profit } = this.bet;
+      if ( !profit.max ) return 0;
+      return ((((this.computedWager * (100-(range.value))) / (range.value)+this.computedWager))*900/1000)-this.computedWager;
     },
     isUserProfitOK() {
       return this.computedUserProfit? this.computedUserProfit <= this.bet.profit.max: false;
@@ -617,10 +662,7 @@ export default {
       let wei = await new Promise((resolve,reject)=>{
         this.web3.eth.getBalance(address, 'latest', (err,result)=>{
           if ( err ) return reject(err)
-          console.log('_______________________')
-          console.log( result );
-          console.log('______________________')
-          resolve( result )
+          resolve(result)
         })
       })
       .then(result=>{
@@ -630,35 +672,17 @@ export default {
       })
       .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getBalance'}))
 
-      let vppWei = await new Promise((resolve,reject)=>{
-        this.getVppContract().balanceOf(address, (err,result)=>{
-          if ( err ) return reject(err)
-          resolve(result)
-        })
-      })
-
       // 余额 (单位 eth)
       let balance = +this.web3.fromWei( wei );
-      let vppBalance = +this.web3.fromWei( vppWei )
-
       console.warn(`余额: ${balance} (eth)`)
 
-      this.$store.commit('setAccount', { ...this.account, address, wei, balance, vppWei, vppBalance, loaded:true })
-    },
-    // 获取胜率
-    getWinRate(amount,multiplying) {
+      this.$store.commit('setAccount', { ...this.account, address, wei, balance, loaded:true })
     },
     // 获取合约
     getContract() {
       return this.contract.instance? 
         this.contract.instance:
         ( this.contract.instance=this.web3.eth.contract(this.contract.abi).at(this.contract.address) );
-    },
-    // 获取vpp合约
-    getVppContract() {
-      return this.vppContract.instance? 
-        this.vppContract.instance:
-        ( this.vppContract.instance=this.web3.eth.contract(this.vppContract.abi).at(this.vppContract.address) );
     },
     // 获取投注记录
     async getRecord() {
@@ -911,7 +935,7 @@ export default {
     // --------- bet ----------
     // 选择价格
     selectBetWager(idx) {
-      this.bet.selected = idx;
+      this.bet.wager.selected = idx;
     },
     setRange(idx) {
       let temp = ((idx-1)*25);
@@ -931,13 +955,9 @@ export default {
         });
       }, profit.reqDelay);
     },
-    acknowledgeContract() {
-      if ( !this.checkAccountValid() ) return;
-      this.showAgreement = true;
-    },
     // 投注
     doRoll() {
-      this.showAgreement = false;
+      if ( !this.checkAccountValid() ) return;
       document.documentElement.scrollTop = 0
       document.body.scrollTop = 0
       
@@ -949,15 +969,15 @@ export default {
           ...this.metamaskOpt
       };
 
-
       // 投注
       let contract = this.getContract();
-      contract.userRollDice(+this.computedUserRate+1, additionParam, (err, hash)=>{
+      contract.userRollDice(+this.bet.range.value+1, additionParam, (err, hash)=>{
         if ( err ) return;
 
         // if ( err ) return this.commonErrorCatcher(err);
         let LogBet = contract.LogBet();
         // 
+        console.log("roll-----------");
         this.roll.state = 'roll';
         this.showAds('roll');
         // 投注支付监控
@@ -1103,11 +1123,6 @@ export default {
     // setTimeout(function() {
       // SyntaxHighlighter.all();
     // }, 3000);
-
-    // this.getWinRate();
-      // return ((((this.computedWager * (100-(range.value))) / (range.value)+this.computedWager))*900/1000)-this.computedWager;
-    
-
   },
   components: {
     footer1

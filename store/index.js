@@ -11,6 +11,8 @@ const store = () => new Vuex.Store({
       address:'',
       wei:0,
       balance:0,
+      vppWei:0,
+      vppBalance:0,
       pendingWithdrawal:0,
       loaded:false
     },
