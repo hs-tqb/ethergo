@@ -1,6 +1,10 @@
 <style lang="less">
   @import url(~assets/css/variables.less);
   #page-home {
+     p.info { 
+      font-size:12px; line-height:20px; color:@color-text-placeholder;
+      span { font-size:12px; color:@color-danger; }
+    }
     // 赌注
     #panel-bet {
       position:relative; .flow; justify-content:space-between; max-height:800px;
@@ -23,7 +27,7 @@
       }
       // #compensate + .btn { margin-bottom:10px; }
       p.info { 
-        font-size:12px; line-height:20px; color:@color-text-placeholder; text-align:right;
+        text-align:right;
         span { font-size:12px; color:@color-danger; }
       }
     }
@@ -217,6 +221,19 @@
     }
     #comp-footer { position:absolute; bottom:0; left:0; width:100%;  }
   }
+
+  #panel-roll {
+    .input-list {
+      .input-wrapper { 
+        margin:5px 20px; height:30px;
+        .flow(row); align-items:center;
+        label { display:block; width:50px; text-align:left; }
+        input[type=text] { flex:1; min-width:20px; height:100%; margin:0 10px; padding:0 10px; color:#666; }
+        .btn { min-height:30px; }
+      }
+    }
+    input-list + .btn { margin-top:10px; }
+  }
 </style>
 
 <template>
@@ -246,8 +263,7 @@
         <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="acknowledgeContract">
       </div>
     </div>
-    <!-- 开奖 -->
-    <div id="panel-roll" class="panel" v-else>
+    <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
       <h2>投注结果</h2>
       <div class="inner-panel">
         <h3>投注数字</h3>
@@ -255,7 +271,33 @@
       </div>
       <div class="border"></div>
       <div class="inner-panel">
-        <h3 v-if="roll.state==='roll'">正在开奖请耐心等待...</h3>
+        <h3>正在开奖请耐心等待...</h3>
+        <p class="info">本次投注大概需要等待1小时左右，请稍后查看结果，我们将邮件或短信告知您投注结果</p>
+      </div>
+      <div class="input-list">
+        <div class="input-wrapper">
+          <label for="sf8sdkfs">邮箱</label>
+          <input type="text" id="sf8sdkfs" name="sf8sdkfs" v-model="email">
+          <input type="button" class="btn primary" value="提交" @click="submitEmail">
+        </div>
+        <div class="input-wrapper">
+          <label for="sdfs1eadsf">手机号</label>
+          <input type="text" id="sdfs1eadsf" name="sdfs1eadsf" v-model="mobile">
+          <input type="button" class="btn primary" value="提交" @click="submitMobile">
+        </div>
+      </div>
+      <input type="button" class="btn primary block" value="再玩一次" @click="backToRoll">
+    </div>
+    <!-- 开奖 -->
+    <div id="panel-roll" class="panel" v-else-if="roll.state==='result'">
+      <h2>投注结果</h2>
+      <div class="inner-panel">
+        <h3>投注数字</h3>
+        <p class="number-block">{{+computedUserRate+1}}</p>
+      </div>
+      <div class="border"></div>
+      <div class="inner-panel">
+        <!-- <h3 v-if="roll.state==='roll'">正在开奖请耐心等待...</h3>
         <h3 v-else-if="roll.state==='bet'">已收到投注，正在生成随机数...</h3>
         <h3 v-else-if="roll.state==='result'">开奖数字</h3>
         <div class="ads">
@@ -264,29 +306,28 @@
             <li>随机数通过<a href="random.org">random.org</a>根据实时大气扰动得出，保证公平</li>
             <li>为增加透明性，本网站智能合约源码已开源，玩家可以随时查看</li>
           </ul>
-        </div>
-        <p class="number-block">
-          <!-- {{roll.result}} -->
-          <template v-if="typeof roll.result !=='number'">
-            <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
-          </template>
-          <template v-else-if="roll.result<3">
-            <span v-if="roll.result===0" class="text-success">{{roll.value}}</span>
-            <span v-else-if="roll.result===1" class="text-danger">{{roll.value}}</span>
-            <span v-else class="text-warning">{{roll.value}}</span>
-          </template>
-        </p>
-        <p class="tips" v-if="typeof roll.result==='number'">
-          <span v-if="roll.result===0" class="text-success">- {{computedWager}} ETH</span>
-          <span v-else-if="roll.result===1" class="text-danger">Wow, 你赢了！ +{{computedUserProfit}} ETH</span>
-          <span v-else-if="roll.result===2">
-            打款失败，请<a href="#withdraw" >手动提现</a>
-          </span>
-          <span v-else-if="roll.result===3" class="text-warning">投注失败, 已退款</span>
-          <span v-else-if="roll.result===4">
-            投注失败, 请<a href="#withdraw" >手动提现</a>
-          </span>
-        </p>
+        </div> -->
+        <h3>开奖结果</h3>
+        <template v-if="typeof roll.result==='number'">
+          <div class="number-block">
+            <p v-if="roll.result<3">
+              <span v-if="roll.result===0" class="text-success">{{roll.value}}</span>
+              <span v-else-if="roll.result===1" class="text-danger">{{roll.value}}</span>
+              <span v-else class="text-warning">{{roll.value}}</span>
+            </p>
+            <svg v-else viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
+          </div>
+          <p class="tips" v-if="typeof roll.result==='number'">
+            <span v-if="roll.result===0" class="text-success">- {{computedWager}} ETH</span>
+            <span v-else-if="roll.result===1" class="text-danger">Wow, 你赢了！ +{{computedUserProfit}} ETH</span>
+            <span v-else-if="roll.result===2">打款失败，请<a href="#withdraw" >手动提现</a></span>
+            <span v-else-if="roll.result===3" class="text-warning">投注失败, 已退款</span>
+            <span v-else-if="roll.result===4">投注失败, 请<a href="#withdraw" >手动提现</a></span>
+          </p>
+        </template>
+        <template v-else >
+          <p class="info">本次投注大概需要等待1小时左右，请稍后查看结果，我们将邮件或短信告知您投注结果</p>
+        </template>
       </div>
       <div class="btn-wrapper" v-if="typeof roll.result==='number'">
         <input type="button" 
@@ -550,6 +591,9 @@ export default {
         gasPrice: 3000000000
       },
       mountedRun: false,
+
+      mobile:'',
+      email:'',
     }
   },
   computed: {
@@ -943,7 +987,7 @@ export default {
       
       // 支付参数
       let additionParam = {
-          from: this.account.address,
+        from: this.account.address,
           to: this.contract.address,
           value: +this.web3.toWei( this.computedWager ),
           ...this.metamaskOpt
@@ -953,13 +997,11 @@ export default {
       // 投注
       let contract = this.getContract();
       contract.userRollDice(+this.computedUserRate+1, additionParam, (err, hash)=>{
-        if ( err ) return;
-
-        // if ( err ) return this.commonErrorCatcher(err);
+        if ( err ) return this.commonErrorCatcher(err);
         let LogBet = contract.LogBet();
         // 
         this.roll.state = 'roll';
-        this.showAds('roll');
+        // this.showAds('roll');
         // 投注支付监控
         LogBet.watch((err, result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'userRollDice'})
@@ -967,10 +1009,10 @@ export default {
 
           // console.log( result )
           console.warn('支付成功');
-          this.roll.state = 'bet';
+          // this.roll.state = 'bet';
           this.roll.BetID = result.args.BetID;
 
-          this.showAds('bet');
+          // this.showAds('bet');
           // this.record.all.push({})
           // this.record.user.push(result.args)
           this.updatePageData();
@@ -985,7 +1027,7 @@ export default {
 
 
           this.roll.state = 'result';
-          this.showAds('result');
+          // this.showAds('result');
           
           this.roll.result = +result.args.Status.toNumber()
           this.roll.value  = +result.args.DiceResult.toNumber()
@@ -1067,6 +1109,17 @@ export default {
           resolve(!err)
         });
       })
+    },
+    submitMobile() {
+      if ( !/^1[3-9]\d{9}$/.test(this.mobile) ) {
+        return this.$store.commit('showMessageDialog', {type:'failure', text:'手机号码错误'});
+      }
+    },
+    submitEmail() {
+      let reg = /^[a-zA-Z0-9\u4e00-\u9fa5]+([\.\_\-]?[a-zA-Z0-9\u4e00-\u9fa5])+@([a-zA-Z0-9]+[\.\-])+[a-zA-Z0-9]+$/;
+      if ( !reg.test(this.email) ) {
+        return this.$store.commit('showMessageDialog', {type:'failure', text:'邮箱格式错误'});
+      }
     }
   },
   // 初始化 环境 和 账户信息
@@ -1108,6 +1161,8 @@ export default {
       // return ((((this.computedWager * (100-(range.value))) / (range.value)+this.computedWager))*900/1000)-this.computedWager;
     
 
+    this.mobile = localStorage.getItem('_mobile')||'';
+    this.email = localStorage.getItem('_email')||'';
   },
   components: {
     footer1
