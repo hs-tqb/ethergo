@@ -563,6 +563,7 @@ export default {
           selected:0,
           list:[
             {name:'0.1', value:0.1},
+            {name:'0.2', value:0.2},
             {name:'0.3', value:0.3},
             {name:'0.5', value:0.5},
             {name:'0.7', value:0.7},

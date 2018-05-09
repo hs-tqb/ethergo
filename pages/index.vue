@@ -266,7 +266,7 @@
       <div>
         <p class="info">&nbsp;
           <span v-if="bet.profit.max&&computedUserProfit&&!isUserProfitOK">
-            已超过最大收益限制 ( {{bet.profit.max}} eth )，请调整投注金额或胜率</span>
+            已超过最大收益限制 ( {{bet.profit.max.toFixed(4)}} eth )，请调整投注金额或胜率</span>
         </p>
         <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="acknowledgeContract">
       </div>
@@ -434,16 +434,13 @@
         <h3>游戏规则</h3>
         <ul>
           <li>
-            1.玩家在2~99中选择一个数字并使用ETH投注
+            1.玩家可以任意选择一个档位并使用ETH投注
           </li>
           <li>
-            2.系统在1~100中产生一个随机数（<a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a>可证明公平）
+            2.系统在1~100中产生一个随机数（随机数算法可证明公平）
           </li>
           <li>
-            3.玩家选择的数字大于系统产生的随机数则玩家赢，系统自动将本金+收益转到玩家钱包
-          </li>
-          <li>
-            4.如果玩家输，系统将发送1 wei（0.0000000000000001ETH）到玩家钱包
+            3.玩家选择的数字大于系统产生的随机数，系统自动将 ETH+VPP 转到玩家钱包；若玩家选择的数字小于等于系统产生的随机数 ，系统自动将对应比例的 VPP 转到玩家钱包
           </li>
         </ul>
       </div>
@@ -488,16 +485,13 @@
         <div id="guide-game">
           <ul>
             <li>
-              1.玩家在2~99中选择一个数字并使用ETH投注
+              1.玩家可以任意选择一个档位并使用ETH投注
             </li>
             <li>
-              2.系统在1~100中产生一个随机数（<a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a>可证明公平）
+              2.系统在1~100中产生一个随机数（随机数算法可证明公平）
             </li>
             <li>
-              3.玩家选择的数字大于系统产生的随机数则玩家赢，系统自动将本金+收益转到玩家钱包
-            </li>
-            <li>
-              4.如果玩家输，系统将发送1 wei（0.0000000000000001ETH）到玩家钱包
+              3.玩家选择的数字大于系统产生的随机数，系统自动将 ETH+VPP 转到玩家钱包；若玩家选择的数字小于等于系统产生的随机数 ，系统自动将对应比例的 VPP 转到玩家钱包
             </li>
           </ul>
         </div>
@@ -563,14 +557,16 @@ export default {
       },
       // 赌注设置
       bet: {
-        selected: 0,
+        selected: 1,
         wager: [
           // {name:'0.1', value:0.1},
           // {name:'0.5', value:0.5},
           // {name:'1.0', value:1.0},
-          { eth:0.1, profit:1.000, rate:8, real:1.0250000000000001 },
-          { eth:0.5, profit:2.500, rate:15, real:2.5 },
-          { eth:1,   profit:2.000, rate:30, real:2 }
+          // { eth:0.1, profit:1.000, rate:8, real:1.0250000000000001 },
+          { eth:0.1, profit:0.12,  rate:75  },
+          { eth:0.2, profit:0.36, rate:50 },
+          { eth:1,   profit:2, rate:30 },
+          { eth:0.5, profit:2.5, rate:15 },
         ],
         range: {
           value:0,
@@ -602,7 +598,7 @@ export default {
       // 
       metamaskOpt: {
         gas: 400000,
-        gasPrice: 3000000000
+        gasPrice: process.env.NODE_ENV==='development'?30000000000: 3000000000
       },
       mountedRun: false,
 
@@ -893,7 +889,7 @@ export default {
     // 提现
     doWithdraw() {
       if ( this.account.pendingWithdrawal == 0 ) 
-        return this.commonErrorCatcher.call(this,err,{from:'doWithdraw'})
+      return this.commonErrorCatcher.call(this,err,{from:'doWithdraw'})
 
       let contract = this.getContract();
 
@@ -960,6 +956,9 @@ export default {
     // --------- 其它 ---------
     // 通用的catcher
     commonErrorCatcher(err,opt) {
+      console.log('=====error')
+      console.log( err.toString() );
+      console.log('=====error')
       this.$store.commit('showMessageDialog',{type:'failure', html:opt&&opt.html, text:err.toString()});
     },
     // 刷新页面数据
@@ -1218,6 +1217,7 @@ export default {
     //   console.log( resp )
     //   console.log('~~~~~~~~~~~~~~~~');
     // })
+
   },
   components: {
     footer1
