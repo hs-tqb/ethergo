@@ -521,7 +521,7 @@ import contract from '~/assets/js/contract'
 import vppContract from '~/assets/js/vppContract'
 import Web3 from 'web3'
 import footer1 from '~/components/footer'
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   head() {
     return {
@@ -1212,7 +1212,7 @@ export default {
     this.email = localStorage.getItem('_email')||'';
     // emailjs.init("user_umCDmG9ipFcjrWpta8MPI");
 
-    axios.post('http://localhost:7000/test')
+    // axios.post('http://localhost:7000/test')
     .then(resp=>{
       console.log('~~~~~~~~~~~~~~~~');
       console.log( resp )
