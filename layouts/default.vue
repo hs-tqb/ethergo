@@ -1,4 +1,5 @@
 <style lang="less">
+
   @import url(~assets/css/variables.less);
   #__nuxt, #__layout, .page-root, .page-container { height:100%; }
   body { background:#333; }
@@ -15,7 +16,7 @@
   @import url(~assets/css/icons/success.less);
   @import url(~assets/css/icons/failure.less);
   .dialog-container { 
-    position:fixed; top:0; left:0; z-index:1000; width:100vw; height:100%; 
+    position:fixed; top:0; left:0; z-index:999; width:100vw; height:100%; 
     background-color: rgba(0,0,0,.7);
     transition-duration:300ms;
     pointer-events:none; opacity:0;
@@ -48,7 +49,6 @@
       &[data-type=failure] { background-image:url(@icon-failure); }
     }
   }
-
   #menu { 
     position:fixed; top:55px; left:0; z-index:1000;
     width:100%;

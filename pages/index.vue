@@ -483,7 +483,7 @@
     </div>
     <div id="dialog-guide" class="dialog-container" :class="showGuide?'show':''">
       <div class="inner-wrapper">
-      <i class="close" @click="hideGuide"></i>
+        <i class="close" @click="hideGuide"></i>
         <h2>怎么玩</h2>
         <div id="guide-game">
           <ul>
@@ -655,6 +655,7 @@ export default {
         new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
     },
     hideGuide() {
+      console.log('hide');
       localStorage.setItem('hasReadGuide', true);
       this.showGuide = false;
     },
