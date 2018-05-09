@@ -1213,11 +1213,11 @@ export default {
     // emailjs.init("user_umCDmG9ipFcjrWpta8MPI");
 
     // axios.post('http://localhost:7000/test')
-    .then(resp=>{
-      console.log('~~~~~~~~~~~~~~~~');
-      console.log( resp )
-      console.log('~~~~~~~~~~~~~~~~');
-    })
+    // .then(resp=>{
+    //   console.log('~~~~~~~~~~~~~~~~');
+    //   console.log( resp )
+    //   console.log('~~~~~~~~~~~~~~~~');
+    // })
   },
   components: {
     footer1
