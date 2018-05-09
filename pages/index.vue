@@ -1,5 +1,6 @@
 <style lang="less">
   @import url(~assets/css/variables.less);
+  .text-highlight { color:@color-highlight; }
   #page-home {
      p.info { 
       font-size:12px; line-height:20px; color:@color-text-placeholder;
@@ -25,6 +26,7 @@
         }
         ul li p { margin:10px 0; }
       }
+      .btn.block { margin-bottom:10px; }
       // #compensate + .btn { margin-bottom:10px; }
       p.info { 
         text-align:right;
@@ -49,6 +51,7 @@
             // &:nth-child(1) { opacity:1; }
           }
         }
+        .info { padding:10px 20px; }
       }
       .btn-wrapper { 
         padding:0 15px;
@@ -224,11 +227,12 @@
 
   #panel-roll {
     .input-list {
+      display:none;
       .input-wrapper { 
         margin:5px 20px; height:30px;
         .flow(row); align-items:center;
         label { display:block; width:50px; text-align:left; }
-        input[type=text] { flex:1; min-width:20px; height:100%; margin:0 10px; padding:0 10px; color:#666; }
+        input[type=text] { flex:1; min-width:20px; height:100%; margin:0 10px; padding:0 10px; color:#666; .radius(4px); }
         .btn { min-height:30px; }
       }
     }
@@ -240,21 +244,25 @@
   <div id="page-home">
     <!-- 赌注 -->
     <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
-      <h2>选择投注类型</h2>
+      <h3>Slogan Slogan Slogan Slogan Slogan </h3>
+      <div>
+        <h3>选择投注类型</h3>
       <div class="inner-panel">
         <div class="label">
-          <h3>投币数</h3>
-          <h3>赢币数</h3>
-          <h3>胜率</h3>
+            <h3>数字</h3>
+            <h3>投币</h3>
+            <h3>赢币</h3>
         </div>
         <ul class="multiplying">
           <li v-for="(w,i) in this.bet.wager" :key="`wager${i}`" :class="bet.selected===i?'selected':''" @click="selectBetWager(i)">
+              <p><span class="text-highlight">{{w.rate+1}}</span></p>
             <p>{{w.eth}}</p>
             <p>{{w.profit}}</p>
-            <p>{{w.rate}}%</p>
           </li>
         </ul>
       </div>
+      </div>
+      <div>&nbsp;</div>
       <div>
         <p class="info">&nbsp;
           <span v-if="bet.profit.max&&computedUserProfit&&!isUserProfitOK">
@@ -308,27 +316,29 @@
           </ul>
         </div> -->
         <h3>开奖结果</h3>
-        <template v-if="typeof roll.result==='number'">
-          <div class="number-block">
-            <p v-if="roll.result<3">
-              <span v-if="roll.result===0" class="text-success">{{roll.value}}</span>
-              <span v-else-if="roll.result===1" class="text-danger">{{roll.value}}</span>
-              <span v-else class="text-warning">{{roll.value}}</span>
-            </p>
-            <svg v-else viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
-          </div>
-          <p class="tips" v-if="typeof roll.result==='number'">
-            <span v-if="roll.result===0" class="text-success">- {{computedWager}} ETH</span>
-            <span v-else-if="roll.result===1" class="text-danger">Wow, 你赢了！ +{{computedUserProfit}} ETH</span>
-            <span v-else-if="roll.result===2">打款失败，请<a href="#withdraw" >手动提现</a></span>
-            <span v-else-if="roll.result===3" class="text-warning">投注失败, 已退款</span>
-            <span v-else-if="roll.result===4">投注失败, 请<a href="#withdraw" >手动提现</a></span>
+        <div class="number-block">
+          <p v-if="roll.result<3">
+            <span v-if="roll.result===0" class="text-success">{{roll.value}}</span>
+            <span v-else-if="roll.result===1" class="text-danger">{{roll.value}}</span>
+            <span v-else class="text-warning">{{roll.value}}</span>
           </p>
-        </template>
-        <template v-else >
-          <p class="info">本次投注大概需要等待1小时左右，请稍后查看结果，我们将邮件或短信告知您投注结果</p>
-        </template>
+          <svg v-else viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
+        </div>
+        <div class="tips" v-if="typeof roll.result==='number'">
+          <p v-if="roll.result===0" class="text-success">
+            - {{computedUserWager}} ETH
+            <br>赠送 VPP:{{computedVppIfLose}} 个
+          </p>
+          <p v-else-if="roll.result===1" class="text-danger">
+            Wow, 你赢了！ +{{computedUserProfit}} ETH
+            <br>赠送 VPP:{{computedVppIfWin}} 个
+          </p>
+          <p v-else-if="roll.result===2">打款失败，请<a href="#withdraw" >手动提现</a></p>
+          <p v-else-if="roll.result===3" class="text-warning">投注失败, 已退款</p>
+          <p v-else-if="roll.result===4">投注失败, 请<a href="#withdraw" >手动提现</a></p>
+        </div>
       </div>
+
       <div class="btn-wrapper" v-if="typeof roll.result==='number'">
         <input type="button" 
           class="btn primary block"
@@ -495,7 +505,9 @@
     </div>
     <div id="dialog-agreement" class="dialog-container" :class="showAgreement?'show':''">
       <div class="inner-wrapper">
-        <p>系统在1~100中产生一个随机数（随机数算法可证明公平；如果玩家选择的档位大于系统产生的随机数则玩家赢，系统自动将本金+收益转到玩家钱包</p>
+        <p>系统在1~100中产生一个随机数（<a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a> 可证明公平）；
+        <br>如果随机数小于<span class="text-highlight">{{computedUserRate+1}}</span>则系统自动将{{computedUserProfit}}ETH和{{computedVppIfWin}} <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 转到玩家钱包；<br>若大于等于<span class="text-highlight">{{computedUserRate+1}}</span>则获得{{computedVppIfLose}} <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 
+        </p>
         <div class="btn-wrapper">
           <input type="button" class="btn primary" value="确定" @click="doRoll">
         </div>
@@ -509,11 +521,13 @@ import contract from '~/assets/js/contract'
 import vppContract from '~/assets/js/vppContract'
 import Web3 from 'web3'
 import footer1 from '~/components/footer'
+import axios from 'axios'
 export default {
   head() {
     return {
-      // meta: {
-      // }
+      script:[
+        { src:'https://cdn.emailjs.com/dist/email.min.js' }
+      ]
     }
   },
   data() {
@@ -549,7 +563,7 @@ export default {
       },
       // 赌注设置
       bet: {
-        selected:0,
+        selected: 0,
         wager: [
           // {name:'0.1', value:0.1},
           // {name:'0.5', value:0.5},
@@ -597,18 +611,29 @@ export default {
     }
   },
   computed: {
-    computedWager() {
+    computedUserSelection() {
+      return this.bet.wager[this.bet.selected];
+    },
+    computedUserWager() {
       // return this.bet.wager.list[this.bet.wager.selected].value;
-      return this.bet.wager[this.bet.selected].eth;
+      return this.computedUserSelection.eth;
     },
     computedUserProfit() {
-      return this.bet.wager[this.bet.selected].profit;
+      return this.computedUserSelection.profit;
       // let { wager, range, roll, profit } = this.bet;
       // if ( !profit.max ) return 0;
-      // return ((((this.computedWager * (100-(range.value))) / (range.value)+this.computedWager))*900/1000)-this.computedWager;
+      // return ((((this.computedUserWager * (100-(range.value))) / (range.value)+this.computedUserWager))*900/1000)-this.computedUserWager;
     },
     computedUserRate() {
-      return this.bet.wager[this.bet.selected].rate;
+      return this.computedUserSelection.rate;
+    },
+
+    computedVppIfWin() {
+      return Math.floor(50000 * this.computedUserWager * 0.1)
+    },
+    computedVppIfLose() {
+      let { eth, rate } = this.computedUserSelection;
+      return Math.floor(50000 * eth * (100-rate+1) / (rate+1) * 0.1)
     },
     isUserProfitOK() {
       return this.computedUserProfit? this.computedUserProfit <= this.bet.profit.max: false;
@@ -677,13 +702,16 @@ export default {
       let vppWei = await new Promise((resolve,reject)=>{
         this.getVppContract().balanceOf(address, (err,result)=>{
           if ( err ) return reject(err)
-          resolve(result)
+          resolve(result.toNumber())
         })
       })
+
 
       // 余额 (单位 eth)
       let balance = +this.web3.fromWei( wei );
       let vppBalance = +this.web3.fromWei( vppWei )
+      console.log( vppWei );
+      console.log(vppBalance);
 
       console.warn(`余额: ${balance} (eth)`)
 
@@ -989,7 +1017,7 @@ export default {
       let additionParam = {
         from: this.account.address,
           to: this.contract.address,
-          value: +this.web3.toWei( this.computedWager ),
+          value: +this.web3.toWei( this.computedUserWager ),
           ...this.metamaskOpt
       };
 
@@ -1031,6 +1059,24 @@ export default {
           
           this.roll.result = +result.args.Status.toNumber()
           this.roll.value  = +result.args.DiceResult.toNumber()
+
+
+
+
+          // emailjs.send("gmail", "etherwow", {
+          //   "mail_userBetId":"qweqwe",
+          //   "mail_betNum":"123",
+          //   "mail_resultNum":"",
+          //   "mail_result":"",
+          //   "mail_userAddress":"",
+          //   "mail_proof":"",
+          //   "mail_resultTimestamp":"123",
+          //   "mail_ethAmt":"123",
+          //   "mail_tokenAmt":"123",
+          //   "mail_totalAmt":"123"
+          // })
+
+
           this.updatePageData();
           LogResult.stopWatching();
         })
@@ -1120,7 +1166,7 @@ export default {
       if ( !reg.test(this.email) ) {
         return this.$store.commit('showMessageDialog', {type:'failure', text:'邮箱格式错误'});
       }
-    }
+    },
   },
   // 初始化 环境 和 账户信息
   async beforeMount() {
@@ -1158,11 +1204,19 @@ export default {
     // }, 3000);
 
     // this.getWinRate();
-      // return ((((this.computedWager * (100-(range.value))) / (range.value)+this.computedWager))*900/1000)-this.computedWager;
+      // return ((((this.computedUserWager * (100-(range.value))) / (range.value)+this.computedUserWager))*900/1000)-this.computedUserWager;
     
 
     this.mobile = localStorage.getItem('_mobile')||'';
     this.email = localStorage.getItem('_email')||'';
+    // emailjs.init("user_umCDmG9ipFcjrWpta8MPI");
+
+    axios.post('http://localhost:7000/test')
+    .then(resp=>{
+      console.log('~~~~~~~~~~~~~~~~');
+      console.log( resp )
+      console.log('~~~~~~~~~~~~~~~~');
+    })
   },
   components: {
     footer1

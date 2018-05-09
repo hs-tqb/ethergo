@@ -7,9 +7,10 @@
     background-color:@color-primary;
     padding:0 20px;
     #account-info {
-      text-align:right; font-size:12px; cursor:pointer;
+      height:42px; text-align:right; font-size:12px; cursor:pointer;
       // #address { margin-bottom:3px; }
-      h4 { margin-bottom:3px; }
+      // h4 { margin-bottom:3px; }
+      .flow(column); justify-content:space-between;
       #address a { 
         color:inherit; 
         &:hover { color:@color-primary-light-2; }
@@ -25,7 +26,7 @@
       }
     }
     #logo-wrapper {
-      font-weight:bold; line-height:50px; font-size:30px; color:#ffdf1b; cursor:pointer;
+      font-weight:bold; line-height:45px; font-size:30px; color:#ffdf1b; cursor:pointer;
     }
   }
   @media screen and (max-width:412px) {
@@ -40,7 +41,7 @@
     #topbar {
       .flow(row); justify-content:space-between;
       // #logo-wrapper { flex:1; }
-      #account-info { .flow; justify-content:center;  }
+      #account-info { .flow; justify-content:space-around;  }
     }
   }
 </style>
@@ -55,6 +56,7 @@
       <template v-if="account.address" class="hasAddress">
         <h4 id="address"><a :href="`https://etherscan.io/address/${account.address}`">钱包: {{account.address}}</a></h4>
         <h4 id="balance">余额: {{account.balance}} ETH</span></h4>
+        <h4 id="balance" v-if="account.vppBalance">{{account.vppBalance}} VPP</span></h4>
         <h4 id="pendingWithdrawal" v-if="!!account.pendingWithdrawal">
           <a href="#withdraw" class="text-warning">待提现金额: {{account.pendingWithdrawal}} ETH</a>
           <!-- <div class="bubble">1231</div> -->
