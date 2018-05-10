@@ -902,7 +902,8 @@ export default {
       }, 300);
     },
     getVppQtyIfLose(eth, num) {
-      return Math.floor(50000 * eth * (100-num) / num * 0.1)
+      // return Math.floor(50000 * eth * (100-num) / num * 0.1)
+      return 50000 * eth * (100-num) / 100 * 0.1
     },
     runHorse() {
       console.log('跑马');
