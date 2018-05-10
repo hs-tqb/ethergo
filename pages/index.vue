@@ -1202,7 +1202,6 @@ export default {
   },
   // 初始化 环境 和 账户信息
   async beforeMount() {
-    return;
   // async created() {
     this.initWeb3();
 
