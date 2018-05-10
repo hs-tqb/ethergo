@@ -272,9 +272,7 @@
         </div>
       </div>
       <div class="inner-panel" id="bet-rule">
-        <p>系统在 <span class="text-highlight">1~100</span> 中产生一个随机数（
-          <!-- <a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a>  -->
-        随机数算法可证明公平）；</p>
+        <p>系统在 <span class="text-highlight">1~100</span> 中产生一个随机数（随机数算法可证明公平）；</p>
         <p>如果随机数小于
         <span class="text-highlight">{{computedUserNumber}}</span>
           则系统自动将
@@ -1204,6 +1202,7 @@ export default {
   },
   // 初始化 环境 和 账户信息
   async beforeMount() {
+    return;
   // async created() {
     this.initWeb3();
 
@@ -1236,7 +1235,6 @@ export default {
     // setTimeout(function() {
       // SyntaxHighlighter.all();
     // }, 3000);
-    
 
     this.mobile = localStorage.getItem('_mobile')||'';
     this.email = localStorage.getItem('_email')||'';
