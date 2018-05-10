@@ -1247,8 +1247,9 @@ export default {
     //   console.log( resp )
     //   console.log('~~~~~~~~~~~~~~~~');
     // })
-
+    console.log('_______________x');
     console.log( navigator.userAgent )
+    console.log('_______________x');
   },
   components: {
     footer1
