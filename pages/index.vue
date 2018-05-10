@@ -415,13 +415,7 @@
               <td>玩家地址</td>
             </tr>
           </thead>
-          <tbody>
-            <tr><td>1111111111111111111111</td></tr>
-            <tr><td>1111111111111111111111</td></tr>
-            <tr><td>1111111111111111111111</td></tr>
-            <tr><td>1111111111111111111111</td></tr>
-          </tbody>
-          <!-- <tbody v-if="record.show==='rank'">
+          <tbody v-if="record.show==='rank'">
             <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
               <td class="text-danger">+ {{web3.fromWei(r.ProfitValue)}}</td>
               <td><a :href="`https://etherscan.io/address/${r.UserAddress}`" target="_blank">
@@ -449,7 +443,7 @@
                 {{ r.UserAddress }}</a>
               </td>
             </tr>
-          </tbody> -->
+          </tbody>
         </table>
       </div>
     </div>
@@ -1253,6 +1247,8 @@ export default {
     //   console.log( resp )
     //   console.log('~~~~~~~~~~~~~~~~');
     // })
+
+    console.log( navigator.userAgent )
   },
   components: {
     footer1
