@@ -29,7 +29,8 @@
       }
       h1 { padding:20px 0 0 5px; font-size:22px; }
       #bet-rule {
-        p { margin-bottom:10px; font-size:14px; line-height:18px; }
+        margin-top:10px;
+        p { margin-bottom:3px; font-size:14px; line-height:16px; }
       }
 
       .btn.block { margin-bottom:10px; }
