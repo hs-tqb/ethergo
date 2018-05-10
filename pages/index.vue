@@ -9,7 +9,7 @@
     // 赌注
     #panel-bet {
       position:relative; .flow; justify-content:space-between; max-height:800px;
-      .inner-panel {
+      #bet-type {
         .flow(row); 
         .label { padding:10px 0; .flow(column); justify-content:space-between; }
         ul { .flow(row); flex:1; margin-left:30px; }
@@ -26,6 +26,11 @@
         }
         ul li p { margin:10px 0; }
       }
+      h1 { padding:20px 0 0 5px; font-size:22px; }
+      #bet-rule {
+        p { margin-bottom:10px; font-size:14px; line-height:18px; }
+      }
+
       .btn.block { margin-bottom:10px; }
       // #compensate + .btn { margin-bottom:10px; }
       p.info { 
@@ -141,10 +146,11 @@
       .panel#panel-roll { margin:0; padding:5px 10px; min-height:100%; }
       .panel { padding:30px 10px; min-height:100%; }
 
-      #panel-bet .inner-panel {
+      #panel-bet #bet-type {
         ul { margin-left:10px; }
         ul li { margin:0 5px; }
       }
+
       // .panel#panel-bet + .panel,
       // .panel#panel-roll + .panel { margin:40px 0; }
     }
@@ -195,6 +201,9 @@
       #panel-bet { 
         min-width:500px; 
         // & > * { margin-bottom:80px!important; }
+        #bet-rule {
+          p { white-space:nowrap; }
+        }
       }
       #panel-contract {
         height:calc( 100% - 10px);
@@ -244,31 +253,48 @@
   <div id="page-home">
     <!-- 赌注 -->
     <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
-      <h3>Slogan Slogan Slogan Slogan Slogan </h3>
+      <h1>国内最火爆的区块链猜数字小游戏</h1>
       <div>
         <h3>选择投注类型</h3>
-      <div class="inner-panel">
-        <div class="label">
-            <h3>数字</h3>
-            <h3>投币</h3>
-            <h3>赢币</h3>
+        <div class="inner-panel" id="bet-type">
+          <div class="label">
+              <h3>数字</h3>
+              <h3>投币</h3>
+              <h3>赢币</h3>
+          </div>
+          <ul class="multiplying">
+            <li v-for="(w,i) in this.bet.wager" :key="`wager${i}`" :class="bet.selected===i?'selected':''" @click="selectBetWager(i)">
+                <p><span class="text-highlight">{{w.rate+1}}</span></p>
+              <p>{{w.eth}}</p>
+              <p>{{w.profit}}</p>
+            </li>
+          </ul>
         </div>
-        <ul class="multiplying">
-          <li v-for="(w,i) in this.bet.wager" :key="`wager${i}`" :class="bet.selected===i?'selected':''" @click="selectBetWager(i)">
-              <p><span class="text-highlight">{{w.rate+1}}</span></p>
-            <p>{{w.eth}}</p>
-            <p>{{w.profit}}</p>
-          </li>
-        </ul>
       </div>
+      <div class="inner-panel" id="bet-rule">
+        <p>系统在 <span class="text-highlight">1~100</span> 中产生一个随机数（
+          <!-- <a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a>  -->
+        随机数算法可证明公平）；</p>
+        <p>如果随机数小于
+        <span class="text-highlight">{{computedUserRate+1}}</span>
+          则系统自动将
+        <span class="text-danger">{{computedUserProfit}}</span>
+        ETH和
+        <span class="text-danger">{{computedVppIfWin}}</span>&nbsp;
+        <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 转到玩家钱包；</p>
+        <p>若大于等于
+          <span class="text-highlight">{{computedUserRate+1}}</span>
+          则获得
+          <span class="text-danger">{{computedVppIfLose}}</span>&nbsp;
+          <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 
+        </p>
       </div>
-      <div>&nbsp;</div>
       <div>
         <p class="info">&nbsp;
           <span v-if="bet.profit.max&&computedUserProfit&&!isUserProfitOK">
             已超过最大收益限制 ( {{bet.profit.max.toFixed(4)}} eth )，请调整投注金额或胜率</span>
         </p>
-        <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="acknowledgeContract">
+        <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll">
       </div>
     </div>
     <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
@@ -409,6 +435,7 @@
                 <span :class="`text-${r.computedProfit.state}`" v-else>
                   {{r.computedProfit.prefix}}
                   {{r.computedProfit.value}}
+                  {{r.computedProfit.unit}}
                 </span>
               </td>
               <td>{{ r.BetID }}</td>
@@ -497,7 +524,7 @@
         </div>
       </div>
     </div>
-    <div id="dialog-agreement" class="dialog-container" :class="showAgreement?'show':''">
+    <!-- <div id="dialog-agreement" class="dialog-container" :class="showAgreement?'show':''">
       <div class="inner-wrapper">
         <p>系统在1~100中产生一个随机数（<a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a> 可证明公平）；
         <br>如果随机数小于<span class="text-highlight">{{computedUserRate+1}}</span>则系统自动将{{computedUserProfit}}ETH和{{computedVppIfWin}} <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 转到玩家钱包；<br>若大于等于<span class="text-highlight">{{computedUserRate+1}}</span>则获得{{computedVppIfLose}} <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 
@@ -506,7 +533,7 @@
           <input type="button" class="btn primary" value="确定" @click="doRoll">
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -683,9 +710,6 @@ export default {
       let wei = await new Promise((resolve,reject)=>{
         this.web3.eth.getBalance(address, 'latest', (err,result)=>{
           if ( err ) return reject(err)
-          console.log('_______________________')
-          console.log( result );
-          console.log('______________________')
           resolve( result )
         })
       })
@@ -838,11 +862,11 @@ export default {
         let map = {}
         arr.forEach(r=>{
           if ( map['_'+r.UserAddress] ) {
-            map['_'+r.UserAddress].ProfitValue += +r.ProfitValue.toNumber()
+            map['_'+r.UserAddress].ProfitValue += r.ProfitValue? +r.ProfitValue.toNumber(): 0
           } else {
             map['_'+r.UserAddress] = {
               UserAddress:r.UserAddress,
-              ProfitValue:+r.ProfitValue.toNumber()
+              ProfitValue:r.ProfitValue? +r.ProfitValue.toNumber(): 0
             }
           }
         })
@@ -882,6 +906,9 @@ export default {
         // console.log('__________________r');
         // console.log( this.record.rank );
       }, 300);
+    },
+    getVppQtyIfLose(eth, num) {
+      return Math.floor(50000 * eth * (100-num) / num * 0.1)
     },
     runHorse() {
       console.log('跑马');
@@ -1005,11 +1032,13 @@ export default {
     },
     acknowledgeContract() {
       if ( !this.checkAccountValid() ) return;
-      this.showAgreement = true;
+      // this.showAgreement = true;
     },
     // 投注
     doRoll() {
-      this.showAgreement = false;
+      if ( !this.checkAccountValid() ) return;
+      
+      // this.showAgreement = false;
       document.documentElement.scrollTop = 0
       document.body.scrollTop = 0
       
@@ -1115,15 +1144,24 @@ export default {
         // return { state:'pending', value:'待开奖' };
         return { state:'pending', value:!!r.RefundValue?'已手工退款':'待开奖' };
       }
-      let state='', value=0, prefix='';
+      let state='', value=0, prefix='', unit='';
       if ( status===0 ) {
-        state  = 'success'
-        value  = +this.web3.fromWei(r.BetValue.toNumber())
-        prefix = '-';
+        // state  = 'success'
+        // value  = +this.web3.fromWei(r.BetValue.toNumber())
+        // prefix = '-';
+
+        state = 'danger'
+        value = this.getVppQtyIfLose(
+          +this.web3.fromWei(r.BetValue.toNumber()), 
+          +r.UserNumber.toNumber()
+        )
+        prefix = '+'
+        unit   = 'VPP'
       } else if ( status===1 ) {
         state  = 'danger'
         value  = +this.web3.fromWei(r.ProfitValue.toNumber())
         prefix = '+'
+        unit   = 'ETH'
       } else {
         switch(status) {
           case 2: value='系统转账失败，请手工提现'; break;
@@ -1136,7 +1174,7 @@ export default {
         state  = 'warning'
         r.DiceResult = { toNumber(){ return '-' } }
       }
-      return { state, value, prefix }
+      return { state, value, prefix, unit }
       // let compare = r.DiceResult.toNumber()<r.UserNumber.toNumber();
       // let value   = this.web3.fromWei(compare? r.ProfitValue.toNumber(): r.BetValue.toNumber());
 

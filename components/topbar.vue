@@ -26,7 +26,10 @@
       }
     }
     #logo-wrapper {
-      font-weight:bold; line-height:45px; font-size:30px; color:#ffdf1b; cursor:pointer;
+      font-weight:bold; height:40px; flex:1;
+      // font-size:30px; color:#ffdf1b; 
+      background:url(~/assets/img/logo.png) no-repeat -15px -7px/auto 50px;
+      cursor:pointer;
     }
   }
   @media screen and (max-width:412px) {
@@ -49,8 +52,8 @@
 <template>
   <div id="topbar" class="panel">
     <div id="logo-wrapper" @click="toggleMenu">
-      <!-- <img src="" alt="logo"> -->
-      ETHERWOW
+      <!-- <img src="~/assets/img/logo.png" alt="logo" height="40"> -->
+      <!-- ETHERWOW -->
     </div>
     <div id="account-info" v-show="account.loaded">
       <template v-if="account.address" class="hasAddress">
