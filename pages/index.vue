@@ -1048,7 +1048,7 @@ export default {
       // 投注
       let contract = this.getContract();
       contract.userRollDice(+this.computedUserNumber, additionParam, (err, hash)=>{
-        if ( err ) return this.commonErrorCatcher(err);
+        if ( err ) return this.commonErrorCatcher('已取消支付');
         let LogBet = contract.LogBet();
         // 
         this.roll.state = 'roll';
