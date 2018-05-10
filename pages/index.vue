@@ -9,6 +9,7 @@
     // 赌注
     #panel-bet {
       position:relative; .flow; justify-content:space-between; max-height:800px;
+      & > *:not(:last-child) { margin-bottom:15px; }
       #bet-type {
         .flow(row); 
         .label { padding:10px 0; .flow(column); justify-content:space-between; }
@@ -801,9 +802,9 @@ export default {
       ResultBet.watch((err,result)=>{
         if ( err ) return console.error(err);
         if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
-        console.log( '______________record_result' )
-        console.log( result )
-        console.log( '______________record_result' )
+        // console.log( '______________record_result' )
+        // console.log( result )
+        // console.log( '______________record_result' )
         results.push( result );
         this.disposeRecord(bets, results, refunds);
         this.disposeRankRecord(results, bets)
