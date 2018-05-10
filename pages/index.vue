@@ -649,7 +649,7 @@ export default {
       return this.computedUserSelection.num;
     },
     computedVppIfWin() {
-      return Math.floor(50000 * this.computedUserWager * 0.1)
+      return Math.floor(50000 * this.computedUserWager * 0.01)
     },
     computedVppIfLose() {
       let { eth, num } = this.computedUserSelection;
@@ -795,8 +795,9 @@ export default {
       ResultBet.watch((err,result)=>{
         if ( err ) return console.error(err);
         if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
-        // console.log( '______________record_result' )
-        // console.log( result.args.BetID, ': ', result.args.Status.toNumber() )
+        console.log( '______________record_result' )
+        console.log( result )
+        console.log( '______________record_result' )
         results.push( result );
         this.disposeRecord(bets, results, refunds);
         this.disposeRankRecord(results, bets)
@@ -900,10 +901,6 @@ export default {
         // console.log('__________________r');
         // console.log( this.record.rank );
       }, 300);
-    },
-    getVppQtyIfLose(eth, num) {
-      // return Math.floor(50000 * eth * (100-num) / num * 0.1)
-      return 50000 * eth * (100-num) / 100 * 0.1
     },
     runHorse() {
       console.log('跑马');
@@ -1146,10 +1143,11 @@ export default {
         // prefix = '-';
 
         state = 'danger'
-        value = this.getVppQtyIfLose(
-          +this.web3.fromWei(r.BetValue.toNumber()), 
-          +r.UserNumber.toNumber()
-        )
+        // value = this.getVppQtyIfLose(
+        //   +this.web3.fromWei(r.BetValue.toNumber()), 
+        //   +r.UserNumber.toNumber()
+        // )
+        value  = +this.web3.fromWei(r.tokenReward.toNumber())
         prefix = '+'
         unit   = 'VPP'
       } else if ( status===1 ) {
