@@ -34,7 +34,7 @@
       .btn.block { margin-bottom:10px; }
       // #compensate + .btn { margin-bottom:10px; }
       p.info { 
-        text-align:right;
+        text-align:center;
         span { font-size:12px; color:@color-danger; }
       }
     }
@@ -253,7 +253,7 @@
   <div id="page-home">
     <!-- 赌注 -->
     <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
-      <h1>国内最火爆的区块链猜数字小游戏</h1>
+      <h1 class="text-highlight">国内最火爆的区块链猜数字小游戏</h1>
       <div>
         <h3>选择投注类型</h3>
         <div class="inner-panel" id="bet-type">
@@ -264,9 +264,9 @@
           </div>
           <ul class="multiplying">
             <li v-for="(w,i) in this.bet.wager" :key="`wager${i}`" :class="bet.selected===i?'selected':''" @click="selectBetWager(i)">
-                <p><span class="text-highlight">{{w.rate+1}}</span></p>
+                <p><span class="text-highlight">{{w.num}}</span></p>
               <p>{{w.eth}}</p>
-              <p>{{w.profit}}</p>
+              <p class="text-danger">{{w.profit}}</p>
             </li>
           </ul>
         </div>
@@ -276,14 +276,14 @@
           <!-- <a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a>  -->
         随机数算法可证明公平）；</p>
         <p>如果随机数小于
-        <span class="text-highlight">{{computedUserRate+1}}</span>
+        <span class="text-highlight">{{computedUserNumber}}</span>
           则系统自动将
         <span class="text-danger">{{computedUserProfit}}</span>
         ETH和
         <span class="text-danger">{{computedVppIfWin}}</span>&nbsp;
         <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 转到玩家钱包；</p>
         <p>若大于等于
-          <span class="text-highlight">{{computedUserRate+1}}</span>
+          <span class="text-highlight">{{computedUserNumber}}</span>
           则获得
           <span class="text-danger">{{computedVppIfLose}}</span>&nbsp;
           <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 
@@ -301,12 +301,12 @@
       <h2>投注结果</h2>
       <div class="inner-panel">
         <h3>投注数字</h3>
-        <p class="number-block">{{+computedUserRate+1}}</p>
+        <p class="number-block">{{+computedUserNumber}}</p>
       </div>
       <div class="border"></div>
       <div class="inner-panel">
         <h3>正在开奖请耐心等待...</h3>
-        <p class="info">本次投注大概需要等待1小时左右，请稍后查看结果，我们将邮件或短信告知您投注结果</p>
+        <p class="info">本次投注大概需要等待1-10分钟左右，视以太坊网络拥堵情况而定（不超过1小时），请稍后查看结果</p>
       </div>
       <div class="input-list">
         <div class="input-wrapper">
@@ -327,7 +327,7 @@
       <h2>投注结果</h2>
       <div class="inner-panel">
         <h3>投注数字</h3>
-        <p class="number-block">{{+computedUserRate+1}}</p>
+        <p class="number-block">{{+computedUserNumber}}</p>
       </div>
       <div class="border"></div>
       <div class="inner-panel">
@@ -527,7 +527,7 @@
     <!-- <div id="dialog-agreement" class="dialog-container" :class="showAgreement?'show':''">
       <div class="inner-wrapper">
         <p>系统在1~100中产生一个随机数（<a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a> 可证明公平）；
-        <br>如果随机数小于<span class="text-highlight">{{computedUserRate+1}}</span>则系统自动将{{computedUserProfit}}ETH和{{computedVppIfWin}} <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 转到玩家钱包；<br>若大于等于<span class="text-highlight">{{computedUserRate+1}}</span>则获得{{computedVppIfLose}} <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 
+        <br>如果随机数小于<span class="text-highlight">{{computedUserNumber}}</span>则系统自动将{{computedUserProfit}}ETH和{{computedVppIfWin}} <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 转到玩家钱包；<br>若大于等于<span class="text-highlight">{{computedUserNumber}}</span>则获得{{computedVppIfLose}} <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 
         </p>
         <div class="btn-wrapper">
           <input type="button" class="btn primary" value="确定" @click="doRoll">
@@ -542,7 +542,7 @@ import contract from '~/assets/js/contract'
 import vppContract from '~/assets/js/vppContract'
 import Web3 from 'web3'
 import footer1 from '~/components/footer'
-// import axios from 'axios'
+import axios from 'axios'
 export default {
   head() {
     return {
@@ -589,11 +589,11 @@ export default {
           // {name:'0.1', value:0.1},
           // {name:'0.5', value:0.5},
           // {name:'1.0', value:1.0},
-          // { eth:0.1, profit:1.000, rate:8, real:1.0250000000000001 },
-          { eth:0.1, profit:0.12,  rate:75  },
-          { eth:0.2, profit:0.36, rate:50 },
-          { eth:1,   profit:2, rate:30 },
-          { eth:0.5, profit:2.5, rate:15 },
+          // { eth:0.1, profit:1.000, num:9, real:1.0250000000000001 },
+          { eth:0.1, profit:0.12,  num:76  },
+          { eth:0.2, profit:0.36, num:51 },
+          { eth:1,   profit:2, num:31 },
+          { eth:0.5, profit:2.5, num:16 },
         ],
         range: {
           value:0,
@@ -647,16 +647,15 @@ export default {
       // if ( !profit.max ) return 0;
       // return ((((this.computedUserWager * (100-(range.value))) / (range.value)+this.computedUserWager))*900/1000)-this.computedUserWager;
     },
-    computedUserRate() {
-      return this.computedUserSelection.rate;
+    computedUserNumber() {
+      return this.computedUserSelection.num;
     },
-
     computedVppIfWin() {
       return Math.floor(50000 * this.computedUserWager * 0.1)
     },
     computedVppIfLose() {
-      let { eth, rate } = this.computedUserSelection;
-      return Math.floor(50000 * eth * (100-rate+1) / (rate+1) * 0.1)
+      let { eth, num } = this.computedUserSelection;
+      return 50000 * eth * (100-num) / 100 * 0.1
     },
     isUserProfitOK() {
       return this.computedUserProfit? this.computedUserProfit <= this.bet.profit.max: false;
@@ -737,9 +736,6 @@ export default {
       console.warn(`余额: ${balance} (eth)`)
 
       this.$store.commit('setAccount', { ...this.account, address, wei, balance, vppWei, vppBalance, loaded:true })
-    },
-    // 获取胜率
-    getWinRate(amount,multiplying) {
     },
     // 获取合约
     getContract() {
@@ -1053,7 +1049,7 @@ export default {
 
       // 投注
       let contract = this.getContract();
-      contract.userRollDice(+this.computedUserRate+1, additionParam, (err, hash)=>{
+      contract.userRollDice(+this.computedUserNumber, additionParam, (err, hash)=>{
         if ( err ) return this.commonErrorCatcher(err);
         let LogBet = contract.LogBet();
         // 
@@ -1240,22 +1236,19 @@ export default {
     // setTimeout(function() {
       // SyntaxHighlighter.all();
     // }, 3000);
-
-    // this.getWinRate();
-      // return ((((this.computedUserWager * (100-(range.value))) / (range.value)+this.computedUserWager))*900/1000)-this.computedUserWager;
     
 
     this.mobile = localStorage.getItem('_mobile')||'';
     this.email = localStorage.getItem('_email')||'';
     // emailjs.init("user_umCDmG9ipFcjrWpta8MPI");
 
-    // axios.post('http://localhost:7000/test')
+    // axios.post('http://gaowenbao.net:3002/test')
+    // axios.post('http://localhost:3002/test', {name:1})
     // .then(resp=>{
     //   console.log('~~~~~~~~~~~~~~~~');
     //   console.log( resp )
     //   console.log('~~~~~~~~~~~~~~~~');
     // })
-
   },
   components: {
     footer1
