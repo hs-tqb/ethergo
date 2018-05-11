@@ -7,7 +7,7 @@
     background-color:@color-primary;
     padding:0 20px;
     #account-info {
-      height:42px; text-align:right; font-size:12px; cursor:pointer;
+      max-height:42px; text-align:right; font-size:12px; cursor:pointer;
       // #address { margin-bottom:3px; }
       // h4 { margin-bottom:3px; }
       .flow(column); justify-content:space-between;
@@ -66,9 +66,9 @@
         </h4>
       </template>
       <template v-else>
-        <h4 class="" style="text-align:left">请安装
-          <a href="http://p6cirevb0.sabkt.gdipper.com/metamask%204.6.1.crx" target="_blank">metamask</a> 插件或使用 
-          <a href="http://p6cirevb0.sabkt.gdipper.com/dappB.apk" target="_blank">dapp</a> 浏览器访问</h4>
+        <h4 style="text-align:left; line-height:26px;">请安装
+          <a href="/help/metamask" target="_blank">metamask</a> 插件或使用 
+          <a href="/help/dapp" target="_blank">dapp</a> 浏览器访问</h4>
       </template>
     </div>
 
