@@ -626,7 +626,7 @@ export default {
       // 
       metamaskOpt: {
         gas: 400000,
-        gasPrice: process.env.NODE_ENV==='development'?30000000000: 3000000000
+        gasPrice: process.env.NODE_ENV==='development'?110000000000: 11000000000
       },
       mountedRun: false,
 
