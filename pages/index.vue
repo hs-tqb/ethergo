@@ -1119,7 +1119,7 @@ export default {
       }
       
       if ( state === 'bet' ) {
-        setTimeout(this.showAds.bind(this,'bet-2'),3000)
+        setTimeout(this.showAds.bind(this,'bet-2'),10000)
       }
 
       list.className = state;
