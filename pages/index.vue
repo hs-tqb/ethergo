@@ -334,7 +334,7 @@
         <h3 v-if="roll.state==='roll'">正在开奖请耐心等待...</h3>
         <h3 v-else-if="roll.state==='bet'">已收到投注，正在生成随机数...</h3>
         <h3 v-else-if="roll.state==='result'">开奖数字</h3>
-        <p class="info">本次投注大概需要等待1-10分钟左右，视以太坊网络拥堵情况而定（不超过1小时），请稍后查看结果</p>
+        <p class="info" v-if="roll.state!=='result'">本次投注大概需要等待1-10分钟左右，视以太坊网络拥堵情况而定（不超过1小时），请稍后查看结果</p>
         <div class="ads">
           <ul ref="ads-list">
             <li>Etherwow是中国最火的以太坊猜数字小游戏，无需注册，即点即玩</li>
@@ -351,11 +351,11 @@
           <svg v-else viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
         </div>
         <div class="tips" v-if="typeof roll.result==='number'">
-          <p v-if="roll.result===0" class="text-success">
+          <p v-if="roll.result===0" class="text-success" style="line-height:20px;">
             - {{computedUserWager}} ETH
             <br>赠送 VPP:{{computedVppIfLose}} 个
           </p>
-          <p v-else-if="roll.result===1" class="text-danger">
+          <p v-else-if="roll.result===1" class="text-danger" style="line-height:20px;">
             Wow, 你赢了！ +{{computedUserProfit}} ETH
             <br>赠送 VPP:{{computedVppIfWin}} 个
           </p>
