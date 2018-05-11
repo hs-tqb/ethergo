@@ -51,10 +51,10 @@
         h3 { margin:10px 0 20px 0; }
         .tips { margin:20px 0; }
         .ads  { 
-          margin-top:-12px; height:16px; font-size:12px; line-height:16px; overflow:visible;
+          margin-top:-8px; height:16px; font-size:12px; line-height:16px; overflow:visible;
           ul, ul li { transition-duration:300ms; }
           li { 
-            opacity:0; 
+            opacity:0; color:#c0c4cc;
             // &:nth-child(1) { opacity:1; }
           }
         }
@@ -297,7 +297,7 @@
         <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll">
       </div>
     </div>
-    <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
+    <!-- <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
       <h2>投注结果</h2>
       <div class="inner-panel">
         <h3>投注数字</h3>
@@ -321,9 +321,9 @@
         </div>
       </div>
       <input type="button" class="btn primary block" value="再玩一次" @click="backToRoll">
-    </div>
+    </div> -->
     <!-- 开奖 -->
-    <div id="panel-roll" class="panel" v-else-if="roll.state==='result'">
+    <div id="panel-roll" class="panel" v-else-if="roll.state!=='ready'">
       <h2>投注结果</h2>
       <div class="inner-panel">
         <h3>投注数字</h3>
@@ -331,17 +331,17 @@
       </div>
       <div class="border"></div>
       <div class="inner-panel">
-        <!-- <h3 v-if="roll.state==='roll'">正在开奖请耐心等待...</h3>
+        <h3 v-if="roll.state==='roll'">正在开奖请耐心等待...</h3>
         <h3 v-else-if="roll.state==='bet'">已收到投注，正在生成随机数...</h3>
         <h3 v-else-if="roll.state==='result'">开奖数字</h3>
+        <p class="info">本次投注大概需要等待1-10分钟左右，视以太坊网络拥堵情况而定（不超过1小时），请稍后查看结果</p>
         <div class="ads">
           <ul ref="ads-list">
-            <li>Etherwow是中国最火的以太坊猜数字小游戏，无需注册，即点即玩，最高50倍收益！</li>
-            <li>随机数通过<a href="random.org">random.org</a>根据实时大气扰动得出，保证公平</li>
+            <li>Etherwow是中国最火的以太坊猜数字小游戏，无需注册，即点即玩</li>
+            <li>随机数通过<a href="https://www.random.org/">random.org</a>根据实时大气扰动得出，保证公平</li>
             <li>为增加透明性，本网站智能合约源码已开源，玩家可以随时查看</li>
           </ul>
-        </div> -->
-        <h3>开奖结果</h3>
+        </div>
         <div class="number-block">
           <p v-if="roll.result<3">
             <span v-if="roll.result===0" class="text-success">{{roll.value}}</span>
@@ -504,6 +504,7 @@
     </div>
     <div id="panel-loading" class="panel" v-show="!hash">
       <svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
+      <p style="line-height:26px;">正在连接以太坊网络</p>
     </div>
     <div id="dialog-guide" class="dialog-container" :class="showGuide?'show':''">
       <div class="inner-wrapper">
@@ -615,7 +616,7 @@ export default {
       roll: {
         state:'ready',
         result:'',
-        value:-1,
+        value:'',
         BetID:'',
 
         // state:'roll',
@@ -1052,18 +1053,19 @@ export default {
         let LogBet = contract.LogBet();
         // 
         this.roll.state = 'roll';
-        // this.showAds('roll');
+        this.showAds('roll');
         // 投注支付监控
         LogBet.watch((err, result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'userRollDice'})
           if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
+          if ( this.roll.BetID && (this.roll.BetID!==result.args.BetID) ) return;
 
           // console.log( result )
           console.warn('支付成功');
-          // this.roll.state = 'bet';
+          this.roll.state = 'bet';
           this.roll.BetID = result.args.BetID;
 
-          // this.showAds('bet');
+          this.showAds('bet');
           // this.record.all.push({})
           // this.record.user.push(result.args)
           this.updatePageData();
@@ -1078,7 +1080,7 @@ export default {
 
 
           this.roll.state = 'result';
-          // this.showAds('result');
+          this.showAds('result');
           
           this.roll.result = +result.args.Status.toNumber()
           this.roll.value  = +result.args.DiceResult.toNumber()
