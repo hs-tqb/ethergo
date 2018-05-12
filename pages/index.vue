@@ -473,7 +473,7 @@
             4.PC端请使用chrome + <a href="/help/metamask" target="_blank">metamask</a>访问
           </li>
           <li>
-            5.手机端请使用 <a href="/help/dapp" target="_blank">Dapp浏览器访问</a>
+            5.手机端请使用 <a href="/help/trustwallet" target="_blank">trust wallet 浏览器</a>访问
           </li>
         </ul>
       </div>
@@ -531,7 +531,7 @@
               4.PC端请使用chrome + <a href="/help/metamask" target="_blank">metamask</a>访问
             </li>
             <li>
-              5.手机端请使用 <a href="/help/dapp" target="_blank">Dapp浏览器访问</a>
+              5.手机端请使用 <a href="/help/trustwallet" target="_blank">trust wallet 浏览器</a>访问
             </li>
           </ul>
         </div>
@@ -807,31 +807,30 @@ export default {
         this.disposeRecord(bets, results, refunds);
         this.disposeRankRecord(results, bets)
 
-        // 刷新
+        // 自己的投注
+        // 如果流程不对, 如果已经有在监控的, 
+        if ( this.roll.BetID ) return;
         if ( this.roll.state !=='roll' ) return;
         if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
+
         // if ( this.roll.BetID && (this.roll.BetID!==result.args.BetID) ) return;
         console.warn('支付成功');
         this.roll.state = 'bet';
+        this.roll.BetID = result.args.BetID;
         this.showAds('bet');
         this.updatePageData();
       })
       ResultBet.watch((err,result)=>{
         if ( err ) return console.error(err);
         if ( results.some(r=>r.args.BetID===result.args.BetID) ) return;
-        // console.log( '______________record_result' )
-        // console.log( result )
-        // console.log( '______________record_result' )
         results.push( result );
         this.disposeRecord(bets, results, refunds);
         this.disposeRankRecord(results, bets)
 
-        // // 如果是自己的
-        // if ( this.bet.id && (this.bet.id===result.args.BetID) ) {
-        // }
-
-        // 刷新
+        // 自己的投注
         if ( this.roll.state.indexOf('bet') !== 0 ) return;
+        if ( this.roll.BetID !== result.args.BetID ) return;
+        
         this.roll.state = 'result';
         this.showAds('result');
         this.roll.result = +result.args.Status.toNumber()
@@ -1161,6 +1160,7 @@ export default {
     },
     // 返回
     backToRoll() {
+      this.roll.BetID  = ''
       this.roll.state  = 'ready';
       this.roll.result = '';
       this.roll.value  = undefined;

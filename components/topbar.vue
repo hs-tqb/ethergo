@@ -68,7 +68,7 @@
       <template v-else>
         <h4 style="text-align:left; line-height:26px;">请安装
           <a href="/help/metamask" target="_blank">metamask</a> 插件(PC端)或使用 
-          <a href="/help/dapp" target="_blank">dapp</a> 浏览器(移动端)访问</h4>
+          <a href="/help/trustwallet" target="_blank">trust wallet</a> 浏览器(移动端)访问</h4>
       </template>
     </div>
 
