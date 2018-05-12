@@ -598,6 +598,7 @@ export default {
       },
       // 赌注设置
       bet: {
+        id:'',
         selected: 1,
         wager: [
           // {name:'0.1', value:0.1},
@@ -805,6 +806,16 @@ export default {
         bets.push( result );
         this.disposeRecord(bets, results, refunds);
         this.disposeRankRecord(results, bets)
+
+        // 刷新
+        if ( this.roll.state !=='roll' ) return;
+        if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
+        // if ( this.roll.BetID && (this.roll.BetID!==result.args.BetID) ) return;
+        console.warn('支付成功');
+        this.roll.state = 'bet';
+        this.showAds('bet');
+        this.updatePageData();
+        LogBet.stopWatching();
       })
       ResultBet.watch((err,result)=>{
         if ( err ) return console.error(err);
@@ -815,6 +826,20 @@ export default {
         results.push( result );
         this.disposeRecord(bets, results, refunds);
         this.disposeRankRecord(results, bets)
+
+        // // 如果是自己的
+        // if ( this.bet.id && (this.bet.id===result.args.BetID) ) {
+        // }
+
+        if ( this.roll.state.indexOf('bet') !== 0 ) return;
+
+        this.roll.state = 'result';
+        this.showAds('result');
+        
+        this.roll.result = +result.args.Status.toNumber()
+        this.roll.value  = +result.args.DiceResult.toNumber()
+        this.updatePageData();
+        LogResult.stopWatching();
       });
       LogRefund.watch((err,result)=>{
         if ( err ) return console.error(err);
@@ -1065,11 +1090,13 @@ export default {
         // 
         this.roll.state = 'roll';
         this.showAds('roll');
+        return;
+
         // 投注支付监控
         LogBet.watch((err, result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'userRollDice'})
           if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
-          if ( this.roll.BetID && (this.roll.BetID!==result.args.BetID) ) return;
+          // if ( this.roll.BetID && (this.roll.BetID!==result.args.BetID) ) return;
 
           // console.log( result )
           console.warn('支付成功');
@@ -1137,7 +1164,6 @@ export default {
     },
     // 返回
     backToRoll() {
-      this.roll.BetID  = '';
       this.roll.state  = 'ready';
       this.roll.result = '';
       this.roll.value  = undefined;
