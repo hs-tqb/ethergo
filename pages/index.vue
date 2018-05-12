@@ -51,7 +51,7 @@
         h3 { margin:10px 0 20px 0; }
         .tips { margin:20px 0; }
         .ads  { 
-          margin-top:-8px; height:16px; font-size:12px; line-height:16px; overflow:visible;
+          height:16px; font-size:12px; line-height:16px; overflow:visible;
           ul, ul li { transition-duration:300ms; }
           li { 
             opacity:0; color:#c0c4cc;
@@ -281,12 +281,12 @@
         <span class="text-danger">{{computedUserProfit}}</span>
         ETH和
         <span class="text-danger">{{computedVppIfWin}}</span>&nbsp;
-        <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 转到玩家钱包；</p>
+        <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；</p>
         <p>若大于等于
           <span class="text-highlight">{{computedUserNumber}}</span>
           则获得
           <span class="text-danger">{{computedVppIfLose}}</span>&nbsp;
-          <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 
+          <a :href="vppLink" target="_blank">VPP</a> 
         </p>
       </div>
       <div>
@@ -339,7 +339,7 @@
           <ul ref="ads-list">
             <li>Etherwow是中国最火的以太坊猜数字小游戏，无需注册，即点即玩</li>
             <li>随机数通过<a href="https://www.random.org/">random.org</a>根据实时大气扰动得出，保证公平</li>
-            <li>为增加透明性，本网站智能合约源码已开源，玩家可以随时查看</li>
+            <li>为增加透明性，本网站<a :href="`https://etherscan.io/address/${contract.address}#code`" target="_blank">智能合约</a>源码已开源，玩家可以随时查看</li>
           </ul>
         </div>
         <div class="number-block">
@@ -467,7 +467,13 @@
             2.系统在1~100中产生一个随机数（随机数算法可证明公平）
           </li>
           <li>
-            3.玩家选择的数字大于系统产生的随机数，系统自动将 ETH+VPP 转到玩家钱包；若玩家选择的数字小于等于系统产生的随机数 ，系统自动将对应比例的 VPP 转到玩家钱包
+            3.玩家选择的数字大于系统产生的随机数，系统自动将 ETH+<a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；若玩家选择的数字小于等于系统产生的随机数 ，系统自动将对应比例的 <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包
+          </li>
+          <li>
+            4.PC端请使用chrome + <a href="/help/metamask" target="_blank">metamask</a>访问
+          </li>
+          <li>
+            5.手机端请使用 <a href="/help/dapp" target="_blank">Dapp浏览器访问</a>
           </li>
         </ul>
       </div>
@@ -519,7 +525,13 @@
               2.系统在1~100中产生一个随机数（随机数算法可证明公平）
             </li>
             <li>
-              3.玩家选择的数字大于系统产生的随机数，系统自动将 ETH+VPP 转到玩家钱包；若玩家选择的数字小于等于系统产生的随机数 ，系统自动将对应比例的 VPP 转到玩家钱包
+              3.玩家选择的数字大于系统产生的随机数，系统自动将 ETH+<a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；若玩家选择的数字小于等于系统产生的随机数 ，系统自动将对应比例的 <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包
+            </li>
+            <li>
+              4.PC端请使用chrome + <a href="/help/metamask" target="_blank">metamask</a>访问
+            </li>
+            <li>
+              5.手机端请使用 <a href="/help/dapp" target="_blank">Dapp浏览器访问</a>
             </li>
           </ul>
         </div>
@@ -528,7 +540,7 @@
     <!-- <div id="dialog-agreement" class="dialog-container" :class="showAgreement?'show':''">
       <div class="inner-wrapper">
         <p>系统在1~100中产生一个随机数（<a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a> 可证明公平）；
-        <br>如果随机数小于<span class="text-highlight">{{computedUserNumber}}</span>则系统自动将{{computedUserProfit}}ETH和{{computedVppIfWin}} <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 转到玩家钱包；<br>若大于等于<span class="text-highlight">{{computedUserNumber}}</span>则获得{{computedVppIfLose}} <a href="http://valp.io/zh-tw" target="_blank">VPP</a> 
+        <br>如果随机数小于<span class="text-highlight">{{computedUserNumber}}</span>则系统自动将{{computedUserProfit}}ETH和{{computedVppIfWin}} <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；<br>若大于等于<span class="text-highlight">{{computedUserNumber}}</span>则获得{{computedVppIfLose}} <a :href="vppLink" target="_blank">VPP</a> 
         </p>
         <div class="btn-wrapper">
           <input type="button" class="btn primary" value="确定" @click="doRoll">
@@ -554,6 +566,7 @@ export default {
   },
   data() {
     return {
+      vppLink:"http://valp.io/zh-tw",
       showGuide:false,
       showAgreement:false,
       hash:'',
