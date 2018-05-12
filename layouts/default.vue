@@ -156,11 +156,11 @@ export default {
     if ( process.env.NODE_ENV === 'development' && (/iphone|ios|android|ipad/gi).test(navigator.userAgent) ) {
       localStorage.removeItem('hasReadGuide')
       
+    }
       let script = document.createElement('script');
       script.onload = function() { eruda.init(); }
       document.body.appendChild(script)
       script.src = '//cdn.bootcss.com/eruda/1.4.2/eruda.min.js'
-    }
 
     this.hash = location.hash
   }
