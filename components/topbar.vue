@@ -7,7 +7,7 @@
     background-color:@color-primary;
     padding:0 20px;
     #account-info {
-      max-height:42px; text-align:right; font-size:12px; cursor:pointer;
+      max-height:42px; line-height:16px; text-align:right; font-size:12px; cursor:pointer;
       // #address { margin-bottom:3px; }
       // h4 { margin-bottom:3px; }
       .flow(column); justify-content:space-between;

@@ -731,8 +731,6 @@ export default {
       // 余额 (单位 eth)
       let balance = +this.web3.fromWei( wei );
       let vppBalance = +this.web3.fromWei( vppWei )
-      console.log( vppWei );
-      console.log(vppBalance);
 
       console.warn(`余额: ${balance} (eth)`)
 
@@ -1185,8 +1183,11 @@ export default {
       this.hash = location.hash||'#record';
     },
     async checkNetwork() {
+      
       return await new Promise((resolve,reject)=>{
         this.getContract().maxNumber((err,result)=>{
+          // if ( err ) reject(false)
+          // else resolve(true)
           resolve(!err)
         });
       })
@@ -1208,30 +1209,21 @@ export default {
   // async created() {
     this.initWeb3();
 
-    this.isNetworkOK = await this.checkNetwork();
+    // this.isNetworkOK = await this.checkNetwork();
+    this.isNetworkOK = this.web3.isConnected();
+
+    console.log('___________________'+ this.isNetworkOK)
+
     if ( this.isNetworkOK ) {
-      // this.hashChange();
       this.updatePageData(true)
       console.warn(`合约地址: ${this.contract.address}`);
-      // if ( !this.isAccountOK ) {
-      //   this.hash = location.hash = '#guide';
-      // }
     } else {
-      // this.commonErrorCatcher('未连接到以太坊主网')
       this.hash = location.hash = '#guide';
       this.$store.commit('setAccount', {...this.account, loaded:true});
     }
-    // console.log( '______________isNetw', this.isNetworkOK );
-
 
     window.addEventListener('hashchange', this.hashChange);
 
-
-    this.getContract().maxNumber((err,result)=>{
-      console.log('___________________maxNumber');
-      console.log( err || result.toNumber() );
-      console.log('___________________maxNumber');
-    })
   },
   mounted() {
     // setTimeout(function() {
