@@ -16,9 +16,11 @@ module.exports = {
     //   { src:'/js/web3/web3.min.js' }
     // ]
     script:[
-      { src:'/syntaxhighlighter/scripts/shCore.js' }, 
+      { src:'/syntaxhighlighter/scripts/shCore.js' },
       { src:'/syntaxhighlighter/scripts/shBrushJScript.js' },
       { src:'/syntaxhighlighter/scripts/init.js' },
+      { src:'https://www.googletagmanager.com/gtag/js?id=UA-119117435-1'},
+      { src:'/googleanalytics/init.js' }
     ],
     link:[
       { src:'~/syntaxhighlighter/styles/shCore.css' },
