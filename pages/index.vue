@@ -2,7 +2,7 @@
   @import url(~assets/css/variables.less);
   .text-highlight { color:@color-highlight; }
   #page-home {
-     p.info { 
+     p.info {
       font-size:12px; line-height:20px; color:@color-text-placeholder;
       span { font-size:12px; color:@color-danger; }
     }
@@ -11,13 +11,13 @@
       position:relative; .flow; justify-content:space-between; max-height:800px;
       & > *:not(:last-child) { margin-bottom:15px; }
       #bet-type {
-        .flow(row); 
+        .flow(row);
         .label { padding:10px 0; .flow(column); justify-content:space-between; }
         ul { .flow(row); flex:1; margin-left:30px; }
-        ul li { 
-          .flow(column); flex:1; justify-content:space-between; 
+        ul li {
+          .flow(column); flex:1; justify-content:space-between;
           margin:0 15px; padding:10px 0;
-          text-align:center; 
+          text-align:center;
           background-color:#666;
           .radius(8px);
           cursor:pointer;
@@ -35,7 +35,7 @@
 
       .btn.block { margin-bottom:10px; }
       // #compensate + .btn { margin-bottom:10px; }
-      p.info { 
+      p.info {
         text-align:center;
         span { font-size:12px; color:@color-danger; }
       }
@@ -46,23 +46,23 @@
       h2 { text-align:left; }
       .border { margin:0 30px; }
       .number-block { font-size:100px; }
-      .inner-panel { 
+      .inner-panel {
         position:relative;
         h3 { margin:10px 0 20px 0; }
         .tips { margin:20px 0; }
-        .ads  { 
+        .ads  {
           height:16px; font-size:12px; line-height:16px; overflow:visible;
           ul, ul li { transition-duration:300ms; }
-          li { 
+          li {
             opacity:0; color:#c0c4cc;
             // &:nth-child(1) { opacity:1; }
           }
         }
         .info { padding:10px 20px; }
       }
-      .btn-wrapper { 
+      .btn-wrapper {
         padding:0 15px;
-        margin-bottom:20px; 
+        margin-bottom:20px;
         // padding:0 5px 0 25px;
         // .flow(row);
         // .block { flex:1; }
@@ -85,12 +85,12 @@
       // table tbody td { text-align:center; }
       // table td span { .text-ellipsis; width:auto; max-width:20vw;  }
     }
-    // 
+    //
     #panel-loading {
       .flow; align-items:center; justify-content:center;
     }
     #panel-guide {
-      .anchors { 
+      .anchors {
         line-height:1.2;
         margin:20px 0;
         li { margin:0; }
@@ -117,7 +117,7 @@
       .flow; justify-content:center; align-items:center;
       background:rgba(0,0,0,0);
       .inner-wrapper {
-        position:relative; 
+        position:relative;
         padding:30px; width:500px; line-height:1.4; word-break:break-all;
         background-color:rgba(0,0,0,0.7); .radius(10px);
         li { margin-bottom:12px; }
@@ -128,11 +128,11 @@
       .flow; justify-content:center; align-items:center;
       background-color:rgba(0,0,0,0);
       .inner-wrapper {
-        position:relative; 
+        position:relative;
         padding:20px 30px; width:400px; line-height:1.4; word-break:break-all;
         background-color:rgba(0,0,0,0.9); .radius(10px);
-        .btn-wrapper { 
-          margin-top:20px; text-align:center; 
+        .btn-wrapper {
+          margin-top:20px; text-align:center;
           .btn { width:200px; }
         }
       }
@@ -142,8 +142,8 @@
   @panel-height-mb:calc( 100% - 90px );
   @panel-height-pc:calc( 100% - 110px );
   @media screen and (max-width:411px) {
-    
-    #page-home { 
+
+    #page-home {
       .panel#panel-bet,
       .panel#panel-roll { margin:0; padding:5px 10px; min-height:100%; }
       .panel { padding:30px 10px; min-height:100%; }
@@ -174,10 +174,10 @@
     }
     #page-home #panel-roll .inner-panel .ads {
       ul {
-        &.roll { 
+        &.roll {
           li:nth-child(1) { opacity:1 }
         }
-        &.bet { 
+        &.bet {
           transform:translate3d(0,-32px,0);
           li:nth-child(2) { opacity:1 }
         }
@@ -193,15 +193,15 @@
     }
   }
   @media screen and (min-width:412px) {
-    #page-home { 
+    #page-home {
       // padding: 0 20px;
       .flow(row); height:@panel-height-pc; padding-top:10px; overflow:hidden;
-      .panel { 
+      .panel {
         flex:1; margin:0 10px; min-width:375px; .scroll;
         // &:not(#panel-bet):not(#panel-roll) { flex:1; }
       }
-      #panel-bet { 
-        min-width:500px; 
+      #panel-bet {
+        min-width:500px;
         // & > * { margin-bottom:80px!important; }
         #bet-rule {
           p { white-space:nowrap; }
@@ -212,14 +212,14 @@
         // height:100%;
         iframe { height:calc( 100% - 38px); }
       }
-      // #panel-bet, 
+      // #panel-bet,
       // #panel-roll {  }
       #panel-roll .inner-panel .ads {
         ul {
-          &.roll { 
+          &.roll {
             li:nth-child(1) { opacity:1 }
           }
-          &.bet { 
+          &.bet {
             transform:translate3d(0,-16px,0);
             li:nth-child(2) { opacity:1 }
           }
@@ -239,7 +239,7 @@
   #panel-roll {
     .input-list {
       display:none;
-      .input-wrapper { 
+      .input-wrapper {
         margin:5px 20px; height:30px;
         .flow(row); align-items:center;
         label { display:block; width:50px; text-align:left; }
@@ -286,7 +286,7 @@
           <span class="text-highlight">{{computedUserNumber}}</span>
           则获得
           <span class="text-danger">{{computedVppIfLose}}</span>&nbsp;
-          <a :href="vppLink" target="_blank">VPP</a> 
+          <a :href="vppLink" target="_blank">VPP</a>
         </p>
       </div>
       <div>
@@ -366,10 +366,10 @@
       </div>
 
       <div class="btn-wrapper" v-if="typeof roll.result==='number'">
-        <input type="button" 
+        <input type="button"
           class="btn primary block"
           @click="backToRoll"
-          value="再玩一次" 
+          value="再玩一次"
         >
         <!-- <input type="button" class="btn text" value="分享"> -->
         <!-- <i class="icon">分享</i> -->
@@ -385,9 +385,9 @@
       <p>系统将自动处理对玩家的打款，但是不排除打款失败的情况。<br>如果系统给玩家打款失败，系统将记录下来，玩家稍后可以在此手动点击提现。</p>
       <p>账户: <a :href="`https://etherscan.io/address/${account.address}`" target="_blank">{{account.address}}</a></p>
       <p>可提现金额: {{account.pendingWithdrawal}} ETH</p>
-      <input type="button" class="btn primary" 
+      <input type="button" class="btn primary"
       :disabled="!account.pendingWithdrawal"
-      @click="doWithdraw" 
+      @click="doWithdraw"
       :value="`提现`">
     </div>
     <!-- 记录 -->
@@ -540,7 +540,7 @@
     <!-- <div id="dialog-agreement" class="dialog-container" :class="showAgreement?'show':''">
       <div class="inner-wrapper">
         <p>系统在1~100中产生一个随机数（<a href="http://www.oraclize.it/papers/random_datasource-rev1.pdf" target="_blank">随机数算法</a> 可证明公平）；
-        <br>如果随机数小于<span class="text-highlight">{{computedUserNumber}}</span>则系统自动将{{computedUserProfit}}ETH和{{computedVppIfWin}} <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；<br>若大于等于<span class="text-highlight">{{computedUserNumber}}</span>则获得{{computedVppIfLose}} <a :href="vppLink" target="_blank">VPP</a> 
+        <br>如果随机数小于<span class="text-highlight">{{computedUserNumber}}</span>则系统自动将{{computedUserProfit}}ETH和{{computedVppIfWin}} <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；<br>若大于等于<span class="text-highlight">{{computedUserNumber}}</span>则获得{{computedVppIfLose}} <a :href="vppLink" target="_blank">VPP</a>
         </p>
         <div class="btn-wrapper">
           <input type="button" class="btn primary" value="确定" @click="doRoll">
@@ -566,7 +566,7 @@ export default {
   },
   data() {
     return {
-      vppLink:"http://valp.io/zh-tw",
+      vppLink:"/vpp",
       showGuide:false,
       showAgreement:false,
       hash:'',
@@ -637,7 +637,7 @@ export default {
         // result:4,
         // value:1
       },
-      // 
+      //
       metamaskOpt: {
         gas: 400000,
         gasPrice: process.env.NODE_ENV==='development'?110000000000: 11000000000
@@ -687,7 +687,7 @@ export default {
     // --------- 功能 ---------
     // 初始化 web3
     initWeb3() {
-      this.web3 = typeof web3 !== 'undefined'? 
+      this.web3 = typeof web3 !== 'undefined'?
         new Web3(web3.currentProvider):
         new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
     },
@@ -752,13 +752,13 @@ export default {
     },
     // 获取合约
     getContract() {
-      return this.contract.instance? 
+      return this.contract.instance?
         this.contract.instance:
         ( this.contract.instance=this.web3.eth.contract(this.contract.abi).at(this.contract.address) );
     },
     // 获取vpp合约
     getVppContract() {
-      return this.vppContract.instance? 
+      return this.vppContract.instance?
         this.vppContract.instance:
         ( this.vppContract.instance=this.web3.eth.contract(this.vppContract.abi).at(this.vppContract.address) );
     },
@@ -776,7 +776,7 @@ export default {
 
       this.record.blockNumber = blockNumber;
       // console.log('______________________blockNumber', blockNumber)
-      
+
       // 估计n天的区块数, (假设一分钟上链15个)
       let dayBlockNumber = (60*24*15) * 7;
 
@@ -788,18 +788,18 @@ export default {
 
 
       LogBet = contract.LogBet(
-        { _userAddress: '' }, 
+        { _userAddress: '' },
         { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
       );
       ResultBet = contract.LogResult(
-        { _userAddress: '' }, 
+        { _userAddress: '' },
         { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
       );
       LogRefund = contract.LogRefund(
-        { _userAddress: '' }, 
+        { _userAddress: '' },
         { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
       );
-      
+
       LogBet.watch((err,result)=>{
         if ( err ) return console.error(err);
         if ( bets.some(r=>r.args.BetID===result.args.BetID) ) return;
@@ -808,7 +808,7 @@ export default {
         this.disposeRankRecord(results, bets)
 
         // 自己的投注
-        // 如果流程不对, 如果已经有在监控的, 
+        // 如果流程不对, 如果已经有在监控的,
         if ( this.roll.BetID ) return console.log('111111111', this.roll.BetID);
         if ( this.roll.state !=='roll' ) return console.log('2222222', this.roll.state);
         if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
@@ -839,7 +839,7 @@ export default {
         console.log('____________________result')
         console.log( `${this.roll.BetID}, ${result.args.BetID}` )
         console.log('____________________result')
-        
+
         this.roll.state = 'result';
         this.showAds('result');
         this.roll.result = +result.args.Status.toNumber()
@@ -951,7 +951,7 @@ export default {
     },
     // 提现
     doWithdraw() {
-      if ( this.account.pendingWithdrawal == 0 ) 
+      if ( this.account.pendingWithdrawal == 0 )
       return this.commonErrorCatcher.call(this,err,{from:'doWithdraw'})
 
       let contract = this.getContract();
@@ -963,8 +963,8 @@ export default {
       // 支付参数
 
       contract.userWithdrawPendingTransactions(
-        // this.account.address, 
-        // this.web3.toWei(this.account.pendingWithdrawal), 
+        // this.account.address,
+        // this.web3.toWei(this.account.pendingWithdrawal),
         additionParam,
         (err, result)=>{
         if ( err ) return this.commonErrorCatcher.call(this,err,{from:'userWithdrawPendingTransactions'})
@@ -1012,7 +1012,7 @@ export default {
       }
 
       warning && this.commonErrorCatcher.call(this,warning,{from:'checkBalanceAvailable'})
-      
+
       return !warning;
     },
 
@@ -1073,11 +1073,11 @@ export default {
     // 投注
     doRoll() {
       if ( !this.checkAccountValid() ) return;
-      
+
       // this.showAgreement = false;
       document.documentElement.scrollTop = 0
       document.body.scrollTop = 0
-      
+
       // 支付参数
       let additionParam = {
         from: this.account.address,
@@ -1092,7 +1092,7 @@ export default {
       contract.userRollDice(+this.computedUserNumber, additionParam, (err, hash)=>{
         if ( err ) return this.commonErrorCatcher('已取消支付');
         let LogBet = contract.LogBet();
-        // 
+        //
         this.roll.state = 'roll';
         this.showAds('roll');
       })
@@ -1107,7 +1107,7 @@ export default {
       if ( list.className === 'result' ) {
         return;
       }
-      
+
       if ( state === 'bet' ) {
         setTimeout(this.showAds.bind(this,'bet-2'),10000)
       }
@@ -1138,7 +1138,7 @@ export default {
 
         state = 'danger'
         // value = this.getVppQtyIfLose(
-        //   +this.web3.fromWei(r.BetValue.toNumber()), 
+        //   +this.web3.fromWei(r.BetValue.toNumber()),
         //   +r.UserNumber.toNumber()
         // )
         value  = +this.web3.fromWei(r.tokenReward.toNumber())
@@ -1175,7 +1175,7 @@ export default {
       this.hash = location.hash||'#record';
     },
     async checkNetwork() {
-      
+
       return await new Promise((resolve,reject)=>{
         this.getContract().maxNumber((err,result)=>{
           // if ( err ) reject(false)
