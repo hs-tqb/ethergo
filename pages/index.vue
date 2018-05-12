@@ -809,8 +809,8 @@ export default {
 
         // 自己的投注
         // 如果流程不对, 如果已经有在监控的, 
-        if ( this.roll.BetID ) return;
-        if ( this.roll.state !=='roll' ) return;
+        if ( this.roll.BetID ) return console.log('111111111', this.roll.BetID);
+        if ( this.roll.state !=='roll' ) return console.log('2222222', this.roll.state);
         if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
 
         console.log('____________________bet')
