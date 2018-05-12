@@ -290,7 +290,7 @@
 
     <p><strong>安装方法二</strong>：<br/>
     1.安卓用户<a href="http://od3p9hvyr.bkt.clouddn.com/dappB.apk">点此下载</a>最新版的DAPP浏览器 （无需翻墙）<br/>
-    2.ios用户，打开app应用商店，在首页滚动条拖到最低端，点击自己的apple id，点击注销<br/>
+    2.ios用户，打开app应用商店，在首页滚动条拖到最底端，点击自己的apple id，点击注销<br/>
     <img src="http://od3p9hvyr.bkt.clouddn.com/2018-05-10_15-09-42.png" alt=""/></p>
 
     <p>或者在设置 - iTunes store与app store - 点击apple id，点击注销<br/>
