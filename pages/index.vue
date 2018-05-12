@@ -813,6 +813,10 @@ export default {
         if ( this.roll.state !=='roll' ) return;
         if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
 
+        console.log('____________________bet')
+        console.log( `id: ${result.args.BetID}` )
+        console.log('____________________bet')
+
         // if ( this.roll.BetID && (this.roll.BetID!==result.args.BetID) ) return;
         console.warn('支付成功');
         this.roll.state = 'bet';
@@ -830,6 +834,11 @@ export default {
         // 自己的投注
         if ( this.roll.state.indexOf('bet') !== 0 ) return;
         if ( this.roll.BetID !== result.args.BetID ) return;
+
+
+        console.log('____________________result')
+        console.log( `${this.roll.BetID}, ${result.args.BetID}` )
+        console.log('____________________result')
         
         this.roll.state = 'result';
         this.showAds('result');
@@ -1086,59 +1095,6 @@ export default {
         // 
         this.roll.state = 'roll';
         this.showAds('roll');
-        return;
-
-        // 投注支付监控
-        LogBet.watch((err, result)=>{
-          if ( err ) return this.commonErrorCatcher.call(this,err,{from:'userRollDice'})
-          if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
-          // if ( this.roll.BetID && (this.roll.BetID!==result.args.BetID) ) return;
-
-          // console.log( result )
-          console.warn('支付成功');
-          this.roll.state = 'bet';
-          this.roll.BetID = result.args.BetID;
-
-          this.showAds('bet');
-          // this.record.all.push({})
-          // this.record.user.push(result.args)
-          this.updatePageData();
-          LogBet.stopWatching();
-        })
-        // 投注结果监控
-        let LogResult = contract.LogResult();
-        LogResult.watch((err, result)=>{
-          if ( err ) return this.commonErrorCatcher.call(this,err,{from:'LogResult.watch'});
-          if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 result');
-          if ( result.args.BetID !== this.roll.BetID ) return console.log('其它的 bet');
-
-
-          this.roll.state = 'result';
-          this.showAds('result');
-          
-          this.roll.result = +result.args.Status.toNumber()
-          this.roll.value  = +result.args.DiceResult.toNumber()
-
-
-
-
-          // emailjs.send("gmail", "etherwow", {
-          //   "mail_userBetId":"qweqwe",
-          //   "mail_betNum":"123",
-          //   "mail_resultNum":"",
-          //   "mail_result":"",
-          //   "mail_userAddress":"",
-          //   "mail_proof":"",
-          //   "mail_resultTimestamp":"123",
-          //   "mail_ethAmt":"123",
-          //   "mail_tokenAmt":"123",
-          //   "mail_totalAmt":"123"
-          // })
-
-
-          this.updatePageData();
-          LogResult.stopWatching();
-        })
       })
     },
     showAds(state) {
