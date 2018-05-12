@@ -778,7 +778,7 @@ export default {
       // console.log('______________________blockNumber', blockNumber)
       
       // 估计n天的区块数, (假设一分钟上链10个)
-      let dayBlockNumber = (60*24*15) * 7;
+      let dayBlockNumber = (60*24*15) * 1;
 
       // 获取合约
       let contract = this.getContract();
