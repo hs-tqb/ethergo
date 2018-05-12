@@ -815,7 +815,6 @@ export default {
         this.roll.state = 'bet';
         this.showAds('bet');
         this.updatePageData();
-        LogBet.stopWatching();
       })
       ResultBet.watch((err,result)=>{
         if ( err ) return console.error(err);
@@ -831,15 +830,13 @@ export default {
         // if ( this.bet.id && (this.bet.id===result.args.BetID) ) {
         // }
 
+        // 刷新
         if ( this.roll.state.indexOf('bet') !== 0 ) return;
-
         this.roll.state = 'result';
         this.showAds('result');
-        
         this.roll.result = +result.args.Status.toNumber()
         this.roll.value  = +result.args.DiceResult.toNumber()
         this.updatePageData();
-        LogResult.stopWatching();
       });
       LogRefund.watch((err,result)=>{
         if ( err ) return console.error(err);
