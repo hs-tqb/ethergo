@@ -687,13 +687,37 @@ export default {
     // --------- 功能 ---------
     // 初始化 web3
     initWeb3() {
-      console.log( 'web3',  typeof web3 !== 'undefined')
 
 
       // this.web3 = typeof web3 !== 'undefined'?
         // new Web3(web3.currentProvider):
         // new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-        this.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/aikxiYGH1Yoq8PVbKNB6"));
+        // new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        console.log('0_____-')
+        console.log( typeof web3 !== 'undefined' )
+
+        this.web3 = new Web3(web3.currentProvider);
+        this.web3Watcher = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/aikxiYGH1Yoq8PVbKNB6"))
+
+        // this.web3 = new Web3(web3.currentProvider)
+        return;
+
+        this.web3 = new Web3(new Web3.providers.WebsocketProvider('wss://mainnet.infura.io/ws'));
+
+        const subscription = web3.eth.subscribe('newBlockHeaders', (error, blockHeader) => {
+          if (error) return console.error(error);
+
+          console.log('Successfully subscribed!', blockHeader);
+        }).on('data', (blockHeader) => {
+          console.log('data: ', blockHeader);
+        });
+
+        // unsubscribes the subscription
+        subscription.unsubscribe((error, success) => {
+          if (error) return console.error(error);
+
+          console.log('Successfully unsubscribed!');
+        });
     },
     hideGuide() {
       console.log('hide');
@@ -755,7 +779,12 @@ export default {
       this.$store.commit('setAccount', { ...this.account, address, wei, balance, vppWei, vppBalance, loaded:true })
     },
     // 获取合约
-    getContract() {
+    getContract(forWatching) {
+      if ( forWatching ) {
+        return this.web3Watcher.eth.contract(this.contract.abi).at(this.contract.address);
+      } else {
+        return this.web3.eth.contract( this.contract.abi ).at(this.contract.address)
+      }
       return this.contract.instance?
         this.contract.instance:
         ( this.contract.instance=this.web3.eth.contract(this.contract.abi).at(this.contract.address) );
@@ -785,7 +814,7 @@ export default {
       let dayBlockNumber = (60*24*15) * 7;
 
       // 获取合约
-      let contract = this.getContract();
+      let contract = this.getContract(true);
 
       let LogBet,ResultBet,LogRefund,
           bets=[], results=[], refunds=[];
@@ -1206,7 +1235,8 @@ export default {
     this.initWeb3();
 
     // this.isNetworkOK = await this.checkNetwork();
-    this.isNetworkOK = this.web3.isConnected();
+    // this.isNetworkOK = this.web3.isConnected();
+    this.isNetworkOK = typeof web3 !== 'undefined'
 
     console.log('___________________'+ this.isNetworkOK)
 
