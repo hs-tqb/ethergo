@@ -689,15 +689,13 @@ export default {
     initWeb3() {
 
 
-      // this.web3 = typeof web3 !== 'undefined'?
-        // new Web3(web3.currentProvider):
-        // new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-        // new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-        console.log('0_____-')
-        console.log( typeof web3 !== 'undefined' )
+      this.web3 = typeof web3 !== 'undefined'?
+        new Web3(web3.currentProvider):
+        new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
-        this.web3 = new Web3(web3.currentProvider);
-        this.web3Watcher = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/aikxiYGH1Yoq8PVbKNB6"))
+      this.web3Watcher = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/bjPSTQ5VH6r0zRznudTB"))
+
+
 
         // this.web3 = new Web3(web3.currentProvider)
         return;
@@ -832,7 +830,6 @@ export default {
         { _userAddress: '' },
         { fromBlock   : blockNumber>dayBlockNumber? blockNumber-dayBlockNumber: blockNumber }
       );
-
       LogBet.watch((err,result)=>{
         if ( err ) return console.error(err);
         if ( bets.some(r=>r.args.BetID===result.args.BetID) ) return;
@@ -1266,6 +1263,14 @@ export default {
     //   console.log('~~~~~~~~~~~~~~~~');
     //   console.log( resp )
     //   console.log('~~~~~~~~~~~~~~~~');
+    // })
+
+
+
+    // axios.post('https://api.infura.io/v1/jsonrpc/mainnet/eth_blockNumber?token=bjPSTQ5VH6r0zRznudTB')
+    // .then(resp=>{
+    //   console.log('sss________')
+    //   console.log(resp)
     // })
   },
   components: {
