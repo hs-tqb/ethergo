@@ -687,35 +687,16 @@ export default {
     // --------- 功能 ---------
     // 初始化 web3
     initWeb3() {
-
-
       this.web3 = typeof web3 !== 'undefined'?
         new Web3(web3.currentProvider):
         new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
-      this.web3Watcher = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/bjPSTQ5VH6r0zRznudTB"))
 
-
-
-        // this.web3 = new Web3(web3.currentProvider)
-        return;
-
-        this.web3 = new Web3(new Web3.providers.WebsocketProvider('wss://mainnet.infura.io/ws'));
-
-        const subscription = web3.eth.subscribe('newBlockHeaders', (error, blockHeader) => {
-          if (error) return console.error(error);
-
-          console.log('Successfully subscribed!', blockHeader);
-        }).on('data', (blockHeader) => {
-          console.log('data: ', blockHeader);
-        });
-
-        // unsubscribes the subscription
-        subscription.unsubscribe((error, success) => {
-          if (error) return console.error(error);
-
-          console.log('Successfully unsubscribed!');
-        });
+      if (process.env.NODE_ENV==='development') {
+        this.web3Watcher = this.web3;
+      } else {
+        this.web3Watcher = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/bjPSTQ5VH6r0zRznudTB"))
+      }
     },
     hideGuide() {
       console.log('hide');
