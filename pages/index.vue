@@ -693,7 +693,7 @@ export default {
       // this.web3 = typeof web3 !== 'undefined'?
         // new Web3(web3.currentProvider):
         // new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-        this.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/XyzEcUCJOQunP1PHWBJF"));
+        this.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/aikxiYGH1Yoq8PVbKNB6"));
     },
     hideGuide() {
       console.log('hide');
