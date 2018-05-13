@@ -695,7 +695,8 @@ export default {
       if (process.env.NODE_ENV==='development') {
         this.web3Watcher = this.web3;
       } else {
-        this.web3Watcher = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/bjPSTQ5VH6r0zRznudTB"))
+        this.web3Watcher = this.web3;
+        // this.web3Watcher = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/bjPSTQ5VH6r0zRznudTB"))
       }
     },
     hideGuide() {
