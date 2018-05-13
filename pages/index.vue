@@ -690,10 +690,10 @@ export default {
       console.log( 'web3',  typeof web3 !== 'undefined')
 
 
-      this.web3 = typeof web3 !== 'undefined'?
-        new Web3(web3.currentProvider):
+      // this.web3 = typeof web3 !== 'undefined'?
+        // new Web3(web3.currentProvider):
         // new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-        new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/XyzEcUCJOQunP1PHWBJF"));
+        this.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/XyzEcUCJOQunP1PHWBJF"));
     },
     hideGuide() {
       console.log('hide');
