@@ -607,8 +607,8 @@ export default {
           // { eth:0.1, profit:1.000, num:9, real:1.0250000000000001 },
           { eth:0.1, profit:0.12,  num:76  },
           { eth:0.2, profit:0.36, num:51 },
-          { eth:1,   profit:2, num:31 },
-          { eth:0.5, profit:2.5, num:16 },
+          { eth:1,   profit:3, num:31 },
+          { eth:0.5, profit:3, num:16 },
         ],
         range: {
           value:0,
