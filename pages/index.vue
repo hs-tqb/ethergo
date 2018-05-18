@@ -279,16 +279,20 @@
           已超过最大收益限制 ( {{bet.profit.max.toFixed(4)}} eth )，请选择另一档位</span>
       </p>
       <div style="display:flex; min-height:125px; flex-direction:row; justify-content:space-around;">
-        <div>
-          <img :src="bet.qrcodes[bet.index]" height="100">
-          <!-- <span style="font-size:10px;">{{bet.addrs[bet.index]}}</span> -->
-          <p style="line-height:40px; text-align:center;">扫码投注</p>
+        <div data-clipboard-target="#qrcodeAddress" id="qrcodeCopyBtn" position:relative;>
+          <!-- <div style="height:0; overflow:hidden;opacity:0;"> -->
+            <!-- <input readonly id="qrcodeAddress" type="text" :value="bet.addrs[bet.index]"> -->
+          <!-- </div> -->
+          <img :src="bet.qrcodes[bet.index]" height="100" style="display:block;margin:0 auto;">
+          <!-- <span style="font-size:10px;width:0;height:0;" id="qrcodeAddress">{{bet.addrs[bet.index]}}</span> -->
+          <input readonly id="qrcodeAddress" type="text" :value="bet.addrs[bet.index]" style="position:absolute; top:0; left:0; opacity:0;">
+          <p style="line-height:40px; text-align:center;">扫码投注(点击复制)</p>
         </div>
         <div v-if="isAccountAvailable" @click="doRoll" style="cursor:pointer">
           <!-- <input type="button" class="btn primary" value="使用钱包投注" :disabled="!rollable" @click="doRoll"> -->
           <!-- <p >使用钱包投注</p> -->
-          <img src="~/assets/img/mds.png" v-if="isMobile" height="100">
-          <img src="~/assets/img/metamask.png" v-else height="100">
+          <img src="~/assets/img/mds.png" v-if="isMobile" height="100" style="display:block;margin:0 auto;">
+          <img src="~/assets/img/metamask.png" v-else height="100" style="display:block;margin:0 auto;">
           <p style="line-height:40px; text-align:center;" v-if="isMobile">麦子钱包投注</p>
           <p style="line-height:40px; text-align:center;" v-else>metamask投注</p>
         </div>
@@ -1222,6 +1226,24 @@ export default {
     
     this.mobile = localStorage.getItem('_mobile')||'';
     this.email = localStorage.getItem('_email')||'';
+
+
+    // 点击复制
+    var script = document.createElement('script');
+    script.src = '/js/clipboard.min.js';
+    script.onload = ()=>{
+      var clipboard = new ClipboardJS('#qrcodeCopyBtn');
+      var vm = this;
+      clipboard.on('success', function(e) {
+        e.clearSelection();
+        vm.$store.commit('showMessageDialog', {type:'success', text:'复制成功'});
+      });
+      clipboard.on('error', function(e) {
+        // document.querySelector('#vpp-wallet-address').removeAttribute('readonly');
+        vm.$store.commit('showMessageDialog', {type:'failure', text:'复制失败'});
+      });
+    };
+    document.body.appendChild(script);
   },
   components: {
     footer1
