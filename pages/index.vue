@@ -547,7 +547,7 @@
     </div>
     <div id="panel-contract" class="panel" v-if="hash==='#contract'">
       <h3>
-        <a :href="`https://etherscan.io/address/${contract.address}#code`" target="_blank">智能合约地址</a>
+        <a :href="`https://etherscan.io/address/${contracts.hub}#code`" target="_blank">智能合约地址</a>
       </h3>
       <iframe src="/code" />
     </div>
@@ -639,6 +639,7 @@ export default {
         all:[],
         rank:[]
       },
+      contracts,
       // 投注状态
       bet: {
         gears:contracts.gears,
