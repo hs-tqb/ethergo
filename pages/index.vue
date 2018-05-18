@@ -678,7 +678,7 @@ export default {
       return this.computedUserSelection.amount;
     },
     computedUserProfit() {
-      return this.computedUserSelection.profit;
+      return this.computedUserSelection.profit - this.computedUserAmount;
       // let { wager, range, roll, profit } = this.bet;
       // if ( !profit.max ) return 0;
       // return ((((this.computedUserAmount * (100-(range.value))) / (range.value)+this.computedUserAmount))*900/1000)-this.computedUserAmount;
@@ -704,7 +704,9 @@ export default {
       return !!this.account.address.trim()
     },
     isUserProfitOK() {
-      return this.computedUserProfit? this.computedUserProfit <= this.bet.profit.max: false;
+      return this.computedUserProfit? 
+        this.computedUserProfit <= this.bet.profit.max: 
+        false;
     },
     rollable() {
       return this.isPocketAvailable && this.isAccountAvailable && this.isUserProfitOK;
