@@ -8,11 +8,17 @@ let gears = [
   { amount:0.5, profit:3, num:16 },
 ]
 // 二维码
-import c1 from '~/assets/img/qrcode/c1.png'
-import c2 from '~/assets/img/qrcode/c2.png'
-import c3 from '~/assets/img/qrcode/c3.png'
-import c4 from '~/assets/img/qrcode/c4.png'
-let qrcodes = [c1,c2,c3,c4]
+import d1 from '~/assets/img/qrcode/c1.png'
+import d2 from '~/assets/img/qrcode/c2.png'
+import d3 from '~/assets/img/qrcode/c3.png'
+import d4 from '~/assets/img/qrcode/c4.png'
+import p1 from '~/assets/img/qrcode/p1.png'
+import p2 from '~/assets/img/qrcode/p2.png'
+import p3 from '~/assets/img/qrcode/p3.png'
+import p4 from '~/assets/img/qrcode/p4.png'
+let qrcodes = process.env.NODE_ENV==='development'?
+  [d1,d2,d3,d4]:
+  [p1,p2,p3,p4];
 // 合约地址
 let hub   = process.env.NODE_ENV==='development'?
     '0x503b00fe09aa2f4382f780b323d1697eb70b7dc3':
