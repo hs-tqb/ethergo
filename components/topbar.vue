@@ -65,11 +65,14 @@
           <!-- <div class="bubble">1231</div> -->
         </h4>
       </template>
-      <template v-else>
+      <!-- <template v-else-if="!isPocketAvailable">
         <h4 style="text-align:left; line-height:26px;">请安装
           <a href="/help/metamask" target="_blank">metamask</a> 插件(PC端)或使用 
           <a href="/help/trustwallet" target="_blank">trust wallet</a> 浏览器(移动端)访问</h4>
       </template>
+      <template v-else>
+        <h4>请登录钱包</h4>
+      </template> -->
     </div>
 
   </div>
@@ -81,6 +84,9 @@ export default {
     account() {
       return this.$store.state.account;
     },
+    isPocketAvailable() {
+      return typeof web3 !== 'undefined'
+    }
   },
   methods: {
     getAccountDetail() {
@@ -91,7 +97,6 @@ export default {
     },
   },
   mounted() {
-
   }
 }
 </script>

@@ -27,10 +27,10 @@
         }
         ul li p { margin:10px 0; }
       }
-      h1 { padding:0px 0 0 5px; font-size:22px; }
+      h1 { padding:20px 0 0 5px; font-size:22px; }
       #bet-rule {
         margin-top:10px;
-        p { margin-bottom:5px; font-size:12px; line-height:15px; }
+        p { margin-bottom:3px; font-size:14px; line-height:16px; }
       }
 
       .btn.block { margin-bottom:10px; }
@@ -76,11 +76,11 @@
       .tabs {text-align:right;}
       .tabs .btn { .radius(5px); border-bottom-left-radius:0; border-bottom-right-radius:0; }
       .tabs .btn.primary { background-color:@color-primary; color:#fff; }
-      .table-wrapper { width:100%; min-width:100%; height:calc(100%-46px);  background-color:#666; .scroll; }
+      .table-wrapper { width:100%; min-width:100%; height:calc(100%-46px); .scroll; }
       table thead td { color:@color-highlight; }
       table { min-width:100%; border-collapse:collapse; }
       table td { padding:10px; font-size:16px; white-space:nowrap; }
-      table tr:nth-child(even) { }
+      table tr:nth-child(even) { background-color:#666; }
       table tr:nth-child(odd) { background-color:#555; }
       // table tbody td { text-align:center; }
       // table td span { .text-ellipsis; width:auto; max-width:20vw;  }
@@ -204,7 +204,7 @@
         min-width:500px;
         // & > * { margin-bottom:80px!important; }
         #bet-rule {
-          p { white-space:nowrap; font-size:14px; line-height:18px; }
+          p { white-space:nowrap; }
         }
       }
       #panel-contract {
@@ -254,7 +254,7 @@
 <template>
   <div id="page-home">
     <!-- 赌注 -->
-    <div id="panel-bet" class="panel" v-if="bet.state==='ready'">
+    <div id="panel-bet" class="panel" v-if="roll.state==='ready'">
       <h1 class="text-highlight">国内最火爆的区块链猜数字小游戏</h1>
       <div>
         <h3>选择投注类型</h3>
@@ -265,56 +265,39 @@
               <h3>赢币</h3>
           </div>
           <ul class="multiplying">
-            <li v-for="(g,i) in bet.gears" :key="`gear-${i}`" :class="bet.index===i?'selected':''" @click="selectBetGear(i)">
-              <p><span class="text-highlight">{{g.num}}</span></p>
-              <p>{{g.amount}}</p>
-              <p class="text-danger">{{g.profit}}</p>
+            <li v-for="(w,i) in this.bet.wager" :key="`wager${i}`" :class="bet.selected===i?'selected':''" @click="selectBetWager(i)">
+                <p><span class="text-highlight">{{w.num}}</span></p>
+              <p>{{w.eth}}</p>
+              <p class="text-danger">{{w.profit}}</p>
             </li>
           </ul>
         </div>
       </div>
-      <p class="info">&nbsp;
-        <span v-if="bet.profit.max&&computedUserProfit&&!isUserProfitOK">
-          <!-- <span> -->
-          已超过最大收益限制 ( {{bet.profit.max.toFixed(4)}} eth )，请选择另一档位</span>
-      </p>
-      <div style="display:flex; min-height:125px; flex-direction:row; justify-content:space-around;">
-        <div>
-          <img :src="bet.qrcodes[bet.index]" height="100">
-          <p style="line-height:40px; text-align:center;">扫码投注</p>
-        </div>
-        <div v-if="isAccountAvailable" @click="doRoll" style="cursor:pointer">
-          <!-- <input type="button" class="btn primary" value="使用钱包投注" :disabled="!rollable" @click="doRoll"> -->
-          <!-- <p >使用钱包投注</p> -->
-          <img src="~/assets/img/mds.png" v-if="isMobile" height="100">
-          <img src="~/assets/img/metamask.png" v-else height="100">
-          <p style="line-height:40px; text-align:center;" v-if="isMobile">麦子钱包投注</p>
-          <p style="line-height:40px; text-align:center;" v-else>metamask投注</p>
-        </div>
-      </div>
-      
       <div class="inner-panel" id="bet-rule">
-        <p>系统在 <span class="text-highlight">1~100</span> 中产生一个随机数（源于<a target="_blank" href="https://www.random.org/">random.org</a>）；</p>
-        <p>若随机数小于
+        <p>系统在 <span class="text-highlight">1~100</span> 中产生一个随机数（随机数算法可证明公平）；</p>
+        <p>如果随机数小于
         <span class="text-highlight">{{computedUserNumber}}</span>
-          则玩家赢得
+          则系统自动将
         <span class="text-danger">{{computedUserProfit}}</span>
         ETH和
         <span class="text-danger">{{computedVppIfWin}}</span>&nbsp;
         <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；</p>
         <p>若大于等于
           <span class="text-highlight">{{computedUserNumber}}</span>
-          则获赠
+          则获得
           <span class="text-danger">{{computedVppIfLose}}</span>&nbsp;
           <a :href="vppLink" target="_blank">VPP</a>
         </p>
-        <p>投注后请关注钱包余额变化。</p>
       </div>
       <div>
-        <!-- <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll"> -->
+        <p class="info">&nbsp;
+          <span v-if="bet.profit.max&&computedUserProfit&&!isUserProfitOK">
+            已超过最大收益限制 ( {{bet.profit.max.toFixed(4)}} eth )，请调整投注金额或胜率</span>
+        </p>
+        <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll">
       </div>
     </div>
-    <!-- <div id="panel-roll" class="panel" v-else-if="bet.state==='roll'">
+    <!-- <div id="panel-roll" class="panel" v-else-if="roll.state==='roll'">
       <h2>投注结果</h2>
       <div class="inner-panel">
         <h3>投注数字</h3>
@@ -340,7 +323,7 @@
       <input type="button" class="btn primary block" value="再玩一次" @click="backToRoll">
     </div> -->
     <!-- 开奖 -->
-    <div id="panel-roll" class="panel" v-else-if="bet.state!=='ready'">
+    <div id="panel-roll" class="panel" v-else-if="roll.state!=='ready'">
       <h2>投注结果</h2>
       <div class="inner-panel">
         <h3>投注数字</h3>
@@ -348,10 +331,10 @@
       </div>
       <div class="border"></div>
       <div class="inner-panel">
-        <h3 v-if="bet.state==='roll'">正在开奖请耐心等待...</h3>
-        <h3 v-else-if="bet.state==='bet'">已收到投注，正在生成随机数...</h3>
-        <h3 v-else-if="bet.state==='result'">开奖数字</h3>
-        <p class="info" v-if="bet.state!=='result'">本次投注大概需要等待1-10分钟左右，视以太坊网络拥堵情况而定（不超过1小时），请稍后查看结果</p>
+        <h3 v-if="roll.state==='roll'">正在开奖请耐心等待...</h3>
+        <h3 v-else-if="roll.state==='bet'">已收到投注，正在生成随机数...</h3>
+        <h3 v-else-if="roll.state==='result'">开奖数字</h3>
+        <p class="info" v-if="roll.state!=='result'">本次投注大概需要等待1-10分钟左右，视以太坊网络拥堵情况而定（不超过1小时），请稍后查看结果</p>
         <div class="ads">
           <ul ref="ads-list">
             <li>Etherwow是中国最火的以太坊猜数字小游戏，无需注册，即点即玩</li>
@@ -360,29 +343,29 @@
           </ul>
         </div>
         <div class="number-block">
-          <p v-if="bet.result<3">
-            <span v-if="bet.result===0" class="text-success">{{bet.number}}</span>
-            <span v-else-if="bet.result===1" class="text-danger">{{bet.number}}</span>
-            <span v-else class="text-warning">{{bet.number}}</span>
+          <p v-if="roll.result<3">
+            <span v-if="roll.result===0" class="text-success">{{roll.value}}</span>
+            <span v-else-if="roll.result===1" class="text-danger">{{roll.value}}</span>
+            <span v-else class="text-warning">{{roll.value}}</span>
           </p>
           <svg v-else viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg>
         </div>
-        <div class="tips" v-if="typeof bet.result==='number'">
-          <p v-if="bet.result===0" class="text-success" style="line-height:20px;">
-            - {{computedUserAmount}} ETH
+        <div class="tips" v-if="typeof roll.result==='number'">
+          <p v-if="roll.result===0" class="text-success" style="line-height:20px;">
+            - {{computedUserWager}} ETH
             <br>赠送 VPP:{{computedVppIfLose}} 个
           </p>
-          <p v-else-if="bet.result===1" class="text-danger" style="line-height:20px;">
+          <p v-else-if="roll.result===1" class="text-danger" style="line-height:20px;">
             Wow, 你赢了！ +{{computedUserProfit}} ETH
             <br>赠送 VPP:{{computedVppIfWin}} 个
           </p>
-          <p v-else-if="bet.result===2">打款失败，请<a href="#withdraw" >手动提现</a></p>
-          <p v-else-if="bet.result===3" class="text-warning">投注失败, 已退款</p>
-          <p v-else-if="bet.result===4">投注失败, 请<a href="#withdraw" >手动提现</a></p>
+          <p v-else-if="roll.result===2">打款失败，请<a href="#withdraw" >手动提现</a></p>
+          <p v-else-if="roll.result===3" class="text-warning">投注失败, 已退款</p>
+          <p v-else-if="roll.result===4">投注失败, 请<a href="#withdraw" >手动提现</a></p>
         </div>
       </div>
 
-      <div class="btn-wrapper" v-if="typeof bet.result==='number'">
+      <div class="btn-wrapper" v-if="typeof roll.result==='number'">
         <input type="button"
           class="btn primary block"
           @click="backToRoll"
@@ -412,9 +395,9 @@
       <div class="tabs">
         <input type="button" class="btn text" :class="record.show==='all'?'primary':''" @click="record.show='all'" value="最新投注">
         <input type="button" class="btn text" :class="record.show==='rank'?'primary':''" @click="record.show='rank'" value="奖金排行">
-        <input type="button" class="btn text" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="我的投注" v-if="isAccountAvailable">
+        <input type="button" class="btn text" :class="record.show==='user'?'primary':''" @click="record.show='user'" value="我的投注">
       </div>
-      <div class="table-wrapper" v-if="record[record.show].length">
+      <div class="table-wrapper">
         <table>
           <thead v-if="record.show==='rank'">
             <tr>
@@ -462,27 +445,6 @@
             </tr>
           </tbody>
         </table>
-      </div>
-      <div class="table-wrapper" v-else-if="record.loaded">
-        <table>
-          <thead v-if="record.show==='rank'">
-            <tr>
-              <td>累计奖金(一周)</td>
-              <td>玩家地址</td>
-            </tr>
-          </thead>
-          <thead v-else>
-            <tr>
-              <td>投注数字</td>
-              <td>开奖数字</td>
-              <td>投注金额</td>
-              <td>玩家收益</td>
-              <td>投注ID</td>
-              <td>玩家地址</td>
-            </tr>
-          </thead>
-        </table>
-        <!-- <p style="line-height:200px;text-align:center;">无数据</p> -->
       </div>
     </div>
     <!-- 引导 -->
@@ -606,7 +568,6 @@ export default {
   data() {
     return {
       vppLink:"/vpp",
-      isMobile:false,
       showGuideDialog:false,
       showAgreement:false,
       hash:'',
@@ -629,27 +590,52 @@ export default {
       },
       // 投注记录
       record: {
-        loaded:false,
         show:'all',
         user:[],
         all:[],
         rank:[]
       },
-      // 投注状态
+      // 赌注设置
       bet: {
-        gears:contracts.gears,
-        qrcodes:contracts.qrcodes,
-        index:0,
-        state:'ready',
-        result:'',
-        number:'',
         id:'',
-
+        selected: 1,
+        wager: [
+          // {name:'0.1', value:0.1},
+          // {name:'0.5', value:0.5},
+          // {name:'1.0', value:1.0},
+          // { eth:0.1, profit:1.000, num:9, real:1.0250000000000001 },
+          { eth:0.1, profit:0.12,  num:76  },
+          { eth:0.2, profit:0.36, num:51 },
+          { eth:1,   profit:3, num:31 },
+          { eth:0.5, profit:3, num:16 },
+        ],
+        range: {
+          value:0,
+          min:1,
+          max:100
+        },
+        multiplying: {
+          list:[
+            {  }
+          ]
+        },
         profit: {
           max:0,
           reqTimer:-1,
           reqDelay:400
         }
+      },
+      // 投注状态
+      roll: {
+        index:0,
+        state:'ready',
+        result:'',
+        value:'',
+        BetID:'',
+
+        // state:'roll',
+        // result:4,
+        // value:1
       },
       //
       metamaskOpt: {
@@ -664,28 +650,27 @@ export default {
   },
   computed: {
     computedUserSelection() {
-      // return this.bet.wager[this.bet.selected];
-      return this.bet.gears[this.bet.index]
+      return this.bet.wager[this.bet.selected];
     },
-    computedUserAmount() {
+    computedUserWager() {
       // return this.bet.wager.list[this.bet.wager.selected].value;
-      return this.computedUserSelection.amount;
+      return this.computedUserSelection.eth;
     },
     computedUserProfit() {
       return this.computedUserSelection.profit;
       // let { wager, range, roll, profit } = this.bet;
       // if ( !profit.max ) return 0;
-      // return ((((this.computedUserAmount * (100-(range.value))) / (range.value)+this.computedUserAmount))*900/1000)-this.computedUserAmount;
+      // return ((((this.computedUserWager * (100-(range.value))) / (range.value)+this.computedUserWager))*900/1000)-this.computedUserWager;
     },
     computedUserNumber() {
       return this.computedUserSelection.num;
     },
     computedVppIfWin() {
-      return Math.floor(50000 * this.computedUserAmount * 0.01)
+      return Math.floor(50000 * this.computedUserWager * 0.01)
     },
     computedVppIfLose() {
-      let { amount, num } = this.computedUserSelection;
-      return 50000 * amount * (100-num) / 100 * 0.1
+      let { eth, num } = this.computedUserSelection;
+      return 50000 * eth * (100-num) / 100 * 0.1
     },
     // 钱包可用
     isPocketAvailable() {
@@ -706,7 +691,7 @@ export default {
     account() {
       return this.$store.state.account
     },
-    paymentContracts() {
+    contracts() {
       return this.web3? contracts.addrs.map(a=>{
         return this.web3.eth.contract(contracts.abi).at(a);
       }): []
@@ -794,10 +779,6 @@ export default {
         this.vppContract.instance:
         ( this.vppContract.instance=this.web3.eth.contract(this.vppContract.abi).at(this.vppContract.address) );
     },
-    getContractHub() {
-      return this.contractHub? this.contractHub:
-      (this.contractHub=this.web3.eth.contract(contracts.abi).at(contracts.hub));
-    },
     // 获取投注记录
     async getRecord() {
       // 获取当前的区块数
@@ -813,12 +794,9 @@ export default {
       let dayBlockNumber = (60*24*15) * 7;
 
       // 获取合约
-      let contract = this.getContractHub()
+      let contract = this.contracts[0];
 
-
-
-      console.log( '__________________' )
-      console.log( contract )
+      console.log(  )
 
       console.log('contract...+++++++++++++停滞', contract)
 
@@ -847,18 +825,18 @@ export default {
 
         // 自己的投注
         // 如果流程不对, 如果已经有在监控的,
-        if ( this.bet.id ) return console.log('111111111', this.bet.id);
-        if ( this.bet.state !=='roll' ) return console.log('2222222', this.bet.state);
+        if ( this.roll.BetID ) return console.log('111111111', this.roll.BetID);
+        if ( this.roll.state !=='roll' ) return console.log('2222222', this.roll.state);
         if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
 
         console.log('____________________bet')
         console.log( `id: ${result.args.BetID}` )
         console.log('____________________bet')
 
-        // if ( this.bet.id && (this.bet.id!==result.args.BetID) ) return;
+        // if ( this.roll.BetID && (this.roll.BetID!==result.args.BetID) ) return;
         console.warn('支付成功');
-        this.bet.state = 'bet';
-        this.bet.id = result.args.BetID;
+        this.roll.state = 'bet';
+        this.roll.BetID = result.args.BetID;
         this.showAds('bet');
         this.updatePageData();
       })
@@ -870,18 +848,18 @@ export default {
         this.disposeRankRecord(results, bets)
 
         // 自己的投注
-        if ( this.bet.state.indexOf('bet') !== 0 ) return;
-        if ( this.bet.id !== result.args.BetID ) return;
+        if ( this.roll.state.indexOf('bet') !== 0 ) return;
+        if ( this.roll.BetID !== result.args.BetID ) return;
 
 
         console.log('____________________result')
-        console.log( `${this.bet.id}, ${result.args.BetID}` )
+        console.log( `${this.roll.BetID}, ${result.args.BetID}` )
         console.log('____________________result')
 
-        this.bet.state = 'result';
+        this.roll.state = 'result';
         this.showAds('result');
-        this.bet.result = +result.args.Status.toNumber()
-        this.bet.number  = +result.args.DiceResult.toNumber()
+        this.roll.result = +result.args.Status.toNumber()
+        this.roll.value  = +result.args.DiceResult.toNumber()
         this.updatePageData();
       });
       LogRefund.watch((err,result)=>{
@@ -890,11 +868,6 @@ export default {
         refunds.push( result );
         this.disposeRecord(bets, results, refunds);
       })
-      this.disposeRecordTimer = setTimeout(()=>{
-        console.log('zzz');
-        this.record.loaded = true;
-        // this.record = {...this.record, loaded:true};
-      }, 2000);
       // this.loadRankRecord()
     },
     // 获取待提现金额
@@ -925,7 +898,7 @@ export default {
           return o;
         }).reverse();
         this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
-        this.record.loaded = true;
+        this.recordDisposed = true;
       }, 500);
     },
     disposeRankRecord(results,bets) {
@@ -1070,8 +1043,8 @@ export default {
 
     // --------- bet ----------
     // 选择价格
-    selectBetGear(idx) {
-      this.bet.index = idx;
+    selectBetWager(idx) {
+      this.bet.selected = idx;
     },
     setRange(idx) {
       let temp = ((idx-1)*25);
@@ -1101,7 +1074,7 @@ export default {
       let additionParam = {
         from: this.account.address,
           to: this.contract.address,
-          value: +this.web3.toWei( this.computedUserAmount ),
+          value: +this.web3.toWei( this.computedUserWager ),
           ...this.metamaskOpt
       };
 
@@ -1112,7 +1085,7 @@ export default {
         if ( err ) return this.commonErrorCatcher('已取消支付');
         let LogBet = contract.LogBet();
         //
-        this.bet.state = 'roll';
+        this.roll.state = 'roll';
         this.showAds('roll');
       })
     },
@@ -1135,10 +1108,10 @@ export default {
     },
     // 返回
     backToRoll() {
-      this.bet.id  = ''
-      this.bet.state  = 'ready';
-      this.bet.result = '';
-      this.bet.number  = undefined;
+      this.roll.BetID  = ''
+      this.roll.state  = 'ready';
+      this.roll.result = '';
+      this.roll.value  = undefined;
     },
     // --------- record ----------
     computeProfit(r) {
@@ -1208,7 +1181,6 @@ export default {
   // 初始化 环境 和 账户信息
   mounted() {
     this.initWeb3();
-    this.isMobile = /iphone|ipad|android|ipod|windows phone/gi.test(navigator.userAgent)
 
     if ( this.isPocketAvailable ) {
       this.updatePageData(true)
