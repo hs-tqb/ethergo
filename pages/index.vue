@@ -511,7 +511,7 @@
             4.PC端请使用chrome + <a href="/help/metamask" target="_blank">metamask</a>访问
           </li>
           <li>
-            5.手机端请使用 <a href="/help/trustwallet" target="_blank">trust wallet 浏览器</a>访问
+            5.手机端请使用 <a href="/help/mds" target="_blank">麦子钱包</a>访问
           </li>
         </ul>
       </div>
@@ -569,7 +569,7 @@
               4.PC端请使用chrome + <a href="/help/metamask" target="_blank">metamask</a>访问
             </li>
             <li>
-              5.手机端请使用 <a href="/help/trustwallet" target="_blank">trust wallet 浏览器</a>访问
+              5.手机端请使用 <a href="/help/mds" target="_blank">麦子钱包</a>访问
             </li>
           </ul>
         </div>
