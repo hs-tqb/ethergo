@@ -907,7 +907,7 @@ export default {
     async getPendingWithdrawal() {
       this.account.pendingWithdrawal = await new Promise((resolve,reject)=>{
         // this.getContract()
-        this.web3.eth.contract(contracts.abi).at(contract.hub)
+        this.web3.eth.contract(contracts.abi).at(contracts.hub)
         .userGetPendingTxByAddress(this.account.address, (err,result)=>{
           if ( err ) return reject(err);
           if ( !result ) return resolve(0);
@@ -1005,7 +1005,7 @@ export default {
       return this.commonErrorCatcher.call(this,err,{from:'doWithdraw'})
 
       // let contract = this.getContract();
-      let contract = this.web3.eth.contract(contracts.abi).at(contract.hub)
+      let contract = this.web3.eth.contract(contracts.abi).at(contracts.hub)
       
 
       let additionParam = {
@@ -1093,7 +1093,7 @@ export default {
       clearTimeout( profit.reqTimer );
       profit.reqTimer = setTimeout(()=>{
         // let contract = this.getContract();
-        let contract = this.web3.eth.contract(contracts.abi).at(contract.hub)
+        let contract = this.web3.eth.contract(contracts.abi).at(contracts.hub)
         let temp = contract.maxProfit((err,result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'getUserMaxProfit'})
           profit.max = +this.web3.fromWei(result.toNumber());
