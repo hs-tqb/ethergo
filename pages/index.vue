@@ -281,6 +281,7 @@
       <div style="display:flex; min-height:125px; flex-direction:row; justify-content:space-around;">
         <div>
           <img :src="bet.qrcodes[bet.index]" height="100">
+          <!-- <span style="font-size:10px;">{{bet.addrs[bet.index]}}</span> -->
           <p style="line-height:40px; text-align:center;">扫码投注</p>
         </div>
         <div v-if="isAccountAvailable" @click="doRoll" style="cursor:pointer">
@@ -507,11 +508,10 @@
           <li>
             3.玩家选择的数字大于系统产生的随机数，系统自动将 ETH+<a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；若玩家选择的数字小于等于系统产生的随机数 ，系统自动将对应比例的 <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包
           </li>
-          <li>
-            4.PC端请使用chrome + <a href="/help/metamask" target="_blank">metamask</a>访问
-          </li>
-          <li>
-            5.手机端请使用 <a href="/help/mds" target="_blank">麦子钱包</a>访问
+          <li>4.支付方式任选其一：
+            <br>区块链钱包扫码或直接向合约地址转账
+            <br>PC端支持 chrome + <a href="/help/metamask" target="_blank">metamask</a> 投注
+            <br>手机端支持 <a href="/help/mds" target="_blank">麦子钱包</a>等DAPP浏览器投注
           </li>
         </ul>
       </div>
@@ -556,7 +556,7 @@
         <h2>怎么玩</h2>
         <div id="guide-game">
           <ul>
-            <li>
+              <li>
               1.玩家可以任意选择一个档位并使用ETH投注
             </li>
             <li>
@@ -565,11 +565,10 @@
             <li>
               3.玩家选择的数字大于系统产生的随机数，系统自动将 ETH+<a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；若玩家选择的数字小于等于系统产生的随机数 ，系统自动将对应比例的 <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包
             </li>
-            <li>
-              4.PC端请使用chrome + <a href="/help/metamask" target="_blank">metamask</a>访问
-            </li>
-            <li>
-              5.手机端请使用 <a href="/help/mds" target="_blank">麦子钱包</a>访问
+            <li>4.支付方式任选其一：
+              <br>区块链钱包扫码或直接向合约地址转账
+              <br>PC端支持 chrome + <a href="/help/metamask" target="_blank">metamask</a> 投注
+              <br>手机端支持 <a href="/help/mds" target="_blank">麦子钱包</a>等DAPP浏览器投注
             </li>
           </ul>
         </div>
@@ -639,6 +638,7 @@ export default {
       bet: {
         gears:contracts.gears,
         qrcodes:contracts.qrcodes,
+        addrs:contracts.addrs,
         index:0,
         state:'ready',
         result:'',
