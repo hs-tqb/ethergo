@@ -279,7 +279,7 @@
           已超过最大收益限制 ( {{bet.profit.max.toFixed(4)}} eth )，请选择另一档位</span>
       </p>
       <div style="display:flex; min-height:125px; flex-direction:row; justify-content:space-around;">
-        <div data-clipboard-target="#qrcodeAddress" id="qrcodeCopyBtn" position:relative;>
+        <div data-clipboard-target="#qrcodeAddress" id="qrcodeCopyBtn">
           <!-- <div style="height:0; overflow:hidden;opacity:0;"> -->
             <!-- <input readonly id="qrcodeAddress" type="text" :value="bet.addrs[bet.index]"> -->
           <!-- </div> -->
@@ -299,6 +299,7 @@
       </div>
       
       <div class="inner-panel" id="bet-rule">
+        <p>转账 <span class="text-highlight">{{computedUserAmount}}</span> ETH到合约地址进行投注</p>
         <p>系统在 <span class="text-highlight">1~100</span> 中产生一个随机数（源于<a target="_blank" href="https://www.random.org/">random.org</a>）</p>
         <p>若随机数小于
         <span class="text-highlight">{{computedUserNumber}}</span>
