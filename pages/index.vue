@@ -788,11 +788,11 @@ export default {
     },
     // 获取合约
     getContract(forWatching) {
-      if ( forWatching ) {
-        return this.web3Watcher.eth.contract(this.contract.abi).at(this.contract.address);
-      } else {
-        return this.web3.eth.contract( this.contract.abi ).at(this.contract.address)
-      }
+      // if ( forWatching ) {
+      //   return this.web3Watcher.eth.contract(this.contract.abi).at(this.contract.address);
+      // } else {
+      //   return this.web3.eth.contract( this.contract.abi ).at(this.contract.address)
+      // }
     },
     // 获取vpp合约
     getVppContract() {
@@ -906,7 +906,8 @@ export default {
     // 获取待提现金额
     async getPendingWithdrawal() {
       this.account.pendingWithdrawal = await new Promise((resolve,reject)=>{
-        this.getContract()
+        // this.getContract()
+        this.web3.contract(contracts.abi).at(contract.hub)
         .userGetPendingTxByAddress(this.account.address, (err,result)=>{
           if ( err ) return reject(err);
           if ( !result ) return resolve(0);
@@ -1003,7 +1004,9 @@ export default {
       if ( this.account.pendingWithdrawal == 0 )
       return this.commonErrorCatcher.call(this,err,{from:'doWithdraw'})
 
-      let contract = this.getContract();
+      // let contract = this.getContract();
+      let contract = this.web3.contract(contracts.abi).at(contract.hub)
+      
 
       let additionParam = {
         from:this.account.address,
@@ -1089,7 +1092,8 @@ export default {
       let profit = this.bet.profit;
       clearTimeout( profit.reqTimer );
       profit.reqTimer = setTimeout(()=>{
-        let contract = this.getContract();
+        // let contract = this.getContract();
+        let contract = this.web3.contract(contracts.abi).at(contract.hub)
         let temp = contract.maxProfit((err,result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'getUserMaxProfit'})
           profit.max = +this.web3.fromWei(result.toNumber());
@@ -1113,7 +1117,8 @@ export default {
 
 
       // 投注
-      let contract = this.getContract();
+      // let contract = this.getContract();
+      let contract = this.web3.contract(contracts.abi).at(contracts.addrs[bet.index])
       contract.userRollDice(+this.computedUserNumber, additionParam, (err, hash)=>{
         if ( err ) return this.commonErrorCatcher('已取消支付');
         let LogBet = contract.LogBet();
