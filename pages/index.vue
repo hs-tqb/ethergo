@@ -1119,7 +1119,7 @@ export default {
       // 投注
       // let contract = this.getContract();
       let contract = this.web3.eth.contract(contracts.abi).at(contracts.addrs[this.bet.index])
-      contract.userRollDice(+this.computedUserNumber, additionParam, (err, hash)=>{
+      contract.userRollDice(additionParam, (err, hash)=>{
         if ( err ) return this.commonErrorCatcher('已取消支付');
         let LogBet = contract.LogBet();
         //
