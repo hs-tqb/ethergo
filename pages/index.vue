@@ -294,21 +294,21 @@
       </div>
       
       <div class="inner-panel" id="bet-rule">
-        <p>系统在 <span class="text-highlight">1~100</span> 中产生一个随机数（源于<a target="_blank" href="https://www.random.org/">random.org</a>）；</p>
+        <p>系统在 <span class="text-highlight">1~100</span> 中产生一个随机数（源于<a target="_blank" href="https://www.random.org/">random.org</a>）</p>
         <p>若随机数小于
         <span class="text-highlight">{{computedUserNumber}}</span>
           则玩家赢得
         <span class="text-danger">{{computedUserProfit}}</span>
         ETH和
         <span class="text-danger">{{computedVppIfWin}}</span>&nbsp;
-        <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；</p>
+        <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包</p>
         <p>若大于等于
           <span class="text-highlight">{{computedUserNumber}}</span>
           则获赠
           <span class="text-danger">{{computedVppIfLose}}</span>&nbsp;
           <a :href="vppLink" target="_blank">VPP</a>
         </p>
-        <p>投注后请关注钱包余额变化。</p>
+        <p>投注后请关注钱包余额变化</p>
       </div>
       <div>
         <!-- <input type="button" class="btn primary block" value="投注" :disabled="!rollable" @click="doRoll"> -->
@@ -502,7 +502,7 @@
             1.玩家可以任意选择一个档位并使用ETH投注
           </li>
           <li>
-            2.系统在1~100中产生一个随机数（随机数算法可证明公平）
+            2.系统在1~100中产生一个随机数（源于<a target="_blank" href="https://www.random.org/">random.org</a>）
           </li>
           <li>
             3.玩家选择的数字大于系统产生的随机数，系统自动将 ETH+<a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；若玩家选择的数字小于等于系统产生的随机数 ，系统自动将对应比例的 <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包
@@ -560,7 +560,7 @@
               1.玩家可以任意选择一个档位并使用ETH投注
             </li>
             <li>
-              2.系统在1~100中产生一个随机数（随机数算法可证明公平）
+              2.系统在1~100中产生一个随机数（源于<a target="_blank" href="https://www.random.org/">random.org</a>）
             </li>
             <li>
               3.玩家选择的数字大于系统产生的随机数，系统自动将 ETH+<a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包；若玩家选择的数字小于等于系统产生的随机数 ，系统自动将对应比例的 <a :href="vppLink" target="_blank">VPP</a> 转到玩家钱包
