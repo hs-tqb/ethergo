@@ -729,6 +729,9 @@ export default {
         new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 
+      // window.web3 = new Web3( new Web3.providers.HttpProvider('localhost:8545') );
+      // window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+
       if (process.env.NODE_ENV==='development') {
         this.web3Watcher = this.web3;
       } else {
@@ -1221,7 +1224,11 @@ export default {
   // 初始化 环境 和 账户信息
   mounted() {
     this.initWeb3();
-    this.isMobile = /iphone|ipad|android|ipod|windows phone/gi.test(navigator.userAgent)
+    this.isMobile = /MdsApp|iphone|ipad|android|ipod|windows phone/gi.test(navigator.userAgent)
+
+    // console.log( '_______________________________navigator.userAgent' )
+    // console.log( navigator.userAgent )
+    // console.log( '_______________________________navigator.userAgent' )
 
     if ( this.isPocketAvailable ) {
       this.updatePageData(true)
