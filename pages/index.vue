@@ -603,7 +603,7 @@ export default {
   head() {
     return {
       script:[
-        { src:'https://cdn.emailjs.com/dist/email.min.js' }
+        // { src:'https://cdn.emailjs.com/dist/email.min.js' }
       ]
     }
   },
@@ -740,7 +740,6 @@ export default {
       }
     },
     hideGuide() {
-      console.log('hide');
       localStorage.setItem('hasReadGuide', true);
       this.showGuideDialog = false;
     },
@@ -826,13 +825,6 @@ export default {
       // 获取合约
       let contract = this.getContractHub()
 
-
-
-      console.log( '__________________' )
-      console.log( contract )
-
-      console.log('contract...+++++++++++++停滞', contract)
-
       // 监听实例
       let LogBet,ResultBet,LogRefund,
           bets=[], results=[], refunds=[];
@@ -858,13 +850,9 @@ export default {
 
         // 自己的投注
         // 如果流程不对, 如果已经有在监控的,
-        if ( this.bet.id ) return console.log('111111111', this.bet.id);
-        if ( this.bet.state !=='roll' ) return console.log('2222222', this.bet.state);
-        if ( result.args.UserAddress !== this.account.address ) return console.log('其它的 账户');
-
-        console.log('____________________bet')
-        console.log( `id: ${result.args.BetID}` )
-        console.log('____________________bet')
+        if ( this.bet.id ) return;
+        if ( this.bet.state !=='roll' ) return;
+        if ( result.args.UserAddress !== this.account.address ) return;
 
         // if ( this.bet.id && (this.bet.id!==result.args.BetID) ) return;
         console.warn('支付成功');
@@ -885,10 +873,6 @@ export default {
         if ( this.bet.id !== result.args.BetID ) return;
 
 
-        console.log('____________________result')
-        console.log( `${this.bet.id}, ${result.args.BetID}` )
-        console.log('____________________result')
-
         this.bet.state = 'result';
         this.showAds('result');
         this.bet.result = +result.args.Status.toNumber()
@@ -902,7 +886,6 @@ export default {
         this.disposeRecord(bets, results, refunds);
       })
       this.disposeRecordTimer = setTimeout(()=>{
-        console.log('zzz');
         this.record.loaded = true;
         // this.record = {...this.record, loaded:true};
       }, 2000);
@@ -923,7 +906,6 @@ export default {
       .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getPendingWithdrawal'}));
     },
     disposeRecord(bets,results,refunds) {
-      // console.log('dispose')
       clearTimeout(this.disposeRecordTimer);
       this.disposeRecordTimer = setTimeout(()=>{
         if ( this.record.all.length && this.record.all.length!==bets.length ) {
@@ -997,12 +979,9 @@ export default {
         //   })
         // this.record.rank = Object.keys(map).map(i=>i);
 
-        // console.log('__________________r');
-        // console.log( this.record.rank );
       }, 300);
     },
     runHorse() {
-      console.log('跑马');
     },
     // 提现
     doWithdraw() {
@@ -1027,7 +1006,6 @@ export default {
         if ( err ) return this.commonErrorCatcher.call(this,err,{from:'userWithdrawPendingTransactions'})
         this.$store.commit('showMessageDialog', {type:'success', html:'提现成功<br>请稍后进行查询'});
       })
-      // console.log( this.contract.abi )
     },
 
     //--------- 检测 ---------
@@ -1049,9 +1027,6 @@ export default {
     // --------- 其它 ---------
     // 通用的catcher
     commonErrorCatcher(err,opt) {
-      console.log('=====error')
-      console.log( err.toString() );
-      console.log('=====error')
       this.$store.commit('showMessageDialog',{type:'failure', html:opt&&opt.html, text:err.toString()});
     },
     // 刷新页面数据
@@ -1225,10 +1200,6 @@ export default {
   mounted() {
     this.initWeb3();
     this.isMobile = /MdsApp|iphone|ipad|android|ipod|windows phone/gi.test(navigator.userAgent)
-
-    // console.log( '_______________________________navigator.userAgent' )
-    // console.log( navigator.userAgent )
-    // console.log( '_______________________________navigator.userAgent' )
 
     if ( this.isPocketAvailable ) {
       this.updatePageData(true)
