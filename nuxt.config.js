@@ -34,6 +34,9 @@ module.exports = {
  css: [
    { src:'~assets/css/common.less',lang:'less' },
   ],
+  env: {
+    ws:process.env.ws
+  },
   /*
   ** Build configuration
   */

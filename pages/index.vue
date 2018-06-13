@@ -448,12 +448,12 @@
           </tbody>
           <tbody v-else>
             <tr v-for="(r,i) in record[record.show]" :key="`r-a-${i}`">
-              <td>{{ r.UserNumber.toNumber() }}</td>
-              <td>{{ r.DiceResult.toNumber() }}</td>
-              <td>{{ web3.fromWei(r.BetValue.toNumber()) }}</td>
+              <td>{{ toNumber(r.UserNumber) }}</td>
+              <td>{{ toNumber(r.DiceResult, 'zzz') }}</td>
+              <td>{{ web3.fromWei(toNumber(r.BetValue)) }}</td>
               <td>
                 <span v-if="record.show==='rank'" class="text-danger">
-                  + {{ web3.fromWei(r.ProfitValue.toNumber()) }}
+                  + {{ web3.fromWei(toNumber(r.ProfitValue)) }}
                 </span>
                 <span :class="`text-${r.computedProfit.state}`" v-else>
                   {{r.computedProfit.prefix}}
@@ -604,6 +604,8 @@ export default {
     return {
       script:[
         // { src:'https://cdn.emailjs.com/dist/email.min.js' }
+        // { src:'/js/socket.io/socket.io_2.1.0_socket.io.js' },
+        { src:'https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js' }
       ]
     }
   },
@@ -769,15 +771,15 @@ export default {
       })
       .then(result=>{
         // 返回的是一个bigNumber对象, 需要获取bigNumber对应的数(单位是wei), 再将wei转成eth
-        console.warn(`余额: ${ result.toNumber() } (wei)`)
-        return +result.toNumber()
+        console.warn(`余额: ${ this.toNumber(result) } (wei)`)
+        return this.toNumber(result)
       })
       .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getBalance'}))
 
       let vppWei = await new Promise((resolve,reject)=>{
         this.getVppContract().balanceOf(address, (err,result)=>{
           if ( err ) return reject(err)
-          resolve(result.toNumber())
+          resolve(this.toNumber(result))
         })
       })
 
@@ -810,6 +812,7 @@ export default {
     },
     // 获取投注记录
     async getRecord() {
+      return;
       // 获取当前的区块数
       let blockNumber   = await new Promise((resolve, reject)=>{
         this.web3.eth.getBlockNumber((err, result)=>{
@@ -875,8 +878,8 @@ export default {
 
         this.bet.state = 'result';
         this.showAds('result');
-        this.bet.result = +result.args.Status.toNumber()
-        this.bet.number  = +result.args.DiceResult.toNumber()
+        this.bet.result = this.toNumber(result.args.Status)
+        this.bet.number  = this.toNumber(result.args.DiceResult)
         this.updatePageData();
       });
       LogRefund.watch((err,result)=>{
@@ -899,28 +902,32 @@ export default {
         .userGetPendingTxByAddress(this.account.address, (err,result)=>{
           if ( err ) return reject(err);
           if ( !result ) return resolve(0);
-          console.warn(`未提现: ${ result.toNumber() }`)
-          resolve(+this.web3.fromWei(result.toNumber()))
+          console.warn(`未提现: ${ this.toNumber(result) }`)
+          resolve(+this.web3.fromWei(this.toNumber(result)))
         })
       })
       .catch(err=>this.commonErrorCatcher.call(this,err,{from:'getPendingWithdrawal'}));
     },
     disposeRecord(bets,results,refunds) {
-      clearTimeout(this.disposeRecordTimer);
-      this.disposeRecordTimer = setTimeout(()=>{
-        if ( this.record.all.length && this.record.all.length!==bets.length ) {
-          this.runHorse();
-        }
-        this.record.all = bets.map(b=>{
-          let r  = results.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
-          let f  = refunds.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
-          let o  = { ...b.args, ...r.args, ...f.args};
-          o.computedProfit = this.computeProfit( o );
-          return o;
-        }).reverse();
-        this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
-        this.record.loaded = true;
-      }, 500);
+      if ( this.record.all.length && this.record.all.length!==bets.length ) {
+        this.runHorse();
+      }
+      this.record.all = bets.map(b=>{
+        let r  = results.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
+        let f  = refunds.filter(r=>r.args.BetID===b.args.BetID)[0] || {args:{}};
+        let o  = { ...b.args, ...r.args, ...f.args};
+        o.computedProfit = this.computeProfit( o );
+        return o;
+      }).reverse();
+
+      this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
+      if ( this.record.user.length === 0 ) {
+        setTimeout(()=>{
+          this.record.user = this.record.all.filter(r=>r.UserAddress===this.account.address)
+        }, 1000)
+      }
+
+      this.record.loaded = true;
     },
     disposeRankRecord(results,bets) {
       clearTimeout( this.disposeRankRecordTimer )
@@ -933,16 +940,16 @@ export default {
             return o;
           })
           // 过滤(已出结果,并且结果为赢)
-          .filter(r=>r.Status&&(+r.Status.toNumber()===1||+r.Status.toNumber()===2))
+          .filter(r=>r.Status&&(this.toNumber(r.Status)===1||this.toNumber(r.Status)===2))
 
         let map = {}
         arr.forEach(r=>{
           if ( map['_'+r.UserAddress] ) {
-            map['_'+r.UserAddress].ProfitValue += r.ProfitValue? +r.ProfitValue.toNumber(): 0
+            map['_'+r.UserAddress].ProfitValue += r.ProfitValue? this.toNumber(r.ProfitValue): 0
           } else {
             map['_'+r.UserAddress] = {
               UserAddress:r.UserAddress,
-              ProfitValue:r.ProfitValue? +r.ProfitValue.toNumber(): 0
+              ProfitValue:r.ProfitValue? this.toNumber(r.ProfitValue): 0
             }
           }
         })
@@ -1032,9 +1039,9 @@ export default {
     // 刷新页面数据
     async updatePageData(isFirstTime) {
       if ( !this.isPocketAvailable ) return;
-      if ( !this.record.all.length ) {
-        this.getRecord()
-      }
+      // if ( !this.record.all.length ) {
+      //   this.getRecord()
+      // }
       // 获取最大用户收益
       this.getUserMaxProfit();
       // 获取账户信息
@@ -1053,8 +1060,9 @@ export default {
       // } else {
       //   this.hashChange();
       // }
-
-      this.hashChange();
+      if ( isFirstTime ) {
+        this.hashChange();
+      }
     },
 
     // --------- bet ----------
@@ -1076,7 +1084,7 @@ export default {
         let contract = this.web3.eth.contract(contracts.abi).at(contracts.hub)
         let temp = contract.maxProfit((err,result)=>{
           if ( err ) return this.commonErrorCatcher.call(this,err,{from:'getUserMaxProfit'})
-          profit.max = +this.web3.fromWei(result.toNumber());
+          profit.max = +this.web3.fromWei(this.toNumber(result));
           console.warn(`最大玩家收益: ${profit.max}`);
         });
       }, profit.reqDelay);
@@ -1101,9 +1109,10 @@ export default {
       let contract = this.web3.eth.contract(contracts.abi).at(contracts.hub)
       contract.userRollDice(+this.computedUserNumber, this.account.address, additionParam, (err, hash)=>{
         if ( err ) return this.commonErrorCatcher('已取消支付');
-        let LogBet = contract.LogBet();
         //
+        console.log('hash', hash)
         this.bet.state = 'roll';
+        this.bet.rollHash = hash;
         this.showAds('roll');
       })
     },
@@ -1132,8 +1141,13 @@ export default {
       this.bet.number  = undefined;
     },
     // --------- record ----------
+    toNumber(o,z) {
+      return typeof o.toNumber==='function'? 
+        (isNaN(o.toNumber())? o.toNumber(): +o.toNumber()): 
+        (isNaN(o)? o: +o);
+    },
     computeProfit(r) {
-      let status = r.Status? +r.Status.toNumber(): -1;
+      let status = r.Status? this.toNumber(r.Status): -1;
       // 如果还没出结果
       if ( status === -1 ) {
         r.DiceResult = { toNumber(){ return '-'; } }
@@ -1151,12 +1165,12 @@ export default {
         //   +this.web3.fromWei(r.BetValue.toNumber()),
         //   +r.UserNumber.toNumber()
         // )
-        value  = +this.web3.fromWei(r.tokenReward.toNumber())
+        value  = +this.web3.fromWei( this.toNumber(r.tokenReward))
         prefix = '+'
         unit   = 'VPP'
       } else if ( status===1 ) {
         state  = 'danger'
-        value  = +this.web3.fromWei(r.ProfitValue.toNumber())
+        value  = +this.web3.fromWei(this.toNumber(r.ProfitValue))
         prefix = '+'
         unit   = 'ETH'
       } else {
@@ -1215,6 +1229,74 @@ export default {
     this.email = localStorage.getItem('_email')||'';
 
 
+    // socket
+    let socket = window.io.connect(process.env.ws)
+    // let socket = window.io.connect('http://47.75.185.67:3110')
+    let socketBets    = [],
+        socketResults = [],
+        socketRefunds = [];
+    socket.on('initRecord', events=>{
+      // console.log('_________init')
+      socketBets    = events.filter(e=>!!e&&e.event==="LogBet"),
+      socketResults = events.filter(e=>!!e&&e.event==="LogResult"),
+      socketRefunds = events.filter(e=>!!e&&e.event==="LogRefund")
+
+      this.disposeRecord(socketBets, socketResults, socketRefunds)
+      this.disposeRankRecord(socketResults, socketBets)
+      this.record.loaded = true;
+    })
+    socket.on('newRecord', e=>{
+      if ( !e ) return;
+      console.log( e )
+      
+      if ( e.event === 'LogBet' ) {
+        socketBets.push( e );
+        this.disposeRecord(socketBets, socketResults, socketRefunds)
+
+        if ( e.args.UserAddress !== this.account.address ) return;
+        if ( this.bet.rollHash !== e.transactionHash ) return;
+        // if ( this.bet.id ) return;
+        // if ( this.bet.state !=='roll' ) return;
+
+        console.warn('支付成功');
+        this.bet.state = 'bet';
+        this.bet.id = e.args.BetID;
+
+        this.showAds('bet');
+        this.updatePageData();
+      } else if ( e.event === 'LogResult' ) {
+        socketResults.push( e );
+        this.disposeRecord(socketBets, socketResults, socketRefunds)
+        this.disposeRankRecord(socketResults, socketBets)
+
+
+        // if ( this.bet.state.indexOf('bet') !== 0 ) return;
+        if ( e.args.UserAddress !== this.account.address ) return;
+        if ( this.bet.id !== e.args.BetID ) return;
+
+        console.warn('已开奖');
+        this.bet.state = 'result';
+        this.showAds('result');
+        this.bet.result = this.toNumber(e.args.Status)
+        this.bet.number  = this.toNumber(e.args.DiceResult)
+        this.updatePageData();
+
+      } else if ( e.event === 'LogRefund' ) {
+        socketRefunds.push( e );
+        this.disposeRecord(socketBets, socketResults, socketRefunds)
+
+        if ( e.args.UserAddress !== this.account.address ) return;
+        console.warn('开奖失败');
+        this.bet.state  = ready
+        this.bet.id     = ''
+        this.bet.result = ''
+        this.bet.number = ''
+      }
+      // console.log( '_________new' )
+      // console.log(data)
+    })
+
+
     // 点击复制
     var script = document.createElement('script');
     script.src = '/js/clipboard.min.js';
@@ -1231,6 +1313,27 @@ export default {
       });
     };
     document.body.appendChild(script);
+
+    console.log('_______________')
+    console.log( process.env.ws )
+    console.log('_______________')
+
+
+    // const web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io"));
+    // console.log('________________3');
+    // web3.eth.contract(contracts.abi).at('0x503b00fe09aa2f4382f780b323d1697eb70b7dc3')
+    // .LogBet(
+    //   { _userAddress: '' },
+    //   { fromBlock   :3303936-(60*24*15) * 7}
+    // )
+    // .watch((err,result)=>{
+    //   console.log('______________rb')
+    //   console.log( err )
+    //   console.log('______________rb')
+    // })
+    // console.log('________________3');
+
+    
   },
   components: {
     footer1
